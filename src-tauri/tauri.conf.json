@@ -41,6 +41,16 @@
       "icons/icon.ico",
       "icons/icon.png"
     ],
+    "resources": [
+      "../web_app.py",
+      "../login_info.py",
+      "../login_info.example.py",
+      "../requirements.txt",
+      "../l*.py",
+      "../tool.py",
+      "../parse_template.py",
+      "../useragentutil.py"
+    ],
     "windows": {
       "webviewInstallMode": {
         "type": "embedBootstrapper"
