@@ -1,0 +1,25 @@
+{
+  "name": "lofter-spider",
+  "version": "1.0.0",
+  "description": "Lofter Spider - 优雅的乐乎内容爬取工具",
+  "main": "index.js",
+  "scripts": {
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IshtarTang/lofterSpider.git"
+  },
+  "keywords": ["lofter", "spider", "crawler", "tauri"],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@tauri-apps/api": "^2.0.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0"
+  }
+}
