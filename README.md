@@ -70,7 +70,7 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/你的用户名/LoArchive.git
+git clone https://github.com/Yar1991-Translation/LoArchive.git
 cd LoArchive
 
 # 安装依赖
