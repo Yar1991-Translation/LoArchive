@@ -41,14 +41,28 @@ pub fn run() {
             Ok(())
         })
         .on_window_event(|window, event| {
-            if let tauri::WindowEvent::CloseRequested { .. } = event {
-                if window.label() == "main" {
-                    stop_backend();
+            match event {
+                tauri::WindowEvent::CloseRequested { .. } => {
+                    if window.label() == "main" {
+                        stop_backend();
+                    }
                 }
+                tauri::WindowEvent::Destroyed => {
+                    if window.label() == "main" {
+                        stop_backend();
+                    }
+                }
+                _ => {}
             }
         })
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|_app_handle, event| {
+            // 应用退出时确保关闭后端
+            if let tauri::RunEvent::Exit = event {
+                stop_backend();
+            }
+        });
 }
 
 fn start_backend_sidecar(app: &tauri::AppHandle) -> Result<(), String> {
@@ -93,8 +107,33 @@ fn start_backend_sidecar(app: &tauri::AppHandle) -> Result<(), String> {
 fn stop_backend() {
     if let Ok(mut guard) = BACKEND_HANDLE.lock() {
         if let Some(child) = guard.take() {
-            let _ = child.kill();
-            println!("Backend process stopped");
+            match child.kill() {
+                Ok(_) => println!("Backend process stopped successfully"),
+                Err(e) => eprintln!("Failed to stop backend: {}", e),
+            }
         }
+    }
+    
+    // 额外清理：尝试终止所有遗留的后端进程
+    #[cfg(windows)]
+    {
+        let _ = std::process::Command::new("taskkill")
+            .args(["/F", "/IM", "loarchive-backend-x86_64-pc-windows-msvc.exe"])
+            .creation_flags(0x08000000) // CREATE_NO_WINDOW
+            .output();
+    }
+}
+
+// Windows 特定：隐藏控制台窗口标志
+#[cfg(windows)]
+trait CommandExt {
+    fn creation_flags(&mut self, flags: u32) -> &mut Self;
+}
+
+#[cfg(windows)]
+impl CommandExt for std::process::Command {
+    fn creation_flags(&mut self, flags: u32) -> &mut Self {
+        use std::os::windows::process::CommandExt as WinCommandExt;
+        self.creation_flags(flags)
     }
 }
