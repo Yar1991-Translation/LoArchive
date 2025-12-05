@@ -14,10 +14,24 @@ import requests
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 
-# 添加当前目录到路径
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# PyInstaller 打包后的资源路径处理
+def get_resource_path(relative_path):
+    """获取资源文件的绝对路径，兼容 PyInstaller 打包"""
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller 打包后的临时目录
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), relative_path)
 
-app = Flask(__name__, static_folder='static', template_folder='templates')
+# 添加当前目录到路径
+if hasattr(sys, '_MEIPASS'):
+    sys.path.insert(0, sys._MEIPASS)
+else:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Flask 应用初始化
+template_folder = get_resource_path('templates')
+static_folder = get_resource_path('static')
+app = Flask(__name__, static_folder=static_folder, template_folder=template_folder)
 CORS(app)
 
 # 全局状态

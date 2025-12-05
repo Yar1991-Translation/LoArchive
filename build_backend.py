@@ -37,17 +37,26 @@ def build():
         "--distpath", output_dir,
         "--workpath", os.path.join(script_dir, "build", "pyinstaller"),
         "--specpath", os.path.join(script_dir, "build"),
+        # Include data files
+        "--add-data", f"{os.path.join(script_dir, 'templates')}{os.pathsep}templates",
+        "--add-data", f"{os.path.join(script_dir, 'static')}{os.pathsep}static",
         # Hidden imports
         "--hidden-import", "flask",
         "--hidden-import", "flask_cors",
         "--hidden-import", "requests",
         "--hidden-import", "bs4",
         "--hidden-import", "lxml",
+        "--hidden-import", "lxml.html",
+        "--hidden-import", "lxml.etree",
         "--hidden-import", "werkzeug",
         "--hidden-import", "jinja2",
         "--hidden-import", "markupsafe",
         "--hidden-import", "itsdangerous",
         "--hidden-import", "click",
+        "--hidden-import", "html2text",
+        "--hidden-import", "xhtml2pdf",
+        "--hidden-import", "reportlab",
+        "--hidden-import", "ebooklib",
         # Main program
         os.path.join(script_dir, "web_app.py")
     ]
