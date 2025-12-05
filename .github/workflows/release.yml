@@ -13,12 +13,7 @@ permissions:
 
 jobs:
   release:
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [windows-latest]
-
-    runs-on: ${{ matrix.platform }}
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
@@ -29,23 +24,17 @@ jobs:
       - name: Get commit messages since last tag
         id: changelog
         run: |
-          # Get the last tag
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          
-          if [ -z "$LAST_TAG" ]; then
-            COMMITS=$(git log --pretty=format:"- %s" -20)
-          else
-            COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s")
-          fi
-          
-          if [ -z "$COMMITS" ]; then
-            COMMITS="- Initial release"
-          fi
-          
-          echo "commits<<EOF" >> $GITHUB_OUTPUT
-          echo "$COMMITS" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-        shell: bash
+          $LAST_TAG = git describe --tags --abbrev=0 2>$null
+          if ($LAST_TAG) {
+            $COMMITS = git log "$LAST_TAG..HEAD" --pretty=format:"- %s"
+          } else {
+            $COMMITS = git log --pretty=format:"- %s" -20
+          }
+          if (-not $COMMITS) { $COMMITS = "- Initial release" }
+          echo "commits<<EOF" >> $env:GITHUB_OUTPUT
+          echo $COMMITS >> $env:GITHUB_OUTPUT
+          echo "EOF" >> $env:GITHUB_OUTPUT
+        shell: pwsh
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -77,13 +66,38 @@ jobs:
         run: python build_backend.py
 
       - name: Build Tauri app
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run tauri build
+
+      - name: Create portable ZIP
+        run: |
+          $version = "v${{ github.run_number }}"
+          $bundlePath = "src-tauri/target/release"
+          $zipName = "LoArchive-${version}-portable.zip"
+          
+          # 创建临时目录
+          New-Item -ItemType Directory -Force -Path "portable/LoArchive"
+          
+          # 复制主程序
+          Copy-Item "$bundlePath/lofter-spider.exe" "portable/LoArchive/LoArchive.exe"
+          
+          # 复制后端
+          Copy-Item "src-tauri/binaries/loarchive-backend-x86_64-pc-windows-msvc.exe" "portable/LoArchive/"
+          
+          # 复制资源
+          Copy-Item -Recurse "src-tauri/target/release/resources" "portable/LoArchive/" -ErrorAction SilentlyContinue
+          
+          # 创建 ZIP
+          Compress-Archive -Path "portable/LoArchive" -DestinationPath $zipName -Force
+          
+          echo "PORTABLE_ZIP=$zipName" >> $env:GITHUB_ENV
+        shell: pwsh
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
         with:
-          tagName: v${{ github.run_number }}
-          releaseName: 'LoArchive v${{ github.run_number }}'
-          releaseBody: |
+          tag_name: v${{ github.run_number }}
+          name: LoArchive v${{ github.run_number }}
+          body: |
             ## 🚀 LoArchive v${{ github.run_number }}
             
             ### 📝 更新内容
@@ -94,16 +108,29 @@ jobs:
             ### 📥 下载说明
             | 文件 | 说明 |
             |------|------|
-            | `.msi` | Windows 安装包（推荐） |
-            | `.exe` | Windows 便携版 |
+            | `LoArchive_*_x64-setup.exe` | 🎯 **安装版**（推荐，有开始菜单快捷方式） |
+            | `LoArchive-*-portable.zip` | 📦 **便携版**（解压即用，无需安装） |
             
             ### 🔧 使用方法
-            1. 下载并安装
-            2. 打开应用
+            1. 下载安装版或便携版
+            2. 安装/解压后打开应用
             3. 在「设置」中配置 Lofter 登录信息
             4. 开始使用！
             
+            ### ✨ 功能特性
+            - 📚 Lofter 喜欢/分享/标签爬取
+            - 📖 AO3 作品下载
+            - 🖼️ 图片批量下载
+            - 📄 支持导出 PDF/EPUB/TXT
+            - 🌙 深色模式
+            - 🔄 自动检查更新
+            
             ---
             <sub>构建时间: ${{ github.event.head_commit.timestamp }}</sub>
-          releaseDraft: false
+          files: |
+            src-tauri/target/release/bundle/nsis/*.exe
+            LoArchive-v${{ github.run_number }}-portable.zip
+          draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
