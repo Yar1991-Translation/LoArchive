@@ -50,6 +50,20 @@ dir/
 my_downloads/
 *_save/
 
+# 旧的命令行工具（已弃用）
+l4_*.py
+l8_*.py
+l9_*.py
+l10_*.py
+l13_*.py
+l14_*.py
+l15_*.py
+parse_template.py
+tags_tolist.py
+tool.py
+generate_icon.py
+generate_tauri_icons.py
+
 # 日志文件
 *.log
 tauri_dev.log

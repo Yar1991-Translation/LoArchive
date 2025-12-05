@@ -184,7 +184,6 @@ LoArchive/
 ├── templates/          # 前端页面
 ├── static/             # 静态资源
 ├── src-tauri/          # Tauri 桌面应用
-├── l*.py               # 原命令行工具
 └── dir/                # 下载内容目录
 ```
 
