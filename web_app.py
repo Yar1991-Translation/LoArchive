@@ -34,12 +34,124 @@ task_status = {
 config = {
     'login_key': 'LOFTER-PHONE-LOGIN-AUTH',
     'login_auth': '',
-    'file_path': './dir'
+    'file_path': './dir',
+    'save_path': './dir',  # 用户自定义保存路径
+    'dark_mode': False,
+    'auto_dedup': True,  # 自动去重
+    'notify_on_complete': True  # 完成通知
 }
+
+# 下载历史文件路径
+HISTORY_FILE = './download_history.json'
+# 配置文件路径
+CONFIG_FILE = './loarchive_config.json'
+
+def load_config_file():
+    """从文件加载配置"""
+    global config
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+                saved_config = json.load(f)
+                config.update(saved_config)
+        except Exception as e:
+            print(f"加载配置文件失败: {e}")
+    return config
+
+def save_config_file():
+    """保存配置到文件"""
+    try:
+        with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+            json.dump(config, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"保存配置文件失败: {e}")
+
+def load_download_history():
+    """加载下载历史"""
+    default_history = {'items': [], 'stats': {'total': 0, 'images': 0, 'articles': 0}}
+    if os.path.exists(HISTORY_FILE):
+        try:
+            with open(HISTORY_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                # 确保数据结构完整
+                if 'items' not in data:
+                    data['items'] = []
+                if 'stats' not in data:
+                    data['stats'] = {'total': 0, 'images': 0, 'articles': 0}
+                return data
+        except Exception as e:
+            print(f"加载历史记录失败: {e}")
+            return default_history
+    return default_history
+
+def save_download_history(history):
+    """保存下载历史"""
+    try:
+        with open(HISTORY_FILE, 'w', encoding='utf-8') as f:
+            json.dump(history, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"保存历史记录失败: {e}")
+
+def add_to_history(item_type, url, title, author, file_path, source='lofter'):
+    """添加到下载历史"""
+    history = load_download_history()
+    
+    # 检查是否已存在（去重）
+    for item in history['items']:
+        if item.get('url') == url:
+            return False  # 已存在
+    
+    # 添加新记录
+    record = {
+        'id': str(int(time.time() * 1000)),
+        'type': item_type,  # 'image', 'article', 'ao3'
+        'url': url,
+        'title': title,
+        'author': author,
+        'file_path': file_path,
+        'source': source,
+        'download_time': time.strftime('%Y-%m-%d %H:%M:%S'),
+        'timestamp': int(time.time())
+    }
+    
+    history['items'].insert(0, record)  # 最新的在前面
+    
+    # 更新统计
+    history['stats']['total'] += 1
+    if item_type == 'image':
+        history['stats']['images'] += 1
+    else:
+        history['stats']['articles'] += 1
+    
+    # 限制历史记录数量（保留最近1000条）
+    if len(history['items']) > 1000:
+        history['items'] = history['items'][:1000]
+    
+    save_download_history(history)
+    return True
+
+def is_url_downloaded(url):
+    """检查URL是否已下载过"""
+    if not config.get('auto_dedup', True):
+        return False
+    history = load_download_history()
+    for item in history['items']:
+        if item.get('url') == url:
+            return True
+    return False
+
+def clear_download_history():
+    """清空下载历史"""
+    history = {'items': [], 'stats': {'total': 0, 'images': 0, 'articles': 0}}
+    save_download_history(history)
+    return True
 
 def load_config():
     """加载配置"""
     global config
+    # 首先从配置文件加载
+    load_config_file()
+    # 然后尝试从 login_info.py 加载（如果存在）
     try:
         from login_info import login_auth, login_key
         config['login_key'] = login_key
@@ -147,7 +259,8 @@ def run_single_img_task(params):
     login_auth = config['login_auth']
     
     # 确保目录存在
-    dir_path = "./dir/img/this"
+    save_root = config.get('save_path', './dir')
+    dir_path = os.path.join(save_root, "img/this")
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
     
@@ -278,7 +391,8 @@ def run_single_txt_task(params):
     login_auth = config['login_auth']
     
     # 确保目录存在
-    dir_path = "./dir/article/this"
+    save_root = config.get('save_path', './dir')
+    dir_path = os.path.join(save_root, "article/this")
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
     
@@ -482,7 +596,8 @@ def run_author_img_task(params):
         author_name_safe = author_name.replace("/", "&").replace("|", "&").replace("\\", "&").\
             replace("<", "《").replace(">", "》").replace(":", "：").replace('"', '"').\
             replace("?", "？").replace("*", "·").replace("\n", "")
-        dir_path = f"./dir/img/{author_name_safe}[{author_ip}]"
+        save_root = config.get('save_path', './dir')
+        dir_path = os.path.join(save_root, f"img/{author_name_safe}[{author_ip}]")
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
         
@@ -942,7 +1057,8 @@ def run_like_share_tag_task(params):
         add_log(f"📊 图片博客: {img_count} 篇, 文字博客: {txt_count} 篇")
         
         # 创建保存目录 - 按作者分类
-        base_dir = f"./dir/{mode}_save"
+        save_root = config.get('save_path', './dir')
+        base_dir = os.path.join(save_root, f"{mode}_save")
         img_base_dir = os.path.join(base_dir, "img")
         txt_base_dir = os.path.join(base_dir, "txt")
         os.makedirs(img_base_dir, exist_ok=True)
@@ -1055,6 +1171,93 @@ def run_like_share_tag_task(params):
         add_log(traceback.format_exc())
 
 
+def generate_epub(title, author, content_parts, chapters_info, metadata_list, filepath):
+    """生成 EPUB 电子书"""
+    try:
+        from ebooklib import epub
+        import uuid
+        
+        book = epub.EpubBook()
+        
+        # 设置元数据
+        book.set_identifier(str(uuid.uuid4()))
+        book.set_title(title)
+        book.set_language('zh')
+        book.add_author(author)
+        
+        # 添加 CSS 样式
+        style = '''
+        body { font-family: "Noto Serif SC", "Source Han Serif", serif; line-height: 1.8; margin: 2em; }
+        h1 { text-align: center; margin-bottom: 1em; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 0.5em; margin-top: 2em; }
+        p { text-indent: 2em; margin-bottom: 0.5em; }
+        .meta { font-size: 0.9em; color: #666; margin-bottom: 2em; padding: 1em; background: #f5f5f5; border-radius: 5px; }
+        .meta-item { margin-bottom: 0.3em; }
+        '''
+        css = epub.EpubItem(uid="style", file_name="style/main.css", media_type="text/css", content=style)
+        book.add_item(css)
+        
+        chapters = []
+        
+        # 封面/元数据页
+        if metadata_list:
+            cover_content = f'<html><head><link rel="stylesheet" href="style/main.css"/></head><body>'
+            cover_content += f'<h1>{title}</h1>'
+            cover_content += f'<p style="text-align:center;">by {author}</p>'
+            cover_content += '<div class="meta">'
+            for meta in metadata_list:
+                if meta.strip():
+                    cover_content += f'<div class="meta-item">{meta}</div>'
+            cover_content += '</div></body></html>'
+            
+            cover_chapter = epub.EpubHtml(title='作品信息', file_name='cover.xhtml', lang='zh')
+            cover_chapter.content = cover_content
+            cover_chapter.add_item(css)
+            book.add_item(cover_chapter)
+            chapters.append(cover_chapter)
+        
+        # 内容章节
+        if chapters_info:
+            for idx, (ch_title, ch_content) in enumerate(chapters_info):
+                ch = epub.EpubHtml(title=ch_title, file_name=f'chapter_{idx+1}.xhtml', lang='zh')
+                content = f'<html><head><link rel="stylesheet" href="style/main.css"/></head><body>'
+                content += f'<h2>{ch_title}</h2>'
+                for para in ch_content:
+                    if para.strip():
+                        content += f'<p>{para}</p>'
+                content += '</body></html>'
+                ch.content = content
+                ch.add_item(css)
+                book.add_item(ch)
+                chapters.append(ch)
+        else:
+            # 单章节
+            main_ch = epub.EpubHtml(title='正文', file_name='content.xhtml', lang='zh')
+            content = f'<html><head><link rel="stylesheet" href="style/main.css"/></head><body>'
+            content += f'<h1>{title}</h1>'
+            for para in content_parts:
+                if para.strip() and not para.strip().startswith('='*10):
+                    content += f'<p>{para}</p>'
+            content += '</body></html>'
+            main_ch.content = content
+            main_ch.add_item(css)
+            book.add_item(main_ch)
+            chapters.append(main_ch)
+        
+        # 目录
+        book.toc = chapters
+        book.add_item(epub.EpubNcx())
+        book.add_item(epub.EpubNav())
+        book.spine = ['nav'] + chapters
+        
+        # 保存
+        epub.write_epub(filepath, book)
+        return True
+    except Exception as e:
+        print(f"EPUB生成失败: {e}")
+        return False
+
+
 def run_ao3_task(params):
     """运行AO3文章爬取任务 - 参考 https://github.com/610yilingliu/download_ao3_v2"""
     from lxml import etree
@@ -1066,6 +1269,7 @@ def run_ao3_task(params):
     download_chapters = params.get('download_chapters', True)
     save_metadata = params.get('save_metadata', True)
     export_pdf = params.get('export_pdf', False)  # 是否导出PDF
+    export_epub = params.get('export_epub', False)  # 是否导出EPUB
     
     # PDF生成的HTML模板
     def generate_html_content(title, author, work_url, metadata_list, content_parts, chapters_info=None):
@@ -1308,8 +1512,9 @@ def run_ao3_task(params):
     add_log(f"📚 开始AO3爬取任务，模式: {mode}")
     add_log(f"📍 共 {len(urls)} 个链接")
     
-    # 创建保存目录
-    base_dir = "./dir/ao3"
+    # 创建保存目录（使用自定义路径）
+    save_root = config.get('save_path', './dir')
+    base_dir = os.path.join(save_root, 'ao3')
     os.makedirs(base_dir, exist_ok=True)
     
     # AO3请求Session - 更好的连接管理
@@ -1380,6 +1585,11 @@ def run_ao3_task(params):
         nonlocal saved_count
         
         try:
+            # 检查是否已下载（自动去重）
+            if is_url_downloaded(work_url):
+                add_log(f"⏭️ 已下载过，跳过: {work_url}")
+                return
+            
             add_log(f"📖 正在获取: {work_url}")
             
             # 处理 ?view_adult=true 参数
@@ -1548,6 +1758,16 @@ def run_ao3_task(params):
             saved_count += 1
             add_log(f"   ✅ 已保存: {txt_filename}")
             
+            # 记录到下载历史
+            add_to_history(
+                item_type='ao3',
+                url=work_url,
+                title=title,
+                author=author,
+                file_path=txt_filepath,
+                source='ao3'
+            )
+            
             # 如果需要导出PDF
             if export_pdf:
                 add_log(f"   📄 正在生成PDF...")
@@ -1572,6 +1792,22 @@ def run_ao3_task(params):
                 # 生成PDF
                 if save_as_pdf(html_content, pdf_filepath):
                     add_log(f"   📄 已生成PDF: {pdf_filename}")
+            
+            # 如果需要导出EPUB
+            if export_epub:
+                add_log(f"   📖 正在生成EPUB...")
+                epub_filename = txt_filename.replace('.txt', '.epub')
+                epub_filepath = txt_filepath.replace('.txt', '.epub')
+                
+                if generate_epub(
+                    title=title,
+                    author=author,
+                    content_parts=content_parts,
+                    chapters_info=chapters_info if chapters_info else None,
+                    metadata_list=metadata,
+                    filepath=epub_filepath
+                ):
+                    add_log(f"   📖 已生成EPUB: {epub_filename}")
             
         except Exception as e:
             add_log(f"   ❌ 下载失败: {str(e)}")
@@ -1824,17 +2060,122 @@ def serve_static(filename):
     """提供静态文件"""
     return send_from_directory('static', filename)
 
+# ============ 下载历史 API ============
+
+@app.route('/api/history')
+def get_history():
+    """获取下载历史"""
+    history = load_download_history()
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 50, type=int)
+    filter_type = request.args.get('type', '')  # 'image', 'article', 'ao3', ''
+    filter_source = request.args.get('source', '')  # 'lofter', 'ao3', ''
+    search = request.args.get('search', '')
+    
+    items = history['items']
+    
+    # 过滤
+    if filter_type:
+        items = [i for i in items if i.get('type') == filter_type]
+    if filter_source:
+        items = [i for i in items if i.get('source') == filter_source]
+    if search:
+        search_lower = search.lower()
+        items = [i for i in items if 
+                 search_lower in i.get('title', '').lower() or 
+                 search_lower in i.get('author', '').lower()]
+    
+    # 分页
+    total = len(items)
+    start = (page - 1) * per_page
+    end = start + per_page
+    items = items[start:end]
+    
+    return jsonify({
+        'items': items,
+        'total': total,
+        'page': page,
+        'per_page': per_page,
+        'total_pages': (total + per_page - 1) // per_page,
+        'stats': history['stats']
+    })
+
+@app.route('/api/history/clear', methods=['POST'])
+def api_clear_history():
+    """清空下载历史"""
+    result = clear_download_history()
+    if result:
+        return jsonify({'success': True, 'message': '历史记录已清空'})
+    return jsonify({'success': False, 'message': '清空失败'})
+
+@app.route('/api/history/delete/<item_id>', methods=['DELETE'])
+def delete_history_item(item_id):
+    """删除单条历史记录"""
+    history = load_download_history()
+    history['items'] = [i for i in history['items'] if i.get('id') != item_id]
+    save_download_history(history)
+    return jsonify({'success': True, 'message': '记录已删除'})
+
+@app.route('/api/history/check', methods=['POST'])
+def check_downloaded():
+    """检查URL是否已下载"""
+    data = request.json
+    url = data.get('url', '')
+    downloaded = is_url_downloaded(url)
+    return jsonify({'downloaded': downloaded, 'url': url})
+
+@app.route('/api/settings', methods=['GET', 'POST'])
+def handle_settings():
+    """处理应用设置"""
+    global config
+    if request.method == 'GET':
+        # 确保加载最新配置
+        load_config_file()
+        return jsonify({
+            'save_path': config.get('save_path', './dir'),
+            'dark_mode': config.get('dark_mode', False),
+            'auto_dedup': config.get('auto_dedup', True),
+            'notify_on_complete': config.get('notify_on_complete', True)
+        })
+    else:
+        data = request.json
+        if 'save_path' in data:
+            save_path = data['save_path']
+            config['save_path'] = save_path
+            # 确保目录存在
+            try:
+                os.makedirs(save_path, exist_ok=True)
+                os.makedirs(os.path.join(save_path, 'img'), exist_ok=True)
+                os.makedirs(os.path.join(save_path, 'article'), exist_ok=True)
+            except Exception as e:
+                return jsonify({'success': False, 'message': f'创建目录失败: {str(e)}'})
+        if 'dark_mode' in data:
+            config['dark_mode'] = data['dark_mode']
+        if 'auto_dedup' in data:
+            config['auto_dedup'] = data['auto_dedup']
+        if 'notify_on_complete' in data:
+            config['notify_on_complete'] = data['notify_on_complete']
+        # 保存配置到文件
+        save_config_file()
+        return jsonify({'success': True, 'message': '设置已保存'})
+
 if __name__ == '__main__':
     os.makedirs('templates', exist_ok=True)
     os.makedirs('static', exist_ok=True)
-    os.makedirs('dir', exist_ok=True)
-    os.makedirs('dir/img', exist_ok=True)
-    os.makedirs('dir/article', exist_ok=True)
+    
+    # 加载配置文件
+    load_config()
+    
+    save_path = config.get('save_path', './dir')
+    os.makedirs(save_path, exist_ok=True)
+    os.makedirs(os.path.join(save_path, 'img'), exist_ok=True)
+    os.makedirs(os.path.join(save_path, 'article'), exist_ok=True)
     
     print("=" * 50)
-    print("🌸 Lofter Spider Web Application")
+    print("Lofter Spider Web Application")
     print("=" * 50)
-    print("🌐 访问 http://localhost:5000 开始使用")
+    print(f"保存路径: {save_path}")
+    print("Visit http://localhost:5000 to start")
     print("=" * 50)
     
-    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)
+    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)

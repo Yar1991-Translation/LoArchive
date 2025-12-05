@@ -47,17 +47,29 @@ src-tauri/gen/schemas/
 # ==================== 项目特定 ====================
 # 下载的内容目录
 dir/
+my_downloads/
+*_save/
 
 # 日志文件
 *.log
 tauri_dev.log
 
-# 敏感信息 - 登录凭据
-# login_info.py  # 注意：需要保留模板版本
+# 敏感信息 - 登录凭据（必须忽略！）
+login_info.py
+
+# 配置文件（可能包含敏感信息）
+loarchive_config.json
+download_history.json
 
 # 临时文件
 *.tmp
 *.temp
+example.html
+blogs_info
+
+# PyInstaller 构建文件
+loarchive-backend.spec
+*.spec
 
 # ==================== 发布包 ====================
 *.msi

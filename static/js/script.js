@@ -8,6 +8,24 @@ const AppState = {
     pollInterval: null
 };
 
+// ==================== API 基础地址 ====================
+// 在 Tauri 环境中需要使用完整的后端地址
+function getApiBase() {
+    // 检测是否在 Tauri 环境中
+    const isTauri = window.__TAURI__ !== undefined || 
+                    window.__TAURI_INTERNALS__ !== undefined ||
+                    navigator.userAgent.includes('Tauri');
+    
+    // 在 Tauri 环境中使用完整的后端地址
+    if (isTauri) {
+        return 'http://localhost:5000';
+    }
+    // 在浏览器环境中使用相对路径（Flask 直接提供服务）
+    return '';
+}
+
+const API_BASE = getApiBase();
+
 // ==================== 初始化 ====================
 document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
@@ -178,13 +196,22 @@ function initTauri() {
 // ==================== 配置管理 ====================
 async function loadConfig() {
     try {
-        const res = await fetch('/api/config');
+        const res = await fetch(`${API_BASE}/api/config`);
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('后端服务未启动，请稍候重试');
+        }
         const data = await res.json();
         const loginKeyEl = document.getElementById('loginKey');
         if (loginKeyEl) loginKeyEl.value = data.login_key;
         updateAuthStatus(data.has_auth);
     } catch (e) {
         console.error('加载配置失败:', e);
+        // 如果加载失败，延迟后重试
+        setTimeout(loadConfig, 2000);
     }
 }
 
@@ -193,11 +220,14 @@ window.saveConfig = async function() {
     const loginAuth = document.getElementById('loginAuth').value;
 
     try {
-        const res = await fetch('/api/config', {
+        const res = await fetch(`${API_BASE}/api/config`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ login_key: loginKey, login_auth: loginAuth })
         });
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
         const data = await res.json();
         if (data.success) {
             showNotification('配置保存成功！', 'success');
@@ -285,11 +315,22 @@ window.startAo3Task = async function() {
 
 async function startTask(type, params) {
     try {
-        const res = await fetch('/api/task/start', {
+        const res = await fetch(`${API_BASE}/api/task/start`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type, params })
         });
+        
+        // 检查响应类型，避免解析 HTML 为 JSON
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('后端服务未启动或连接失败，请检查后端是否正在运行');
+        }
+        
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        
         const data = await res.json();
 
         if (data.success) {
@@ -332,7 +373,15 @@ function startPolling() {
     
     AppState.pollInterval = setInterval(async () => {
         try {
-            const res = await fetch('/api/task/status');
+            const res = await fetch(`${API_BASE}/api/task/status`);
+            
+            // 检查响应类型
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                console.error('后端未响应 JSON');
+                return;
+            }
+            
             const data = await res.json();
 
             // 更新进度

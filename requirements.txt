@@ -4,3 +4,9 @@ urllib3==1.26.9
 html2text
 json5
 numpy
+flask
+flask-cors
+beautifulsoup4
+xhtml2pdf
+reportlab
+ebooklib

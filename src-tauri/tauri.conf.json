@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "LoArchive",
   "version": "1.0.0",
-  "identifier": "com.loarchive.app",
+  "identifier": "com.loarchive.desktop",
   "build": {
     "frontendDist": "../templates",
     "devUrl": "http://localhost:5000",
@@ -41,15 +41,8 @@
       "icons/icon.ico",
       "icons/icon.png"
     ],
-    "resources": [
-      "../web_app.py",
-      "../login_info.py",
-      "../login_info.example.py",
-      "../requirements.txt",
-      "../l*.py",
-      "../tool.py",
-      "../parse_template.py",
-      "../useragentutil.py"
+    "externalBin": [
+      "binaries/loarchive-backend"
     ],
     "windows": {
       "webviewInstallMode": {
@@ -57,5 +50,9 @@
       }
     }
   },
-  "plugins": {}
+  "plugins": {
+    "shell": {
+      "open": true
+    }
+  }
 }
