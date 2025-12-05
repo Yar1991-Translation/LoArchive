@@ -1,6 +1,6 @@
 """
-使用 PyInstaller 打包 Flask 后端为独立可执行文件
-用于 Tauri sidecar
+Build Flask backend into standalone executable using PyInstaller
+For Tauri sidecar
 """
 
 import os
@@ -8,30 +8,36 @@ import sys
 import subprocess
 import shutil
 
+# Fix encoding for Windows
+if sys.platform == "win32":
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
 def build():
     print("=" * 50)
-    print("打包 LoArchive 后端服务")
+    print("Building LoArchive Backend Service")
     print("=" * 50)
     
-    # 确保在正确的目录
+    # Ensure we're in the correct directory
     script_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(script_dir)
     
-    # 目标目录
+    # Target directory
     output_dir = os.path.join(script_dir, "src-tauri", "binaries")
     os.makedirs(output_dir, exist_ok=True)
     
-    # PyInstaller 命令
+    # PyInstaller command
     cmd = [
         sys.executable, "-m", "PyInstaller",
-        "--onefile",           # 单文件模式
-        "--noconsole",         # 无控制台窗口
-        "--clean",             # 清理临时文件
-        "--name", "loarchive-backend-x86_64-pc-windows-msvc",  # Tauri sidecar 命名格式
+        "--onefile",           # Single file mode
+        "--noconsole",         # No console window
+        "--clean",             # Clean temp files
+        "--name", "loarchive-backend-x86_64-pc-windows-msvc",  # Tauri sidecar naming format
         "--distpath", output_dir,
         "--workpath", os.path.join(script_dir, "build", "pyinstaller"),
         "--specpath", os.path.join(script_dir, "build"),
-        # 添加隐式导入
+        # Hidden imports
         "--hidden-import", "flask",
         "--hidden-import", "flask_cors",
         "--hidden-import", "requests",
@@ -42,32 +48,32 @@ def build():
         "--hidden-import", "markupsafe",
         "--hidden-import", "itsdangerous",
         "--hidden-import", "click",
-        # 主程序
+        # Main program
         os.path.join(script_dir, "web_app.py")
     ]
     
-    print("\n运行命令:")
+    print("\nRunning command:")
     print(" ".join(cmd))
     print()
     
-    # 运行 PyInstaller
+    # Run PyInstaller
     result = subprocess.run(cmd, cwd=script_dir)
     
     if result.returncode == 0:
         exe_path = os.path.join(output_dir, "loarchive-backend-x86_64-pc-windows-msvc.exe")
         if os.path.exists(exe_path):
             size_mb = os.path.getsize(exe_path) / (1024 * 1024)
-            print(f"\n✅ 打包成功！")
-            print(f"   文件: {exe_path}")
-            print(f"   大小: {size_mb:.1f} MB")
+            print(f"\n[SUCCESS] Build completed!")
+            print(f"   File: {exe_path}")
+            print(f"   Size: {size_mb:.1f} MB")
         else:
-            print("\n❌ 打包似乎成功但找不到输出文件")
+            print("\n[ERROR] Build seemed to succeed but output file not found")
             return False
     else:
-        print(f"\n❌ 打包失败，返回码: {result.returncode}")
+        print(f"\n[ERROR] Build failed with return code: {result.returncode}")
         return False
     
-    # 清理
+    # Cleanup
     for folder in ["build/pyinstaller", "__pycache__"]:
         path = os.path.join(script_dir, folder)
         if os.path.exists(path):
@@ -77,14 +83,13 @@ def build():
 
 
 if __name__ == "__main__":
-    # 检查 PyInstaller
+    # Check PyInstaller
     try:
         import PyInstaller
-        print(f"PyInstaller 版本: {PyInstaller.__version__}")
+        print(f"PyInstaller version: {PyInstaller.__version__}")
     except ImportError:
-        print("正在安装 PyInstaller...")
+        print("Installing PyInstaller...")
         subprocess.run([sys.executable, "-m", "pip", "install", "pyinstaller"])
     
     success = build()
     sys.exit(0 if success else 1)
-
