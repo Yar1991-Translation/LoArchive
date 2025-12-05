@@ -1,7 +1,7 @@
 {
-  "name": "lofter-spider",
+  "name": "loarchive",
   "version": "1.0.0",
-  "description": "Lofter Spider - 优雅的乐乎内容爬取工具",
+  "description": "LoArchive - Lofter & AO3 内容存档工具",
   "main": "index.js",
   "scripts": {
     "tauri": "tauri",
@@ -10,14 +10,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/IshtarTang/lofterSpider.git"
+    "url": "git+https://github.com/Yar1991-Translation/LoArchive.git"
   },
-  "keywords": ["lofter", "spider", "crawler", "tauri"],
-  "author": "",
+  "keywords": ["lofter", "ao3", "archive", "spider", "tauri"],
+  "author": "Yar1991-Translation",
   "license": "MIT",
   "type": "commonjs",
   "dependencies": {
-    "@tauri-apps/api": "^2.0.0"
+    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/plugin-updater": "^2.0.0",
+    "@tauri-apps/plugin-process": "^2.0.0"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.0.0"

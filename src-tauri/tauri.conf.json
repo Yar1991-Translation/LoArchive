@@ -48,11 +48,18 @@
       "webviewInstallMode": {
         "type": "embedBootstrapper"
       }
-    }
+    },
+    "createUpdaterArtifacts": "v1Compatible"
   },
   "plugins": {
     "shell": {
       "open": true
+    },
+    "updater": {
+      "endpoints": [
+        "https://github.com/Yar1991-Translation/LoArchive/releases/latest/download/latest.json"
+      ],
+      "pubkey": ""
     }
   }
 }

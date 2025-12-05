@@ -71,6 +71,10 @@ tauri_dev.log
 # 敏感信息 - 登录凭据（必须忽略！）
 login_info.py
 
+# Tauri 签名密钥（绝对不能提交！）
+.tauri-private.key
+*.private.key
+
 # 配置文件（可能包含敏感信息）
 loarchive_config.json
 download_history.json

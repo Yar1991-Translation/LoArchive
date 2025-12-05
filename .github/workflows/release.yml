@@ -24,7 +24,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch all history for changelog
+          fetch-depth: 0
 
       - name: Get commit messages since last tag
         id: changelog
@@ -33,19 +33,15 @@ jobs:
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
           
           if [ -z "$LAST_TAG" ]; then
-            # No previous tag, get all commits
             COMMITS=$(git log --pretty=format:"- %s" -20)
           else
-            # Get commits since last tag
             COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s")
           fi
           
-          # Handle empty commits
           if [ -z "$COMMITS" ]; then
             COMMITS="- Initial release"
           fi
           
-          # Save to output (handle multiline)
           echo "commits<<EOF" >> $GITHUB_OUTPUT
           echo "$COMMITS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -84,6 +80,8 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: v${{ github.run_number }}
           releaseName: 'LoArchive v${{ github.run_number }}'
@@ -100,6 +98,10 @@ jobs:
             |------|------|
             | `.msi` | Windows 安装包（推荐） |
             | `.exe` | Windows 便携版 |
+            | `.nsis.zip.sig` | 更新签名文件（自动更新用） |
+            
+            ### 🔄 自动更新
+            应用内置自动更新功能，启动时会自动检查新版本。
             
             ### 🔧 使用方法
             1. 下载并安装
@@ -111,3 +113,4 @@ jobs:
             <sub>构建时间: ${{ github.event.head_commit.timestamp }}</sub>
           releaseDraft: false
           prerelease: false
+          includeUpdaterJson: true
