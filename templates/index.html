@@ -787,143 +787,120 @@ async function clearHistory(){
     }
 }
 
-/* ========== 自动更新功能 ========== */
-let updateAvailable = null;
+/* ========== 自动更新功能（GitHub API） ========== */
+const APP_VERSION = '1.0.0';
+const GITHUB_REPO = 'Yar1991-Translation/LoArchive';
+let latestRelease = null;
 
 async function checkForUpdates(silent = false) {
-    const isTauri = window.__TAURI__ !== undefined || window.__TAURI_INTERNALS__ !== undefined;
-    if (!isTauri) {
-        if (!silent) showNotification('浏览器模式不支持自动更新', 'info');
-        return;
-    }
-    
     try {
         if (!silent) showNotification('正在检查更新...', 'info');
         
-        let updater;
-        if (window.__TAURI__ && window.__TAURI__.updater) {
-            updater = window.__TAURI__.updater;
-        } else {
-            updater = await import('@tauri-apps/plugin-updater');
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`);
+        if (!res.ok) {
+            if (res.status === 404) {
+                if (!silent) showNotification('暂无发布版本', 'info');
+                return;
+            }
+            throw new Error('GitHub API 请求失败');
         }
         
-        const update = await updater.check();
+        const release = await res.json();
+        latestRelease = release;
+        const latestVersion = release.tag_name.replace(/^v/, '');
         
-        if (update && update.available) {
-            updateAvailable = update;
-            showUpdateDialog(update);
+        if (isNewerVersion(latestVersion, APP_VERSION)) {
+            showUpdateDialog(release, latestVersion);
         } else {
-            if (!silent) showNotification('当前已是最新版本 ✓', 'success');
+            if (!silent) showNotification(`当前已是最新版本 v${APP_VERSION} ✓`, 'success');
         }
     } catch (e) {
         console.error('检查更新失败:', e);
-        if (!silent) showNotification('检查更新失败: ' + e.message, 'error');
+        if (!silent) showNotification('检查更新失败，请检查网络连接', 'error');
     }
 }
 
-function showUpdateDialog(update) {
-    // 创建更新弹窗
+function isNewerVersion(latest, current) {
+    const l = latest.split('.').map(Number);
+    const c = current.split('.').map(Number);
+    for (let i = 0; i < Math.max(l.length, c.length); i++) {
+        if ((l[i]||0) > (c[i]||0)) return true;
+        if ((l[i]||0) < (c[i]||0)) return false;
+    }
+    return false;
+}
+
+function showUpdateDialog(release, newVersion) {
+    const existing = document.getElementById('update-overlay');
+    if (existing) existing.remove();
+    
     const overlay = document.createElement('div');
     overlay.id = 'update-overlay';
-    overlay.style.cssText = `
-        position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-        display: flex; align-items: center; justify-content: center;
-        z-index: 20000; backdrop-filter: blur(4px);
-    `;
+    overlay.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:20000;backdrop-filter:blur(4px);`;
+    
+    const msiAsset = release.assets.find(a => a.name.endsWith('.msi'));
+    const exeAsset = release.assets.find(a => a.name.endsWith('-setup.exe'));
+    const downloadUrl = msiAsset?.browser_download_url || exeAsset?.browser_download_url || release.html_url;
     
     const dialog = document.createElement('div');
-    dialog.style.cssText = `
-        background: var(--bg-card); border-radius: 16px; padding: 32px;
-        max-width: 450px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        animation: slideUp 0.3s ease;
-    `;
+    dialog.style.cssText = `background:var(--bg-card);border-radius:16px;padding:32px;max-width:500px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:slideUp 0.3s ease;`;
+    
+    const bodyHtml = release.body ? release.body
+        .replace(/^### (.+)$/gm, '<strong style="display:block;margin:8px 0 4px;">$1</strong>')
+        .replace(/^## (.+)$/gm, '<strong style="display:block;margin:12px 0 6px;">$1</strong>')
+        .replace(/^- (.+)$/gm, '• $1<br>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n\n/g, '<br>') : '';
     
     dialog.innerHTML = `
         <div style="text-align:center;margin-bottom:24px;">
             <div style="font-size:48px;margin-bottom:16px;">🎉</div>
-            <h2 style="margin:0 0 8px;font-size:20px;color:var(--text-primary);">发现新版本</h2>
-            <p style="margin:0;color:var(--text-muted);font-size:14px;">
-                ${update.currentVersion || '当前版本'} → <strong style="color:var(--primary);">${update.version || '新版本'}</strong>
-            </p>
+            <h2 style="margin:0 0 8px;font-size:20px;color:var(--text-primary);">发现新版本！</h2>
+            <p style="margin:0;color:var(--text-muted);font-size:14px;">v${APP_VERSION} → <strong style="color:var(--primary);">v${newVersion}</strong></p>
         </div>
-        ${update.body ? `
-        <div style="background:var(--bg-secondary);border-radius:8px;padding:16px;margin-bottom:24px;max-height:200px;overflow-y:auto;">
-            <h4 style="margin:0 0 8px;font-size:14px;color:var(--text-primary);">📝 更新内容</h4>
-            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;white-space:pre-wrap;">${update.body}</div>
+        ${bodyHtml ? `<div style="background:var(--bg-secondary);border-radius:8px;padding:16px;margin-bottom:24px;max-height:200px;overflow-y:auto;">
+            <h4 style="margin:0 0 12px;font-size:14px;color:var(--text-primary);">📝 更新内容</h4>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.8;">${bodyHtml}</div>
         </div>` : ''}
-        <div style="display:flex;gap:12px;">
-            <button id="update-later" style="
-                flex:1;padding:12px;border:1px solid var(--border);border-radius:8px;
-                background:transparent;color:var(--text-secondary);cursor:pointer;font-size:14px;
-            ">稍后更新</button>
-            <button id="update-now" style="
-                flex:1;padding:12px;border:none;border-radius:8px;
-                background:var(--primary);color:white;cursor:pointer;font-size:14px;font-weight:600;
-            ">立即更新</button>
-        </div>
-    `;
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button id="update-later" style="flex:1;min-width:100px;padding:12px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text-secondary);cursor:pointer;font-size:14px;">稍后提醒</button>
+            <button id="update-github" style="flex:1;min-width:100px;padding:12px;border:none;border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);cursor:pointer;font-size:14px;">📋 GitHub</button>
+            <button id="update-download" style="flex:1;min-width:100px;padding:12px;border:none;border-radius:8px;background:var(--primary);color:white;cursor:pointer;font-size:14px;font-weight:600;">⬇️ 下载</button>
+        </div>`;
     
     overlay.appendChild(dialog);
     document.body.appendChild(overlay);
     
-    // 添加动画样式
-    const style = document.createElement('style');
-    style.textContent = `@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}`;
-    document.head.appendChild(style);
+    if (!document.getElementById('update-anim-style')) {
+        const style = document.createElement('style');
+        style.id = 'update-anim-style';
+        style.textContent = `@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}`;
+        document.head.appendChild(style);
+    }
     
-    // 绑定事件
     document.getElementById('update-later').onclick = () => {
         overlay.remove();
-        style.remove();
+        localStorage.setItem('loarchive_update_skip', Date.now().toString());
     };
-    
-    document.getElementById('update-now').onclick = async () => {
-        const btn = document.getElementById('update-now');
-        btn.textContent = '下载中...';
-        btn.disabled = true;
-        
-        try {
-            await installUpdate();
-        } catch (e) {
-            showNotification('更新失败: ' + e.message, 'error');
-            overlay.remove();
-            style.remove();
-        }
+    document.getElementById('update-github').onclick = () => window.open(release.html_url, '_blank');
+    document.getElementById('update-download').onclick = () => {
+        window.open(downloadUrl, '_blank');
+        showNotification('下载已开始，安装后请重启应用', 'success');
+        overlay.remove();
     };
+    overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
 }
 
-async function installUpdate() {
-    if (!updateAvailable) return;
-    
-    try {
-        showNotification('正在下载更新...', 'info');
-        
-        // 下载并安装更新
-        await updateAvailable.downloadAndInstall();
-        
-        showNotification('更新完成，正在重启应用...', 'success');
-        
-        // 重启应用
-        let process;
-        if (window.__TAURI__ && window.__TAURI__.process) {
-            process = window.__TAURI__.process;
-        } else {
-            process = await import('@tauri-apps/plugin-process');
-        }
-        await process.relaunch();
-    } catch (e) {
-        console.error('安装更新失败:', e);
-        throw e;
-    }
-}
-
-// 应用启动时静默检查更新
+// 应用启动时检查更新
 setTimeout(() => {
-    checkForUpdates(true);
+    const skipTime = localStorage.getItem('loarchive_update_skip');
+    if (!skipTime || (Date.now() - parseInt(skipTime)) > 86400000) {
+        checkForUpdates(true);
+    }
 }, 3000);
 
-// 暴露给全局使用
 window.checkForUpdates = checkForUpdates;
+window.APP_VERSION = APP_VERSION;
     </script>
 </body>
 </html>
