@@ -23,6 +23,33 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for changelog
+
+      - name: Get commit messages since last tag
+        id: changelog
+        run: |
+          # Get the last tag
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          
+          if [ -z "$LAST_TAG" ]; then
+            # No previous tag, get all commits
+            COMMITS=$(git log --pretty=format:"- %s" -20)
+          else
+            # Get commits since last tag
+            COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s")
+          fi
+          
+          # Handle empty commits
+          if [ -z "$COMMITS" ]; then
+            COMMITS="- Initial release"
+          fi
+          
+          # Save to output (handle multiline)
+          echo "commits<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMITS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        shell: bash
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -61,18 +88,26 @@ jobs:
           tagName: v${{ github.run_number }}
           releaseName: 'LoArchive v${{ github.run_number }}'
           releaseBody: |
-            ## 更新内容
+            ## 🚀 LoArchive v${{ github.run_number }}
             
-            提交: ${{ github.sha }}
+            ### 📝 更新内容
+            ${{ steps.changelog.outputs.commits }}
             
-            ### 下载说明
-            - **Windows**: 下载 `.msi` 或 `.exe` 安装包
+            ---
             
-            ### 使用方法
+            ### 📥 下载说明
+            | 文件 | 说明 |
+            |------|------|
+            | `.msi` | Windows 安装包（推荐） |
+            | `.exe` | Windows 便携版 |
+            
+            ### 🔧 使用方法
             1. 下载并安装
             2. 打开应用
-            3. 在设置中配置 Lofter 登录信息
+            3. 在「设置」中配置 Lofter 登录信息
             4. 开始使用！
+            
+            ---
+            <sub>构建时间: ${{ github.event.head_commit.timestamp }}</sub>
           releaseDraft: false
           prerelease: false
-
