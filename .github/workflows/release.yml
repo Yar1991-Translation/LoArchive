@@ -1,0 +1,78 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-action@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build backend
+        run: python build_backend.py
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v${{ github.run_number }}
+          releaseName: 'LoArchive v${{ github.run_number }}'
+          releaseBody: |
+            ## 更新内容
+            
+            提交: ${{ github.sha }}
+            
+            ### 下载说明
+            - **Windows**: 下载 `.msi` 或 `.exe` 安装包
+            
+            ### 使用方法
+            1. 下载并安装
+            2. 打开应用
+            3. 在设置中配置 Lofter 登录信息
+            4. 开始使用！
+          releaseDraft: false
+          prerelease: false
+
