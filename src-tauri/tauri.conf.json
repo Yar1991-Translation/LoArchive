@@ -47,15 +47,6 @@
     "windows": {
       "webviewInstallMode": {
         "type": "embedBootstrapper"
-      },
-      "nsis": {
-        "oneClick": false,
-        "perMachine": false,
-        "allowElevation": true,
-        "installerIcon": "icons/icon.ico",
-        "uninstallerIcon": "icons/icon.ico",
-        "displayLanguageSelector": false,
-        "languages": ["SimpChinese", "English"]
       }
     }
   },

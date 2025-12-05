@@ -117,23 +117,10 @@ fn stop_backend() {
     // 额外清理：尝试终止所有遗留的后端进程
     #[cfg(windows)]
     {
+        use std::os::windows::process::CommandExt;
         let _ = std::process::Command::new("taskkill")
             .args(["/F", "/IM", "loarchive-backend-x86_64-pc-windows-msvc.exe"])
             .creation_flags(0x08000000) // CREATE_NO_WINDOW
             .output();
-    }
-}
-
-// Windows 特定：隐藏控制台窗口标志
-#[cfg(windows)]
-trait CommandExt {
-    fn creation_flags(&mut self, flags: u32) -> &mut Self;
-}
-
-#[cfg(windows)]
-impl CommandExt for std::process::Command {
-    fn creation_flags(&mut self, flags: u32) -> &mut Self {
-        use std::os::windows::process::CommandExt as WinCommandExt;
-        self.creation_flags(flags)
     }
 }
