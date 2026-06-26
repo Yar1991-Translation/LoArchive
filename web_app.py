@@ -6,13 +6,20 @@ Lofter Spider Web Application
 import os
 import sys
 import json
+import ast
 import time
 import threading
 import queue
 import re
+import io
 import requests
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
+
+# Windows 终端 UTF-8 编码修复 — 防止 emoji 字符导致 GBK 编码崩溃
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 # PyInstaller 打包后的资源路径处理
 def get_resource_path(relative_path):
@@ -34,7 +41,8 @@ static_folder = get_resource_path('static')
 app = Flask(__name__, static_folder=static_folder, template_folder=template_folder)
 CORS(app)
 
-# 全局状态
+# 全局状态（使用 task_lock 保护并发访问）
+task_lock = threading.Lock()
 task_status = {
     'running': False,
     'current_task': None,
@@ -59,6 +67,8 @@ config = {
 HISTORY_FILE = './download_history.json'
 # 配置文件路径
 CONFIG_FILE = './loarchive_config.json'
+# 历史记录锁
+history_lock = threading.Lock()
 
 def load_config_file():
     """从文件加载配置"""
@@ -80,18 +90,22 @@ def save_config_file():
     except Exception as e:
         print(f"保存配置文件失败: {e}")
 
+def _compute_stats(items):
+    """从 items 列表实时计算统计"""
+    total = len(items)
+    images = sum(1 for i in items if i.get('type') == 'image')
+    articles = sum(1 for i in items if i.get('type') in ('article', 'ao3'))
+    return {'total': total, 'images': images, 'articles': articles}
+
 def load_download_history():
     """加载下载历史"""
-    default_history = {'items': [], 'stats': {'total': 0, 'images': 0, 'articles': 0}}
+    default_history = {'items': []}
     if os.path.exists(HISTORY_FILE):
         try:
             with open(HISTORY_FILE, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-                # 确保数据结构完整
                 if 'items' not in data:
                     data['items'] = []
-                if 'stats' not in data:
-                    data['stats'] = {'total': 0, 'images': 0, 'articles': 0}
                 return data
         except Exception as e:
             print(f"加载历史记录失败: {e}")
@@ -107,57 +121,49 @@ def save_download_history(history):
         print(f"保存历史记录失败: {e}")
 
 def add_to_history(item_type, url, title, author, file_path, source='lofter'):
-    """添加到下载历史"""
-    history = load_download_history()
-    
-    # 检查是否已存在（去重）
-    for item in history['items']:
-        if item.get('url') == url:
-            return False  # 已存在
-    
-    # 添加新记录
-    record = {
-        'id': str(int(time.time() * 1000)),
-        'type': item_type,  # 'image', 'article', 'ao3'
-        'url': url,
-        'title': title,
-        'author': author,
-        'file_path': file_path,
-        'source': source,
-        'download_time': time.strftime('%Y-%m-%d %H:%M:%S'),
-        'timestamp': int(time.time())
-    }
-    
-    history['items'].insert(0, record)  # 最新的在前面
-    
-    # 更新统计
-    history['stats']['total'] += 1
-    if item_type == 'image':
-        history['stats']['images'] += 1
-    else:
-        history['stats']['articles'] += 1
-    
-    # 限制历史记录数量（保留最近1000条）
-    if len(history['items']) > 1000:
-        history['items'] = history['items'][:1000]
-    
-    save_download_history(history)
-    return True
+    """添加到下载历史（线程安全）"""
+    with history_lock:
+        history = load_download_history()
+
+        # 检查是否已存在（去重）
+        for item in history['items']:
+            if item.get('url') == url:
+                return False
+
+        # 生成唯一 ID: 时间戳 + 随机数
+        record = {
+            'id': f"{int(time.time() * 1000)}-{os.urandom(4).hex()}",
+            'type': item_type,  # 'image', 'article', 'ao3'
+            'url': url,
+            'title': title or '无标题',
+            'author': author or '未知作者',
+            'file_path': file_path,
+            'source': source,
+            'download_time': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'timestamp': int(time.time())
+        }
+
+        history['items'].insert(0, record)
+
+        # 限制历史记录数量（保留最近1000条）
+        if len(history['items']) > 1000:
+            history['items'] = history['items'][:1000]
+
+        save_download_history(history)
+        return True
 
 def is_url_downloaded(url):
     """检查URL是否已下载过"""
     if not config.get('auto_dedup', True):
         return False
-    history = load_download_history()
-    for item in history['items']:
-        if item.get('url') == url:
-            return True
-    return False
+    with history_lock:
+        history = load_download_history()
+        return any(item.get('url') == url for item in history['items'])
 
 def clear_download_history():
     """清空下载历史"""
-    history = {'items': [], 'stats': {'total': 0, 'images': 0, 'articles': 0}}
-    save_download_history(history)
+    with history_lock:
+        save_download_history({'items': []})
     return True
 
 def load_config():
@@ -170,7 +176,7 @@ def load_config():
         from login_info import login_auth, login_key
         config['login_key'] = login_key
         config['login_auth'] = login_auth
-    except:
+    except Exception:
         pass
     return config
 
@@ -199,28 +205,53 @@ login_auth = "{login_auth}"
     try:
         import login_info
         importlib.reload(login_info)
-    except:
+    except Exception:
         pass
 
 def add_log(message):
     """添加日志"""
     timestamp = time.strftime('%H:%M:%S')
     log_entry = f'[{timestamp}] {message}'
-    task_status['logs'].append(log_entry)
-    task_status['message'] = message
+    with task_lock:
+        task_status['logs'].append(log_entry)
+        task_status['message'] = message
+        # 保留最新的200条日志
+        if len(task_status['logs']) > 200:
+            task_status['logs'] = task_status['logs'][-200:]
     print(log_entry)  # 同时打印到控制台
-    # 保留最新的200条日志
-    if len(task_status['logs']) > 200:
-        task_status['logs'] = task_status['logs'][-200:]
+
+
+def sanitize_filename(name):
+    """清理文件名中的非法字符"""
+    return (name.replace("/", "&").replace("|", "&").replace("\\", "&")
+            .replace("<", "《").replace(">", "》").replace(":", "：")
+            .replace('"', "'").replace("?", "？").replace("*", "·")
+            .replace("\n", "").replace("\r", "").replace("\t", " ").strip())
+
+
+def filter_lofter_image_urls(img_urls):
+    """过滤 Lofter 图片 URL，移除缩略图和无效链接"""
+    filtered = []
+    for img_url in img_urls:
+        if "&amp;" in img_url:
+            continue
+        if re.search(r"[1649]{2}[x,y][1649]{2}", img_url):
+            continue
+        img_url = img_url.split("imageView")[0]
+        if img_url not in filtered:
+            filtered.append(img_url)
+    return filtered
+
 
 def run_spider_task(task_type, params):
     """运行爬虫任务"""
     global task_status
-    task_status['running'] = True
-    task_status['current_task'] = task_type
-    task_status['progress'] = 0
-    task_status['logs'] = []
-    task_status['error'] = None
+    with task_lock:
+        task_status['running'] = True
+        task_status['current_task'] = task_type
+        task_status['progress'] = 0
+        task_status['logs'] = []
+        task_status['error'] = None
     
     try:
         load_config()  # 重新加载配置
@@ -246,12 +277,14 @@ def run_spider_task(task_type, params):
     except Exception as e:
         import traceback
         error_msg = str(e)
-        task_status['error'] = error_msg
+        with task_lock:
+            task_status['error'] = error_msg
         add_log(f'❌ 任务出错: {error_msg}')
         add_log(traceback.format_exc())
     finally:
-        task_status['running'] = False
-        task_status['progress'] = 100
+        with task_lock:
+            task_status['running'] = False
+            task_status['progress'] = 100
         add_log('✅ 任务结束')
 
 
@@ -259,14 +292,12 @@ def run_single_img_task(params):
     """运行单篇图片爬取任务 - 真正调用 l8_blogs_img.py"""
     import useragentutil
     from lxml.html import etree
-    import l4_author_img
-    from l13_like_share_tag import filename_check
-    
+
     urls = params.get('urls', [])
     if not urls:
         add_log('❌ 没有提供链接')
         return
-    
+
     add_log(f"🚀 开始单篇图片爬取，共 {len(urls)} 个链接")
     
     login_key = config['login_key']
@@ -302,7 +333,7 @@ def run_single_img_task(params):
             
             try:
                 author_name = author_view_parse.xpath("//h1/a/text()")[0]
-            except:
+            except Exception:
                 author_name = "未知作者"
             
             author_ip = re.search(r"http(s)*://(.*).lofter.com/", blog_url).group(2)
@@ -316,18 +347,9 @@ def run_single_img_task(params):
             
             # 匹配图片链接
             imgs_url = re.findall(r'"(http[s]{0,1}://imglf\d{0,1}.lf\d*.[0-9]{0,3}.net.*?)"', content)
-            
+
             # 过滤图片
-            filtered_imgs = []
-            for img_url in imgs_url:
-                if "&amp;" in img_url:
-                    continue
-                re_url = re.search(r"[1649]{2}[x,y][1649]{2}", img_url)
-                if re_url:
-                    continue
-                img_url = img_url.split("imageView")[0]
-                if img_url not in filtered_imgs:
-                    filtered_imgs.append(img_url)
+            filtered_imgs = filter_lofter_image_urls(imgs_url)
             
             add_log(f"   找到 {len(filtered_imgs)} 张图片")
             
@@ -342,10 +364,8 @@ def run_single_img_task(params):
                 else:
                     img_type = "jpg"
                 
-                author_name_safe = author_name.replace("/", "&").replace("|", "&").replace("\\", "&").\
-                    replace("<", "《").replace(">", "》").replace(":", "：").replace('"', '"').replace("?", "？").\
-                    replace("*", "·").replace("\n", "").replace("(", "（").replace(")", "）")
-                
+                author_name_safe = sanitize_filename(author_name)
+
                 pic_name = f"{author_name_safe}[{author_ip}] {public_time}({img_idx+1}).{img_type}"
                 all_imgs_info.append({
                     "img_url": img_url,
@@ -376,13 +396,17 @@ def run_single_img_task(params):
                 f.write(response.content)
             
             add_log(f"   💾 [{idx+1}/{len(all_imgs_info)}] 已保存: {pic_name}")
-            
+
         except Exception as e:
             add_log(f"   ⚠️ 下载失败: {pic_name} - {str(e)}")
-        
+
         if idx % 5 == 0:
             time.sleep(0.5)  # 防止请求过快
-    
+
+    # 记录到下载历史（按博客URL去重）
+    if all_imgs_info:
+        add_to_history('image', urls[0], f'{len(all_imgs_info)}张图片', '批量下载', dir_path, 'lofter')
+
     add_log(f"✅ 图片保存完成！共保存 {len(all_imgs_info)} 张图片到 {dir_path}")
 
 
@@ -390,15 +414,13 @@ def run_single_txt_task(params):
     """运行单篇文章爬取任务 - 真正调用 l10_blogs_txt.py"""
     import useragentutil
     from lxml.html import etree
-    import l4_author_img
-    from l13_like_share_tag import filename_check
     import html2text
-    
+
     urls = params.get('urls', [])
     if not urls:
         add_log('❌ 没有提供链接')
         return
-    
+
     add_log(f"🚀 开始单篇文章爬取，共 {len(urls)} 个链接")
     
     login_key = config['login_key']
@@ -434,7 +456,7 @@ def run_single_txt_task(params):
             
             try:
                 author_name = author_view_parse.xpath("//h1/a/text()")[0]
-            except:
+            except Exception:
                 author_name = "未知作者"
             
             author_ip = re.search(r"http(s)*://(.*).lofter.com/", blog_url).group(2)
@@ -477,7 +499,7 @@ def run_single_txt_task(params):
                     content_text = h.handle(blog_html)
                     # 清理一些无用内容
                     content_text = re.sub(r'\n{3,}', '\n\n', content_text)
-                except:
+                except Exception:
                     content_text = "无法解析正文内容"
             
             # 构建文章
@@ -491,9 +513,7 @@ def run_single_txt_task(params):
                 file_name = f"{author_name} {public_time}.txt"
             
             # 清理文件名中的非法字符
-            file_name = file_name.replace("/", "&").replace("|", "&").replace("\\", "&").\
-                replace("<", "《").replace(">", "》").replace(":", "：").replace('"', '"').\
-                replace("?", "？").replace("*", "·").replace("\n", "").replace("(", "（").replace(")", "）")
+            file_name = sanitize_filename(file_name)
             
             # 保存文件
             file_path = os.path.join(dir_path, file_name)
@@ -502,13 +522,14 @@ def run_single_txt_task(params):
             
             saved_count += 1
             add_log(f"   💾 已保存: {file_name}")
-            
+            add_to_history('article', blog_url, title or f'{author_name} {public_time}', author_name, file_path, 'lofter')
+
         except Exception as e:
             add_log(f"   ⚠️ 保存失败: {str(e)}")
             continue
-        
+
         time.sleep(0.5)  # 防止请求过快
-    
+
     add_log(f"✅ 文章保存完成！共保存 {saved_count} 篇文章到 {dir_path}")
 
 
@@ -527,7 +548,6 @@ def run_author_img_task(params):
     add_log(f"📍 作者主页: {author_url}")
     
     try:
-        import l4_author_img
         import useragentutil
         from lxml.html import etree
         
@@ -552,10 +572,28 @@ def run_author_img_task(params):
         # 获取归档页
         archive_url = author_url + "dwr/call/plaincall/ArchiveBean.getArchivePostByTime.dwr"
         add_log(f"📚 正在获取归档页...")
-        
+
         query_num = 50
-        data = l4_author_img.make_data(author_id, query_num)
-        header = l4_author_img.make_head(author_url)
+
+        # 构建 DWR 请求数据（替代 l4_author_img 模块）
+        data = {
+            'callCount': '1',
+            'scriptSessionId': '${scriptSessionId}187',
+            'c0-scriptName': 'ArchiveBean',
+            'c0-methodName': 'getArchivePostByTime',
+            'c0-id': '0',
+            'c0-param0': f'string:{author_id}',
+            'c0-param1': 'string:',
+            'c0-param2': 'number:0',
+            'c0-param3': f'number:{query_num}',
+            'batchId': '0',
+        }
+        header = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Content-Type': 'text/plain',
+            'Referer': author_url,
+            'Host': 'www.lofter.com',
+        }
         
         all_blog_info = []
         page_num = 0
@@ -565,10 +603,9 @@ def run_author_img_task(params):
             add_log(f"   获取第 {page_num} 页...")
             task_status['progress'] = min(30, page_num * 5)
             
-            page_data = l4_author_img.post_content(
-                url=archive_url, data=data, head=header,
-                cookies_dict={login_key: login_auth}
-            )
+            response = requests.post(archive_url, data=data, headers=header,
+                                     cookies={login_key: login_auth})
+            page_data = response.content.decode("utf-8")
             
             new_blogs_info = re.findall(r"s[\d]*.blogId.*\n.*noticeLinkTitle", page_data)
             all_blog_info += new_blogs_info
@@ -579,7 +616,7 @@ def run_author_img_task(params):
             try:
                 data['c0-param2'] = 'number:' + str(
                     re.search(r's%d\.time=(.*);s.*type' % (query_num - 1), page_data).group(1))
-            except:
+            except Exception:
                 break
             
             time.sleep(0.5)
@@ -597,7 +634,7 @@ def run_author_img_task(params):
                     timestamp = re.search(r's[\d]*.time=(\d*);', blog_info).group(1)
                     dt_time = time.strftime("%Y-%m-%d", time.localtime(int(int(timestamp) / 1000)))
                     img_blogs.append({"url": blog_url, "time": dt_time})
-            except:
+            except Exception:
                 continue
         
         add_log(f"🖼️ 共找到 {len(img_blogs)} 篇图片博客")
@@ -607,9 +644,7 @@ def run_author_img_task(params):
             return
         
         # 创建保存目录
-        author_name_safe = author_name.replace("/", "&").replace("|", "&").replace("\\", "&").\
-            replace("<", "《").replace(">", "》").replace(":", "：").replace('"', '"').\
-            replace("?", "？").replace("*", "·").replace("\n", "")
+        author_name_safe = sanitize_filename(author_name)
         save_root = config.get('save_path', './dir')
         dir_path = os.path.join(save_root, f"img/{author_name_safe}[{author_ip}]")
         if not os.path.exists(dir_path):
@@ -625,18 +660,9 @@ def run_author_img_task(params):
                                          cookies={login_key: login_auth}).content.decode("utf-8")
                 
                 imgs_url = re.findall(r'"(http[s]{0,1}://imglf\d{0,1}.lf\d*.[0-9]{0,3}.net.*?)"', blog_html)
-                
+
                 # 过滤
-                filtered_imgs = []
-                for img_url in imgs_url:
-                    if "&amp;" in img_url:
-                        continue
-                    re_url = re.search(r"[1649]{2}[x,y][1649]{2}", img_url)
-                    if re_url:
-                        continue
-                    img_url = img_url.split("imageView")[0]
-                    if img_url not in filtered_imgs:
-                        filtered_imgs.append(img_url)
+                filtered_imgs = filter_lofter_image_urls(imgs_url)
                 
                 for img_idx, img_url in enumerate(filtered_imgs):
                     is_gif = "gif" in img_url
@@ -664,6 +690,10 @@ def run_author_img_task(params):
             
             time.sleep(0.3)
         
+        # 记录到下载历史
+        if total_saved > 0:
+            add_to_history('image', author_url, f'{author_name} {total_saved}张图片', author_name, dir_path, 'lofter')
+
         add_log(f"✅ 完成！共保存 {total_saved} 张图片到 {dir_path}")
         
     except Exception as e:
@@ -703,7 +733,7 @@ def run_like_share_tag_task(params):
             # 注册中文字体
             try:
                 pdfmetrics.registerFont(UnicodeCIDFont('STSong-Light'))
-            except:
+            except Exception:
                 pass
             
             # 处理内容中的换行
@@ -873,7 +903,7 @@ def run_like_share_tag_task(params):
             try:
                 userId = user_page_parse.xpath("//body/iframe[@id='control_frame']/@src")[0].split("blogId=")[1]
                 add_log(f"   用户ID: {userId}")
-            except:
+            except Exception:
                 add_log("❌ 无法获取用户ID，请检查链接是否正确")
                 return
             session.headers["Host"] = "www.lofter.com"
@@ -975,7 +1005,7 @@ def run_like_share_tag_task(params):
                     data["c0-param6"] = 'number:' + str(get_num)
                     data["c0-param7"] = 'number:' + str(got_num)
                     data["c0-param8"] = 'number:' + str(last_timestamp)
-                except:
+                except Exception:
                     break
             
             time.sleep(0.5)
@@ -1022,12 +1052,12 @@ def run_like_share_tag_task(params):
                 if urls_search:
                     try:
                         urls_str = urls_search.group(1).replace("\\", "").replace("false", "False").replace("true", "True")
-                        urls_infos = eval(urls_str)
+                        urls_infos = ast.literal_eval(urls_str)
                         for url_info in urls_infos:
                             img_url = url_info.get("raw", "") or url_info.get("orign", "").split("?imageView")[0]
                             if img_url:
                                 img_urls.append(img_url)
-                    except:
+                    except Exception:
                         pass
                 
                 # 正文内容
@@ -1038,7 +1068,7 @@ def run_like_share_tag_task(params):
                         h = html2text.HTML2Text()
                         h.ignore_links = False
                         content = h.handle(content)
-                    except:
+                    except Exception:
                         pass
                 else:
                     content = ""
@@ -1080,20 +1110,13 @@ def run_like_share_tag_task(params):
         
         saved_img = 0
         saved_txt = 0
-        
-        # 用于安全化文件名的函数
-        def safe_name(name):
-            return name.replace("/", "&").replace("\\", "&").replace(":", "：").\
-                replace("*", "·").replace("?", "？").replace('"', "'").\
-                replace("<", "《").replace(">", "》").replace("|", "&").\
-                replace("\n", "").replace("\r", "").replace("\t", " ").strip()
-        
+
         for idx, blog in enumerate(blogs_info):
             task_status['progress'] = 30 + int((idx / len(blogs_info)) * 70)
             
             try:
                 # 生成作者目录名
-                author_safe = safe_name(blog["author_name"])
+                author_safe = sanitize_filename(blog["author_name"])
                 author_folder = f"{author_safe}[{blog['author_ip']}]"
                 
                 # 保存图片 - 按作者分类
@@ -1118,7 +1141,7 @@ def run_like_share_tag_task(params):
                                 f.write(img_content)
                             
                             saved_img += 1
-                        except:
+                        except Exception:
                             continue
                 
                 # 保存文章/文本 - 按作者分类
@@ -1128,7 +1151,7 @@ def run_like_share_tag_task(params):
                     os.makedirs(author_txt_dir, exist_ok=True)
                     
                     if blog["title"]:
-                        title_safe = safe_name(blog["title"])
+                        title_safe = sanitize_filename(blog["title"])
                         file_name = f"{title_safe}.txt"
                     else:
                         file_name = f"{blog['public_time']}.txt"
@@ -1166,7 +1189,12 @@ def run_like_share_tag_task(params):
                         )
                     
                     saved_txt += 1
-                
+                    add_to_history('article', blog['url'], blog['title'] or '无标题', blog['author_name'], txt_path, 'lofter')
+
+                # 记录图片博客到历史（仅当没有文章记录时）
+                if blog["has_img"] and save_mode.get("img") and not ((blog["title"] and save_mode.get("article")) or (not blog["title"] and save_mode.get("text"))):
+                    add_to_history('image', blog['url'], f'{blog["author_name"]} {len(blog["img_urls"])}张图片', blog['author_name'], author_img_dir, 'lofter')
+
                 if idx % 20 == 0:
                     add_log(f"   进度: {idx+1}/{len(blogs_info)}, 已保存图片 {saved_img} 张, 文章 {saved_txt} 篇")
                     
@@ -2041,14 +2069,15 @@ def get_task_status():
 @app.route('/api/task/stop', methods=['POST'])
 def stop_task():
     """停止任务"""
-    task_status['running'] = False
+    with task_lock:
+        task_status['running'] = False
     add_log('⚠️ 任务已停止')
     return jsonify({'success': True, 'message': '任务已停止'})
 
 @app.route('/api/files')
 def list_files():
     """列出已下载的文件"""
-    base_path = config['file_path']
+    base_path = config.get('save_path', config.get('file_path', './dir'))
     files = []
     
     if os.path.exists(base_path):
@@ -2079,40 +2108,47 @@ def serve_static(filename):
 @app.route('/api/history')
 def get_history():
     """获取下载历史"""
-    history = load_download_history()
-    page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 50, type=int)
-    filter_type = request.args.get('type', '')  # 'image', 'article', 'ao3', ''
-    filter_source = request.args.get('source', '')  # 'lofter', 'ao3', ''
-    search = request.args.get('search', '')
-    
-    items = history['items']
-    
-    # 过滤
-    if filter_type:
-        items = [i for i in items if i.get('type') == filter_type]
-    if filter_source:
-        items = [i for i in items if i.get('source') == filter_source]
-    if search:
-        search_lower = search.lower()
-        items = [i for i in items if 
-                 search_lower in i.get('title', '').lower() or 
-                 search_lower in i.get('author', '').lower()]
-    
-    # 分页
-    total = len(items)
-    start = (page - 1) * per_page
-    end = start + per_page
-    items = items[start:end]
-    
-    return jsonify({
-        'items': items,
-        'total': total,
-        'page': page,
-        'per_page': per_page,
-        'total_pages': (total + per_page - 1) // per_page,
-        'stats': history['stats']
-    })
+    with history_lock:
+        history = load_download_history()
+        items = history['items']
+
+        # 查询参数
+        page = max(1, request.args.get('page', 1, type=int))
+        per_page = min(100, max(10, request.args.get('per_page', 20, type=int)))
+        filter_type = request.args.get('type', '')
+        filter_source = request.args.get('source', '')
+        search = request.args.get('search', '').strip()
+
+        # 过滤
+        if filter_type:
+            items = [i for i in items if i.get('type') == filter_type]
+        if filter_source:
+            items = [i for i in items if i.get('source') == filter_source]
+        if search:
+            search_lower = search.lower()
+            items = [i for i in items if
+                     search_lower in i.get('title', '').lower() or
+                     search_lower in i.get('author', '').lower() or
+                     search_lower in i.get('url', '').lower()]
+
+        # 从过滤后的结果计算统计（而非全局 stats）
+        filtered_stats = _compute_stats(items)
+
+        # 分页
+        total = len(items)
+        total_pages = max(1, (total + per_page - 1) // per_page)
+        page = min(page, total_pages)
+        start = (page - 1) * per_page
+        items = items[start:start + per_page]
+
+        return jsonify({
+            'items': items,
+            'total': total,
+            'page': page,
+            'per_page': per_page,
+            'total_pages': total_pages,
+            'stats': filtered_stats
+        })
 
 @app.route('/api/history/clear', methods=['POST'])
 def api_clear_history():
@@ -2125,9 +2161,10 @@ def api_clear_history():
 @app.route('/api/history/delete/<item_id>', methods=['DELETE'])
 def delete_history_item(item_id):
     """删除单条历史记录"""
-    history = load_download_history()
-    history['items'] = [i for i in history['items'] if i.get('id') != item_id]
-    save_download_history(history)
+    with history_lock:
+        history = load_download_history()
+        history['items'] = [i for i in history['items'] if i.get('id') != item_id]
+        save_download_history(history)
     return jsonify({'success': True, 'message': '记录已删除'})
 
 @app.route('/api/history/check', methods=['POST'])

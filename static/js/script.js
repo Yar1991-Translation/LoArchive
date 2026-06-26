@@ -309,6 +309,7 @@ window.startAo3Task = async function() {
         download_chapters: document.getElementById('ao3DownloadChapters').checked,
         save_metadata: document.getElementById('ao3SaveMetadata').checked,
         export_pdf: document.getElementById('ao3ExportPdf').checked,
+        export_epub: document.getElementById('ao3ExportEpub').checked,
         max_pages: parseInt(document.getElementById('ao3MaxPages').value) || 5
     });
 };
@@ -422,39 +423,24 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-function showNotification(message, type = 'info') {
-    // 创建一个临时的 toast 通知
+function showNotification(message, type = 'info', duration = 4000) {
+    const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
-    toast.style.position = 'fixed';
-    toast.style.bottom = '20px';
-    toast.style.left = '50%';
-    toast.style.transform = 'translateX(-50%)';
-    toast.style.padding = '12px 24px';
-    toast.style.borderRadius = '8px';
-    toast.style.background = type === 'error' ? '#b00020' : '#00bcd4';
-    toast.style.color = 'white';
-    toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-    toast.style.zIndex = '10001';
-    toast.style.fontSize = '14px';
-    toast.style.fontWeight = '500';
-    toast.style.opacity = '0';
-    toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-    toast.textContent = message;
-
-    document.body.appendChild(toast);
-
-    // 动画显示
-    requestAnimationFrame(() => {
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateX(-50%) translateY(-10px)';
-    });
-
-    // 3秒后移除
+    toast.className = 'toast timer';
+    const icons = {info: 'ℹ️', success: '✅', error: '❌', warning: '⚠️'};
+    toast.innerHTML = `<span class="toast-icon">${icons[type] || 'ℹ️'}</span><div class="toast-body"><div class="toast-text">${escapeHtml(message)}</div></div><button class="toast-close" onclick="this.parentElement.remove()">✕</button><div class="toast-bar" style="width:100%"></div>`;
+    container.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    const bar = toast.querySelector('.toast-bar');
+    if (bar) {
+        bar.style.transitionDuration = duration + 'ms';
+        requestAnimationFrame(() => { bar.style.width = '0%'; });
+    }
     setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(-50%) translateY(0)';
-        setTimeout(() => document.body.removeChild(toast), 300);
-    }, 3000);
+        toast.classList.remove('show');
+        toast.classList.add('hide');
+        setTimeout(() => toast.remove(), 400);
+    }, duration);
 }
 
 // ==================== 自定义右键菜单 ====================

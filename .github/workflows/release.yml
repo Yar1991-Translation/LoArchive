@@ -21,6 +21,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Get version from tauri.conf.json
+        id: version
+        run: |
+          $VERSION = (Get-Content src-tauri/tauri.conf.json | ConvertFrom-Json).version
+          echo "version=$VERSION" >> $env:GITHUB_OUTPUT
+          echo "Resolved version: $VERSION"
+        shell: pwsh
+
       - name: Get commit messages since last tag
         id: changelog
         run: |
@@ -70,10 +78,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: v${{ github.run_number }}
-          releaseName: 'LoArchive v${{ github.run_number }}'
+          tagName: v${{ steps.version.outputs.version }}
+          releaseName: 'LoArchive v${{ steps.version.outputs.version }}'
           releaseBody: |
-            ## 🚀 LoArchive v${{ github.run_number }}
+            ## LoArchive v${{ steps.version.outputs.version }}
             
             ### 📝 更新内容
             ${{ steps.changelog.outputs.commits }}

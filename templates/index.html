@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LoArchive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-:root{--md3-primary:#00bcd4;--md3-on-primary:#fff;--md3-primary-container:#b2ebf2;--md3-on-primary-container:#002021;--md3-secondary:#26c6da;--md3-on-secondary:#fff;--md3-secondary-container:#e0f7fa;--md3-on-secondary-container:#002021;--md3-background:#f0fdfa;--md3-on-background:#002021;--md3-surface:#fff;--md3-on-surface:#1a1a1a;--md3-surface-variant:#e8f5f3;--md3-outline:#006064;--md3-outline-variant:#b2ebf2;--md3-error:#b00020;--md3-on-error:#fff;--color-success:#00897b;--color-warning:#ff9800;--color-info:#0288d1;--text-primary:#1a1a1a;--text-secondary:#424242;--text-muted:#757575;--shadow-sm:0 1px 3px rgba(0,188,212,.08);--shadow-md:0 4px 12px rgba(0,188,212,.12);--shadow-lg:0 8px 24px rgba(0,188,212,.16);--shadow-xl:0 16px 48px rgba(0,188,212,.2);--radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:24px;--radius-full:9999px;--titlebar-height:42px;--sidebar-width:280px;--transition-fast:.15s cubic-bezier(.4,0,.2,1);--transition-normal:.25s cubic-bezier(.4,0,.2,1)}
+.mi{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased;vertical-align:middle;flex-shrink:0}.mi.mi-sm{font-size:16px}.mi.mi-lg{font-size:28px}.mi.mi-xl{font-size:36px}
+:root{--md3-primary:#00bcd4;--md3-on-primary:#fff;--md3-primary-container:#b2ebf2;--md3-on-primary-container:#002021;--md3-secondary:#26c6da;--md3-on-secondary:#fff;--md3-secondary-container:#e0f7fa;--md3-on-secondary-container:#002021;--md3-background:#f0fdfa;--md3-on-background:#002021;--md3-surface:#fff;--md3-on-surface:#1a1a1a;--md3-surface-variant:#e8f5f3;--md3-outline:#006064;--md3-outline-variant:#b2ebf2;--md3-error:#b00020;--md3-on-error:#fff;--color-success:#00897b;--color-warning:#ff9800;--color-info:#0288d1;--text-primary:#1a1a1a;--text-secondary:#424242;--text-muted:#757575;--shadow-sm:0 1px 3px rgba(0,188,212,.08);--shadow-md:0 4px 12px rgba(0,188,212,.12);--shadow-lg:0 8px 24px rgba(0,188,212,.16);--shadow-xl:0 16px 48px rgba(0,188,212,.2);--radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:24px;--radius-full:9999px;--titlebar-height:42px;--sidebar-width:280px;--transition-fast:.15s cubic-bezier(.4,0,.2,1);--transition-normal:.25s cubic-bezier(.4,0,.2,1);--icon-color:#fff}
 /* 深色模式 */
-body.dark-mode{--md3-primary:#4dd0e1;--md3-on-primary:#000;--md3-primary-container:#1a4a4d;--md3-on-primary-container:#a8e8eb;--md3-secondary:#80deea;--md3-on-secondary:#00363d;--md3-secondary-container:#1e4f55;--md3-on-secondary-container:#b2ebf2;--md3-background:#0f1a1b;--md3-on-background:#e0f2f1;--md3-surface:#182222;--md3-on-surface:#e0f2f1;--md3-surface-variant:#243333;--md3-outline:#5a8a8e;--md3-outline-variant:#2d4040;--md3-error:#ff6b6b;--md3-on-error:#000;--color-success:#4db6ac;--color-warning:#ffb74d;--color-info:#4fc3f7;--text-primary:#e0f2f1;--text-secondary:#a8c4c8;--text-muted:#6a9095;--shadow-sm:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 12px rgba(0,0,0,.4);--shadow-lg:0 8px 24px rgba(0,0,0,.5);--shadow-xl:0 16px 48px rgba(0,0,0,.6)}
+body.dark-mode{--md3-primary:#4dd0e1;--md3-on-primary:#000;--md3-primary-container:#1a4a4d;--md3-on-primary-container:#a8e8eb;--md3-secondary:#80deea;--md3-on-secondary:#00363d;--md3-secondary-container:#1e4f55;--md3-on-secondary-container:#b2ebf2;--md3-background:#0f1a1b;--md3-on-background:#e0f2f1;--md3-surface:#182222;--md3-on-surface:#e0f2f1;--md3-surface-variant:#243333;--md3-outline:#5a8a8e;--md3-outline-variant:#2d4040;--md3-error:#ff6b6b;--md3-on-error:#000;--color-success:#4db6ac;--color-warning:#ffb74d;--color-info:#4fc3f7;--text-primary:#e0f2f1;--text-secondary:#a8c4c8;--text-muted:#6a9095;--shadow-sm:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 12px rgba(0,0,0,.4);--shadow-lg:0 8px 24px rgba(0,0,0,.5);--shadow-xl:0 16px 48px rgba(0,0,0,.6);--icon-color:#e0f2f1}
 body.dark-mode .titlebar{background:linear-gradient(180deg,#1a2828 0%,#152020 100%);border-bottom-color:var(--md3-outline-variant)}
 body.dark-mode .sidebar-header{background:linear-gradient(135deg,#1e2e2e 0%,#182424 100%)}
 body.dark-mode .titlebar-btn.btn-maximize:hover{background:#1e3333}
@@ -17,9 +19,96 @@ body.dark-mode .checkbox-item input[type="checkbox"]{background:var(--md3-surfac
 body.dark-mode .log-container{background:#0d1515;border-color:#1e2c2c}
 body.dark-mode .log-header{background:#0a1010}
 body.dark-mode .log-content{color:#8eb8c0}
-body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234dd0e1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")}*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:var(--md3-background);color:var(--text-primary);line-height:1.6;-webkit-font-smoothing:antialiased}.titlebar{height:var(--titlebar-height);background:linear-gradient(180deg,var(--md3-surface) 0%,#f8fffe 100%);border-bottom:1px solid var(--md3-outline-variant);display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:10000;-webkit-app-region:drag;user-select:none}.titlebar-left{display:flex;align-items:center;padding-left:16px;gap:12px}.titlebar-logo{width:28px;height:28px;background:linear-gradient(135deg,var(--md3-primary) 0%,var(--md3-secondary) 100%);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;box-shadow:var(--shadow-sm)}.titlebar-title{font-size:13px;font-weight:500;color:var(--text-secondary);letter-spacing:.3px}.titlebar-controls{display:flex;align-items:center;height:100%;padding-right:8px;gap:6px;-webkit-app-region:no-drag}.titlebar-btn{width:36px;height:36px;border:none;background:var(--md3-surface-variant);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--transition-normal)}.titlebar-btn:active{transform:scale(.92)}.titlebar-btn.btn-minimize{color:var(--md3-primary)}.titlebar-btn.btn-minimize:hover{background:var(--md3-primary-container);box-shadow:0 2px 8px rgba(0,188,212,.25)}.titlebar-btn.btn-maximize{color:var(--color-success)}.titlebar-btn.btn-maximize:hover{background:#e0f2f1;box-shadow:0 2px 8px rgba(0,137,123,.25)}.titlebar-btn.btn-close{color:#e57373}.titlebar-btn.btn-close:hover{background:#ffebee;color:var(--md3-error);box-shadow:0 2px 8px rgba(176,0,32,.25)}.titlebar-btn svg{width:12px;height:12px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}.app-container{height:100%;padding-top:var(--titlebar-height);display:flex;background:var(--md3-background)}.sidebar{width:var(--sidebar-width);background:var(--md3-surface);border-right:1px solid var(--md3-outline-variant);display:flex;flex-direction:column;flex-shrink:0}.sidebar-header{padding:24px 20px;border-bottom:1px solid var(--md3-outline-variant);background:linear-gradient(135deg,var(--md3-surface-variant) 0%,var(--md3-surface) 100%)}.brand{display:flex;align-items:center;gap:14px}.brand-icon{width:48px;height:48px;background:linear-gradient(135deg,var(--md3-primary) 0%,#0097a7 100%);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;box-shadow:var(--shadow-md)}.brand-text h1{font-size:17px;font-weight:600;color:var(--text-primary);margin-bottom:3px}.brand-text p{font-size:12px;color:var(--text-muted)}.sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto}.nav-section-title{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;padding:12px 14px 8px;margin-top:8px}.nav-section-title:first-child{margin-top:0}.nav-item{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:var(--radius-lg);cursor:pointer;transition:background-color .15s ease;margin-bottom:4px;position:relative}.nav-item::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:4px;height:0;background:var(--md3-primary);border-radius:0 4px 4px 0;transition:height var(--transition-normal)}.nav-item:hover{background:var(--md3-surface-variant)}.nav-item.active{background:var(--md3-primary-container)}.nav-item.active::before{height:24px}.nav-item.active .nav-icon{color:var(--md3-primary)}.nav-item.active .nav-label{color:var(--md3-on-primary-container);font-weight:600}.nav-icon{font-size:22px;width:32px;text-align:center}.nav-label{font-size:14px;font-weight:500;color:var(--text-secondary)}.sidebar-footer{padding:16px;border-top:1px solid var(--md3-outline-variant);background:var(--md3-surface-variant)}.status-card{background:var(--md3-surface);border-radius:var(--radius-md);padding:16px;border:1px solid var(--md3-outline-variant)}.status-row{display:flex;align-items:center;justify-content:space-between;font-size:13px}.status-row+.status-row{margin-top:10px;padding-top:10px;border-top:1px dashed var(--md3-outline-variant)}.status-label{color:var(--text-muted);font-weight:500}.status-value{font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:6px}.status-value.success{color:var(--color-success)}.status-value.error{color:var(--md3-error)}.status-dot{width:8px;height:8px;border-radius:50%;background:var(--color-success);animation:pulse 2s infinite}.status-dot.running{background:var(--color-warning)}@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.9)}}.main-content{flex:1;overflow-y:auto;padding:28px 36px;background:var(--md3-background)}.panel{display:none;animation:fadeSlideIn .2s cubic-bezier(.2,0,.2,1)}.panel.active{display:block}@keyframes fadeSlideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}.panel-header{margin-bottom:28px}.panel-title{font-size:24px;font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:12px}.panel-title-icon{width:40px;height:40px;background:var(--md3-primary-container);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:20px}.mode-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:28px}.mode-card{background:var(--md3-surface);border:2px solid var(--md3-outline-variant);border-radius:var(--radius-lg);padding:24px 18px;text-align:center;cursor:pointer;transition:border-color .15s ease,transform .1s ease,box-shadow .15s ease;position:relative;overflow:hidden}.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--md3-primary);transform:scaleX(0);transition:transform var(--transition-normal)}.mode-card:hover{border-color:var(--md3-primary);transform:translateY(-3px);box-shadow:var(--shadow-md)}.mode-card:hover::before{transform:scaleX(1)}.mode-card.selected{border-color:var(--md3-primary);background:var(--md3-primary-container);box-shadow:var(--shadow-lg)}.mode-card.selected::before{transform:scaleX(1)}.mode-card-icon{font-size:36px;margin-bottom:10px}.mode-card-name{font-size:14px;font-weight:600;color:var(--text-primary)}.mode-card.selected .mode-card-name{color:var(--md3-on-primary-container)}.form-card{background:var(--md3-surface);border-radius:var(--radius-xl);padding:32px;border:1px solid var(--md3-outline-variant);box-shadow:var(--shadow-sm)}.form-group{margin-bottom:24px;position:relative}.form-group:last-child{margin-bottom:0}.form-label{display:block;font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:10px}.form-hint{font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.5}.form-input{width:100%;padding:16px 18px;background:var(--md3-surface-variant);border:2px solid transparent;border-radius:var(--radius-md);font-size:14px;font-family:inherit;color:var(--text-primary);transition:all var(--transition-fast);appearance:none}.form-input:hover{background:var(--md3-secondary-container)}.form-input:focus{outline:none;background:var(--md3-surface);border-color:var(--md3-primary);box-shadow:0 0 0 4px rgba(0,188,212,.15)}.form-input::placeholder{color:var(--text-muted)}textarea.form-input{min-height:110px;resize:vertical;line-height:1.6}select.form-input{padding-right:40px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23006064' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:18px;cursor:pointer}.checkbox-group{display:flex;flex-wrap:wrap;gap:10px}.checkbox-item{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--md3-surface-variant);border-radius:var(--radius-md);cursor:pointer;transition:all var(--transition-fast);border:2px solid transparent}.checkbox-item:hover{background:var(--md3-secondary-container);border-color:var(--md3-secondary)}.checkbox-item:has(input:checked){background:var(--md3-primary-container);border-color:var(--md3-primary)}.checkbox-item input[type="checkbox"]{appearance:none;width:20px;height:20px;border:2px solid var(--md3-outline);border-radius:6px;margin:0;position:relative;transition:all var(--transition-fast);background:#fff;cursor:pointer}.checkbox-item input[type="checkbox"]:checked{background-color:var(--md3-primary);border-color:var(--md3-primary)}.checkbox-item input[type="checkbox"]:checked::after{content:'';position:absolute;left:5px;top:1px;width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}.checkbox-item span{font-size:14px;font-weight:500;color:var(--text-primary)}.checkbox-item:has(input:checked) span{color:var(--md3-on-primary-container);font-weight:600}.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:16px 32px;border:none;border-radius:var(--radius-full);font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:all var(--transition-normal);position:relative;overflow:hidden;text-transform:uppercase;letter-spacing:.5px}.btn-primary{background:linear-gradient(135deg,var(--md3-primary) 0%,#0097a7 100%);color:var(--md3-on-primary);box-shadow:0 4px 16px rgba(0,188,212,.4)}.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,188,212,.3)}.btn-primary:active{transform:scale(.98)}.btn-primary:disabled{background:var(--md3-surface-variant);color:var(--text-muted);cursor:not-allowed;transform:none;box-shadow:none}.btn-block{width:100%}.btn-icon{font-size:18px}.progress-section{margin-top:28px;display:none}.progress-section.active{display:block}.progress-card{background:var(--md3-surface);border-radius:var(--radius-lg);padding:24px;border:1px solid var(--md3-outline-variant);margin-bottom:16px}.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.progress-title{font-size:14px;font-weight:600;color:var(--text-primary)}.progress-percent{font-size:16px;font-weight:700;color:var(--md3-primary)}.progress-bar{height:10px;background:var(--md3-surface-variant);border-radius:var(--radius-full);overflow:hidden}.progress-fill{height:100%;background:linear-gradient(90deg,var(--md3-primary),var(--md3-secondary));border-radius:var(--radius-full);transition:width .3s ease;position:relative}.progress-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:shimmer 1.5s infinite}@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}.log-container{background:#1a2332;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-md);border:1px solid #2a3445}.log-header{padding:14px 18px;background:#141c28;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.05)}.log-header-title{font-size:13px;font-weight:600;color:#8ec8d8;display:flex;align-items:center;gap:8px}.log-content{padding:18px;max-height:300px;overflow-y:auto;font-family:'JetBrains Mono','Fira Code',Consolas,monospace;font-size:12px;line-height:1.8;color:#a8c0c8}.log-line{padding:4px 8px;border-radius:4px;margin-bottom:2px;border-left:2px solid transparent}.log-line:hover{background:rgba(0,188,212,.08);border-left-color:var(--md3-primary)}.settings-section{background:var(--md3-surface);border-radius:var(--radius-lg);padding:28px;border:1px solid var(--md3-outline-variant);margin-bottom:20px}.settings-title{font-size:17px;font-weight:600;color:var(--text-primary);margin-bottom:24px;display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--md3-outline-variant)}.settings-title-icon{width:32px;height:32px;background:var(--md3-primary-container);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:16px}.help-list{color:var(--text-secondary);line-height:2.2;font-size:14px}.help-list p{margin-bottom:8px;display:flex;align-items:center;gap:8px}.help-list code{background:var(--md3-surface-variant);padding:4px 10px;border-radius:var(--radius-sm);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--md3-primary);border:1px solid var(--md3-outline-variant)}::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--md3-outline-variant);border-radius:var(--radius-full);border:2px solid var(--md3-background)}::-webkit-scrollbar-thumb:hover{background:var(--md3-primary)}::selection{background:var(--md3-primary);color:var(--md3-on-primary)}.context-menu{position:fixed;z-index:99999;min-width:180px;background:var(--md3-surface);border:1px solid var(--md3-outline-variant);border-radius:var(--radius-lg);box-shadow:var(--shadow-xl);padding:8px 0;opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .1s ease,transform .1s ease,visibility .1s}.context-menu.show{opacity:1;visibility:visible;transform:translateY(0)}.context-menu-item{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;transition:all var(--transition-fast);color:var(--text-primary);font-size:14px;font-weight:500}.context-menu-item:hover{background:var(--md3-primary-container);color:var(--md3-on-primary-container)}.context-menu-item-icon{font-size:16px;width:20px;text-align:center;opacity:.8}.context-menu-item-text{flex:1}.context-menu-item-shortcut{font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace}.context-menu-item.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}.context-menu-divider{height:1px;background:var(--md3-outline-variant);margin:6px 12px}.tooltip{position:fixed;z-index:99998;padding:6px 10px;background:#1a2332;color:#fff;font-size:12px;font-weight:500;border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);opacity:0;visibility:hidden;transition:opacity .1s ease,visibility .1s;pointer-events:none;white-space:nowrap}.tooltip.show{opacity:1;visibility:visible}*:focus{outline:none}*:focus-visible{outline:2px solid var(--md3-primary);outline-offset:2px}@media (max-width:1000px){.sidebar{width:240px}.main-content{padding:24px}}@media (max-width:768px){.sidebar{width:200px}.mode-cards{grid-template-columns:repeat(2,1fr)}}
+body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234dd0e1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")}
+/* 黑白块风格主题 */
+body.bw-mode{--icon-color:#000;--md3-primary:#000;--md3-on-primary:#fff;--md3-primary-container:#e0e0e0;--md3-on-primary-container:#000;--md3-secondary:#333;--md3-on-secondary:#fff;--md3-secondary-container:#d0d0d0;--md3-on-secondary-container:#000;--md3-background:#fff;--md3-on-background:#000;--md3-surface:#fff;--md3-on-surface:#000;--md3-surface-variant:#f0f0f0;--md3-outline:#000;--md3-outline-variant:#ccc;--md3-error:#000;--md3-on-error:#fff;--color-success:#000;--color-warning:#333;--color-info:#000;--text-primary:#000;--text-secondary:#333;--text-muted:#666;--shadow-sm:none;--shadow-md:none;--shadow-lg:none;--shadow-xl:none;--radius-sm:0;--radius-md:0;--radius-lg:0;--radius-xl:0;--radius-full:0}
+body.bw-mode .titlebar{background:#000;border-bottom:2px solid #000}
+body.bw-mode .titlebar-title{color:#fff}
+body.bw-mode .titlebar-logo{background:#fff;color:#000;border-radius:0;box-shadow:none}
+body.bw-mode .titlebar-btn{background:#333;color:#fff;border-radius:0}
+body.bw-mode .titlebar-btn:hover{background:#555}
+body.bw-mode .titlebar-btn.btn-close:hover{background:#900}
+body.bw-mode .sidebar{border-right:2px solid #000}
+body.bw-mode .sidebar-header{background:#000;border-bottom:2px solid #000}
+body.bw-mode .brand-icon{background:#fff;color:#000;border-radius:0;box-shadow:none}
+body.bw-mode .brand-text h1{color:#fff}
+body.bw-mode .brand-text p{color:#aaa}
+body.bw-mode .nav-item{border-radius:0;border-left:3px solid transparent}
+body.bw-mode .nav-item::before{display:none}
+body.bw-mode .nav-item:hover{background:#f0f0f0;border-left-color:#000}
+body.bw-mode .nav-item.active{background:#000;color:#fff}
+body.bw-mode .nav-item.active .nav-icon{color:#fff}
+body.bw-mode .nav-item.active .nav-label{color:#fff}
+body.bw-mode .sidebar-footer{background:#f5f5f5;border-top:2px solid #000}
+body.bw-mode .status-card{border:2px solid #000;border-radius:0}
+body.bw-mode .status-dot{background:#000}
+body.bw-mode .status-dot.running{background:#666}
+body.bw-mode .main-content{background:#fff}
+body.bw-mode .panel-title-icon{background:#000;color:#fff;border-radius:0}
+body.bw-mode .mode-card{border:2px solid #000;border-radius:0;box-shadow:none}
+body.bw-mode .mode-card::before{background:#000}
+body.bw-mode .mode-card:hover{border-color:#000;box-shadow:4px 4px 0 #000;transform:translate(-2px,-2px)}
+body.bw-mode .mode-card.selected{background:#000;color:#fff;border-color:#000}
+body.bw-mode .mode-card.selected .mode-card-name{color:#fff}
+body.bw-mode .form-card{border:2px solid #000;border-radius:0;box-shadow:none}
+body.bw-mode .form-input{border:2px solid #000;border-radius:0;background:#fff}
+body.bw-mode .form-input:focus{box-shadow:4px 4px 0 #000}
+body.bw-mode .form-input:hover{background:#f8f8f8}
+body.bw-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")}
+body.bw-mode .checkbox-item{border:2px solid #000;border-radius:0;background:#fff}
+body.bw-mode .checkbox-item:hover{background:#f0f0f0}
+body.bw-mode .checkbox-item input[type="checkbox"]{border:2px solid #000;border-radius:0}
+body.bw-mode .checkbox-item input[type="checkbox"]:checked{background:#000}
+body.bw-mode .checkbox-item:has(input:checked){background:#e0e0e0;border-color:#000}
+body.bw-mode .btn{border-radius:0;text-transform:uppercase;letter-spacing:1px}
+body.bw-mode .btn-primary{background:#000;color:#fff;box-shadow:none;border:2px solid #000}
+body.bw-mode .btn-primary:hover{background:#333;box-shadow:4px 4px 0 #000;transform:translate(-2px,-2px)}
+body.bw-mode .progress-card{border:2px solid #000;border-radius:0}
+body.bw-mode .progress-bar{border:2px solid #000;border-radius:0;background:#fff}
+body.bw-mode .progress-fill{background:#000;border-radius:0}
+body.bw-mode .progress-fill::after{display:none}
+body.bw-mode .log-container{background:#000;border:2px solid #000;border-radius:0;box-shadow:none}
+body.bw-mode .log-header{background:#111;border-bottom:2px solid #333}
+body.bw-mode .log-header-title{color:#fff}
+body.bw-mode .log-content{color:#ccc}
+body.bw-mode .log-line:hover{background:rgba(255,255,255,.08);border-left-color:#fff}
+body.bw-mode .settings-section{border:2px solid #000;border-radius:0}
+body.bw-mode .settings-title{border-bottom:2px solid #000}
+body.bw-mode .settings-title-icon{background:#000;color:#fff;border-radius:0}
+body.bw-mode .history-item{border:2px solid #000;border-radius:0;background:#fff}
+body.bw-mode .history-item:hover{background:#f0f0f0;border-color:#000}
+body.bw-mode .history-btn{border-radius:0}
+body.bw-mode .history-btn.delete{background:#000;color:#fff}
+body.bw-mode .history-btn.open{background:#000;color:#fff}
+body.bw-mode .page-btn{border:2px solid #000;border-radius:0}
+body.bw-mode .page-btn.active{background:#000;color:#fff}
+body.bw-mode .toast{border:2px solid #000;border-radius:0;box-shadow:4px 4px 0 #000}
+body.bw-mode .toast-btn.primary{background:#000;color:#fff;border-radius:0}
+body.bw-mode .toast-btn.secondary{border:2px solid #000;border-radius:0;background:#fff;color:#000}
+body.bw-mode .toggle-slider{border:2px solid #000;border-radius:0}
+body.bw-mode .toggle-switch input:checked+.toggle-slider{background:#000}
+body.bw-mode .context-menu{border:2px solid #000;border-radius:0;box-shadow:4px 4px 0 #000}
+body.bw-mode .context-menu-item:hover{background:#000;color:#fff}
+body.bw-mode .tooltip{background:#000;color:#fff;border-radius:0;box-shadow:4px 4px 0 #333}
+body.bw-mode .onboarding-modal{border-radius:0}
+body.bw-mode .onboarding-header{background:#000}
+body.bw-mode .onboarding-btn{border-radius:0}
+body.bw-mode .onboarding-btn.primary{background:#000}
+body.bw-mode .onboarding-dot{border-radius:0}
+body.bw-mode .onboarding-dot.active{border-radius:0}
+body.bw-mode ::-webkit-scrollbar-thumb{border:2px solid #fff;border-radius:0;background:#000}
+body.bw-mode ::-webkit-scrollbar-thumb:hover{background:#333}
+body.bw-mode ::selection{background:#000;color:#fff}
+*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:var(--md3-background);color:var(--text-primary);line-height:1.6;-webkit-font-smoothing:antialiased}.titlebar{height:var(--titlebar-height);background:linear-gradient(180deg,var(--md3-surface) 0%,#f8fffe 100%);border-bottom:1px solid var(--md3-outline-variant);display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:10000;-webkit-app-region:drag;user-select:none}.titlebar-left{display:flex;align-items:center;padding-left:16px;gap:12px}.titlebar-logo{width:28px;height:28px;background:linear-gradient(135deg,var(--md3-primary) 0%,var(--md3-secondary) 100%);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;box-shadow:var(--shadow-sm)}.titlebar-title{font-size:13px;font-weight:500;color:var(--text-secondary);letter-spacing:.3px}.titlebar-controls{display:flex;align-items:center;height:100%;padding-right:8px;gap:6px;-webkit-app-region:no-drag}.titlebar-btn{width:36px;height:36px;border:none;background:var(--md3-surface-variant);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--transition-normal)}.titlebar-btn:active{transform:scale(.92)}.titlebar-btn.btn-minimize{color:var(--md3-primary)}.titlebar-btn.btn-minimize:hover{background:var(--md3-primary-container);box-shadow:0 2px 8px rgba(0,188,212,.25)}.titlebar-btn.btn-maximize{color:var(--color-success)}.titlebar-btn.btn-maximize:hover{background:#e0f2f1;box-shadow:0 2px 8px rgba(0,137,123,.25)}.titlebar-btn.btn-close{color:#e57373}.titlebar-btn.btn-close:hover{background:#ffebee;color:var(--md3-error);box-shadow:0 2px 8px rgba(176,0,32,.25)}.titlebar-btn svg{width:12px;height:12px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}.app-container{height:100%;padding-top:var(--titlebar-height);display:flex;background:var(--md3-background)}.sidebar{width:var(--sidebar-width);background:var(--md3-surface);border-right:1px solid var(--md3-outline-variant);display:flex;flex-direction:column;flex-shrink:0}.sidebar-header{padding:24px 20px;border-bottom:1px solid var(--md3-outline-variant);background:linear-gradient(135deg,var(--md3-surface-variant) 0%,var(--md3-surface) 100%)}.brand{display:flex;align-items:center;gap:14px}.brand-icon{width:48px;height:48px;background:linear-gradient(135deg,var(--md3-primary) 0%,#0097a7 100%);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;box-shadow:var(--shadow-md)}.brand-text h1{font-size:17px;font-weight:600;color:var(--text-primary);margin-bottom:3px}.brand-text p{font-size:12px;color:var(--text-muted)}.sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto}.nav-section-title{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;padding:12px 14px 8px;margin-top:8px}.nav-section-title:first-child{margin-top:0}.nav-item{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:var(--radius-lg);cursor:pointer;transition:background-color .15s ease;margin-bottom:4px;position:relative}.nav-item::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:4px;height:0;background:var(--md3-primary);border-radius:0 4px 4px 0;transition:height var(--transition-normal)}.nav-item:hover{background:var(--md3-surface-variant)}.nav-item.active{background:var(--md3-primary-container)}.nav-item.active::before{height:24px}.nav-item.active .nav-icon{color:var(--md3-primary)}.nav-item.active .nav-label{color:var(--md3-on-primary-container);font-weight:600}.nav-icon{font-size:22px;width:32px;text-align:center}.nav-label{font-size:14px;font-weight:500;color:var(--text-secondary)}.sidebar-footer{padding:16px;border-top:1px solid var(--md3-outline-variant);background:var(--md3-surface-variant)}.status-card{background:var(--md3-surface);border-radius:var(--radius-md);padding:16px;border:1px solid var(--md3-outline-variant)}.status-row{display:flex;align-items:center;justify-content:space-between;font-size:13px}.status-row+.status-row{margin-top:10px;padding-top:10px;border-top:1px dashed var(--md3-outline-variant)}.status-label{color:var(--text-muted);font-weight:500}.status-value{font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:6px}.status-value.success{color:var(--color-success)}.status-value.error{color:var(--md3-error)}.status-dot{width:8px;height:8px;border-radius:50%;background:var(--color-success);animation:pulse 2s infinite}.status-dot.running{background:var(--color-warning)}@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.9)}}.main-content{flex:1;overflow-y:auto;padding:28px 36px;background:var(--md3-background)}.panel{display:none;animation:fadeSlideIn .2s cubic-bezier(.2,0,.2,1)}.panel.active{display:block}@keyframes fadeSlideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}.panel-header{margin-bottom:28px}.panel-title{font-size:24px;font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:12px}.panel-title-icon{width:40px;height:40px;background:var(--md3-primary-container);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:20px}.mode-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:28px}.mode-card{background:var(--md3-surface);border:2px solid var(--md3-outline-variant);border-radius:var(--radius-lg);padding:24px 18px;text-align:center;cursor:pointer;transition:border-color .15s ease,transform .1s ease,box-shadow .15s ease;position:relative;overflow:hidden}.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--md3-primary);transform:scaleX(0);transition:transform var(--transition-normal)}.mode-card:hover{border-color:var(--md3-primary);transform:translateY(-3px);box-shadow:var(--shadow-md)}.mode-card:hover::before{transform:scaleX(1)}.mode-card.selected{border-color:var(--md3-primary);background:var(--md3-primary-container);box-shadow:var(--shadow-lg)}.mode-card.selected::before{transform:scaleX(1)}.mode-card-icon{font-size:36px;margin-bottom:10px}.mode-card-name{font-size:14px;font-weight:600;color:var(--text-primary)}.mode-card.selected .mode-card-name{color:var(--md3-on-primary-container)}.form-card{background:var(--md3-surface);border-radius:var(--radius-xl);padding:32px;border:1px solid var(--md3-outline-variant);box-shadow:var(--shadow-sm)}.form-group{margin-bottom:24px;position:relative}.form-group:last-child{margin-bottom:0}.form-label{display:block;font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:10px}.form-hint{font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.5}.form-input{width:100%;padding:16px 18px;background:var(--md3-surface-variant);border:2px solid transparent;border-radius:var(--radius-md);font-size:14px;font-family:inherit;color:var(--text-primary);transition:all var(--transition-fast);appearance:none}.form-input:hover{background:var(--md3-secondary-container)}.form-input:focus{outline:none;background:var(--md3-surface);border-color:var(--md3-primary);box-shadow:0 0 0 4px rgba(0,188,212,.15)}.form-input::placeholder{color:var(--text-muted)}textarea.form-input{min-height:110px;resize:vertical;line-height:1.6}select.form-input{padding-right:40px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23006064' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:18px;cursor:pointer}.checkbox-group{display:flex;flex-wrap:wrap;gap:10px}.checkbox-item{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--md3-surface-variant);border-radius:var(--radius-md);cursor:pointer;transition:all var(--transition-fast);border:2px solid transparent}.checkbox-item:hover{background:var(--md3-secondary-container);border-color:var(--md3-secondary)}.checkbox-item:has(input:checked){background:var(--md3-primary-container);border-color:var(--md3-primary)}.checkbox-item input[type="checkbox"]{appearance:none;width:20px;height:20px;border:2px solid var(--md3-outline);border-radius:6px;margin:0;position:relative;transition:all var(--transition-fast);background:#fff;cursor:pointer}.checkbox-item input[type="checkbox"]:checked{background-color:var(--md3-primary);border-color:var(--md3-primary)}.checkbox-item input[type="checkbox"]:checked::after{content:'';position:absolute;left:5px;top:1px;width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}.checkbox-item span{font-size:14px;font-weight:500;color:var(--text-primary)}.checkbox-item:has(input:checked) span{color:var(--md3-on-primary-container);font-weight:600}.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:16px 32px;border:none;border-radius:var(--radius-full);font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:all var(--transition-normal);position:relative;overflow:hidden;text-transform:uppercase;letter-spacing:.5px}.btn-primary{background:linear-gradient(135deg,var(--md3-primary) 0%,#0097a7 100%);color:var(--md3-on-primary);box-shadow:0 4px 16px rgba(0,188,212,.4)}.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,188,212,.3)}.btn-primary:active{transform:scale(.98)}.btn-primary:disabled{background:var(--md3-surface-variant);color:var(--text-muted);cursor:not-allowed;transform:none;box-shadow:none}.btn-block{width:100%}.btn-icon{font-size:18px}.progress-section{margin-top:28px;display:none}.progress-section.active{display:block}.progress-card{background:var(--md3-surface);border-radius:var(--radius-lg);padding:24px;border:1px solid var(--md3-outline-variant);margin-bottom:16px}.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.progress-title{font-size:14px;font-weight:600;color:var(--text-primary)}.progress-percent{font-size:16px;font-weight:700;color:var(--md3-primary)}.progress-bar{height:10px;background:var(--md3-surface-variant);border-radius:var(--radius-full);overflow:hidden}.progress-fill{height:100%;background:linear-gradient(90deg,var(--md3-primary),var(--md3-secondary));border-radius:var(--radius-full);transition:width .3s ease;position:relative}.progress-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:shimmer 1.5s infinite}@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}.log-container{background:#1a2332;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-md);border:1px solid #2a3445}.log-header{padding:14px 18px;background:#141c28;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.05)}.log-header-title{font-size:13px;font-weight:600;color:#8ec8d8;display:flex;align-items:center;gap:8px}.log-content{padding:18px;max-height:300px;overflow-y:auto;font-family:'JetBrains Mono','Fira Code',Consolas,monospace;font-size:12px;line-height:1.8;color:#a8c0c8}.log-line{padding:4px 8px;border-radius:4px;margin-bottom:2px;border-left:2px solid transparent}.log-line:hover{background:rgba(0,188,212,.08);border-left-color:var(--md3-primary)}.settings-section{background:var(--md3-surface);border-radius:var(--radius-lg);padding:28px;border:1px solid var(--md3-outline-variant);margin-bottom:20px}.settings-title{font-size:17px;font-weight:600;color:var(--text-primary);margin-bottom:24px;display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--md3-outline-variant)}.settings-title-icon{width:32px;height:32px;background:var(--md3-primary-container);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:16px}.help-list{color:var(--text-secondary);line-height:2.2;font-size:14px}.help-list p{margin-bottom:8px;display:flex;align-items:center;gap:8px}.help-list code{background:var(--md3-surface-variant);padding:4px 10px;border-radius:var(--radius-sm);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--md3-primary);border:1px solid var(--md3-outline-variant)}::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--md3-outline-variant);border-radius:var(--radius-full);border:2px solid var(--md3-background)}::-webkit-scrollbar-thumb:hover{background:var(--md3-primary)}::selection{background:var(--md3-primary);color:var(--md3-on-primary)}.context-menu{position:fixed;z-index:99999;min-width:180px;background:var(--md3-surface);border:1px solid var(--md3-outline-variant);border-radius:var(--radius-lg);box-shadow:var(--shadow-xl);padding:8px 0;opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .1s ease,transform .1s ease,visibility .1s}.context-menu.show{opacity:1;visibility:visible;transform:translateY(0)}.context-menu-item{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;transition:all var(--transition-fast);color:var(--text-primary);font-size:14px;font-weight:500}.context-menu-item:hover{background:var(--md3-primary-container);color:var(--md3-on-primary-container)}.context-menu-item-icon{font-size:16px;width:20px;text-align:center;opacity:.8}.context-menu-item-text{flex:1}.context-menu-item-shortcut{font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace}.context-menu-item.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}.context-menu-divider{height:1px;background:var(--md3-outline-variant);margin:6px 12px}.tooltip{position:fixed;z-index:99998;padding:6px 10px;background:#1a2332;color:#fff;font-size:12px;font-weight:500;border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);opacity:0;visibility:hidden;transition:opacity .1s ease,visibility .1s;pointer-events:none;white-space:nowrap}.tooltip.show{opacity:1;visibility:visible}*:focus{outline:none}*:focus-visible{outline:2px solid var(--md3-primary);outline-offset:2px}@media (max-width:1000px){.sidebar{width:240px}.main-content{padding:24px}}@media (max-width:768px){.sidebar{width:200px}.mode-cards{grid-template-columns:repeat(2,1fr)}}
+.mi.mi-num{font-family:inherit;font-size:13px;font-weight:700;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;background:var(--md3-primary-container);color:var(--md3-on-primary-container);border-radius:50%}
 /* 开关样式 */
 .toggle-switch{position:relative;display:inline-block;width:52px;height:28px}.toggle-switch input{opacity:0;width:0;height:0}.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--md3-outline-variant);border-radius:28px;transition:all .3s ease}.toggle-slider:before{content:'';position:absolute;height:22px;width:22px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:all .3s ease;box-shadow:0 2px 4px rgba(0,0,0,.2)}.toggle-switch input:checked+.toggle-slider{background:var(--md3-primary)}.toggle-switch input:checked+.toggle-slider:before{transform:translateX(24px)}
+/* 右上角通知样式 */
+.toast-container{position:fixed;top:52px;right:16px;z-index:10002;display:flex;flex-direction:column;gap:10px;pointer-events:none;max-width:380px;width:100%}.toast{pointer-events:auto;background:var(--md3-surface);border:1px solid var(--md3-outline-variant);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:16px 20px;opacity:0;transform:translateX(100%);transition:all .35s cubic-bezier(.4,0,.2,1);display:flex;gap:14px;align-items:flex-start}.toast.show{opacity:1;transform:translateX(0)}.toast.hide{opacity:0;transform:translateX(100%);pointer-events:none}.toast-icon{font-size:22px;flex-shrink:0;line-height:1}.toast-body{flex:1;min-width:0}.toast-title{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px}.toast-text{font-size:13px;color:var(--text-secondary);line-height:1.5;max-height:120px;overflow-y:auto}.toast-actions{display:flex;gap:8px;margin-top:10px}.toast-btn{padding:6px 14px;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s ease;font-family:inherit}.toast-btn.primary{background:var(--md3-primary);color:#fff}.toast-btn.primary:hover{filter:brightness(1.1)}.toast-btn.secondary{background:var(--md3-surface-variant);color:var(--text-secondary);border:1px solid var(--md3-outline-variant)}.toast-btn.secondary:hover{background:var(--md3-secondary-container)}.toast-close{position:absolute;top:10px;right:12px;background:none;border:none;font-size:16px;cursor:pointer;color:var(--text-muted);padding:4px;line-height:1;transition:color .15s}.toast-close:hover{color:var(--text-primary)}.toast.timer .toast-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--md3-primary);border-radius:0 0 var(--radius-lg) var(--radius-lg);transition:width linear}
+/* 主题选择卡片 */
+.theme-cards{display:flex;gap:14px;flex-wrap:wrap}.theme-card{cursor:pointer;padding:12px;border:2px solid var(--md3-outline-variant);border-radius:var(--radius-md);text-align:center;transition:all .2s ease;width:110px;background:var(--md3-surface)}.theme-card:hover{border-color:var(--md3-primary);transform:translateY(-2px);box-shadow:var(--shadow-md)}.theme-card.selected{border-color:var(--md3-primary);background:var(--md3-primary-container);box-shadow:var(--shadow-lg)}.theme-card-label{display:block;font-size:12px;font-weight:600;color:var(--text-primary);margin-top:8px}.theme-card.selected .theme-card-label{color:var(--md3-on-primary-container)}.theme-preview{width:86px;height:56px;border-radius:4px;overflow:hidden;position:relative;border:1px solid var(--md3-outline-variant)}.tp-bar{height:8px;width:100%}.tp-side{position:absolute;left:0;top:8px;width:22px;bottom:0}.tp-dot{width:8px;height:8px;border-radius:50%;margin:6px auto 0}.tp-main{position:absolute;left:22px;top:8px;right:0;bottom:0;padding:6px}.tp-block{width:100%;height:12px;border-radius:2px;margin-bottom:4px}.tp-line{width:70%;height:6px;border-radius:2px}.theme-preview-light .tp-bar{background:#00bcd4}.theme-preview-light .tp-side{background:#f0fdfa}.theme-preview-light .tp-dot{background:#00bcd4}.theme-preview-light .tp-main{background:#fff}.theme-preview-light .tp-block{background:#e0f7fa}.theme-preview-light .tp-line{background:#b2ebf2}.theme-preview-dark .tp-bar{background:#152020}.theme-preview-dark .tp-side{background:#182222}.theme-preview-dark .tp-dot{background:#4dd0e1}.theme-preview-dark .tp-main{background:#0f1a1b}.theme-preview-dark .tp-block{background:#243333}.theme-preview-dark .tp-line{background:#1a4a4d}.theme-preview-bw{border-color:#000}.theme-preview-bw .tp-bar{background:#000}.theme-preview-bw .tp-side{background:#f5f5f5;border-right:2px solid #000}.theme-preview-bw .tp-dot{background:#000;border-radius:0}.theme-preview-bw .tp-main{background:#fff}.theme-preview-bw .tp-block{background:#000;border-radius:0}.theme-preview-bw .tp-line{background:#ccc;border-radius:0}
+/* 开发者模式样式 */
+.dev-indicator{position:fixed;bottom:16px;left:16px;background:var(--md3-primary);color:#fff;padding:6px 14px;border-radius:var(--radius-full);font-size:11px;font-weight:600;z-index:9999;box-shadow:var(--shadow-md);display:flex;align-items:center;gap:6px;letter-spacing:.3px}.dev-indicator .dev-dot{width:6px;height:6px;border-radius:50%;background:#76ff03;animation:pulse 1.5s infinite}
 /* 历史记录样式 */
 .history-item{display:flex;align-items:center;gap:16px;padding:16px;background:var(--md3-surface-variant);border-radius:var(--radius-md);margin-bottom:10px;transition:all .15s ease;border:1px solid transparent}.history-item:hover{background:var(--md3-secondary-container);border-color:var(--md3-secondary)}.history-icon{font-size:28px;flex-shrink:0}.history-info{flex:1;min-width:0}.history-title{font-size:14px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.history-meta{font-size:12px;color:var(--text-muted);margin-top:4px;display:flex;gap:12px;flex-wrap:wrap}.history-actions{display:flex;gap:8px}.history-btn{padding:8px 12px;border:none;border-radius:var(--radius-sm);font-size:12px;cursor:pointer;transition:all .15s ease}.history-btn.delete{background:#ffebee;color:#c62828}.history-btn.delete:hover{background:#ffcdd2}.history-btn.open{background:var(--md3-primary-container);color:var(--md3-primary)}.history-btn.open:hover{background:var(--md3-primary);color:#fff}.page-btn{padding:8px 16px;border:1px solid var(--md3-outline-variant);background:var(--md3-surface);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s ease}.page-btn:hover{border-color:var(--md3-primary);color:var(--md3-primary)}.page-btn.active{background:var(--md3-primary);color:#fff;border-color:var(--md3-primary)}.page-btn:disabled{opacity:.5;cursor:not-allowed}
 /* 新手引导样式 */
@@ -31,7 +120,7 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
     <div class="onboarding-overlay" id="onboarding">
         <div class="onboarding-modal">
             <div class="onboarding-header">
-                <div class="onboarding-logo">📚</div>
+                <div class="onboarding-logo"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="13" y2="11"/></svg></div>
                 <h2 class="onboarding-welcome">欢迎使用 LoArchive</h2>
                 <p class="onboarding-subtitle">Lofter & AO3 内容存档工具</p>
             </div>
@@ -41,21 +130,21 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
                     <h3 class="step-title"><span class="step-number">1</span>主要功能</h3>
                     <div class="step-features">
                         <div class="feature-item">
-                            <span class="feature-icon">❤️</span>
+                            <span class="feature-icon"><span class="mi">favorite</span></span>
                             <div class="feature-text">
                                 <h4>Lofter 内容爬取</h4>
                                 <p>保存喜欢、推荐、Tag 内容，支持图片和文章批量下载</p>
                             </div>
                         </div>
                         <div class="feature-item">
-                            <span class="feature-icon">📚</span>
+                            <span class="feature-icon"><span class="mi">auto_stories</span></span>
                             <div class="feature-text">
                                 <h4>AO3 文章下载</h4>
                                 <p>下载 AO3 作品、系列、作者全部文章，支持导出 PDF</p>
                             </div>
                         </div>
                         <div class="feature-item">
-                            <span class="feature-icon">📑</span>
+                            <span class="feature-icon"><span class="mi">bookmark</span></span>
                             <div class="feature-text">
                                 <h4>PDF 导出</h4>
                                 <p>将下载的内容转换为精美排版的 PDF 文件</p>
@@ -68,21 +157,21 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
                     <h3 class="step-title"><span class="step-number">2</span>配置登录信息</h3>
                     <div class="step-features">
                         <div class="feature-item">
-                            <span class="feature-icon">🔐</span>
+                            <span class="feature-icon"><span class="mi">key</span></span>
                             <div class="feature-text">
                                 <h4>获取授权码</h4>
                                 <p>打开 Lofter 网页版 → 按 F12 打开开发者工具 → Application → Cookies</p>
                             </div>
                         </div>
                         <div class="feature-item">
-                            <span class="feature-icon">📝</span>
+                            <span class="feature-icon"><span class="mi">edit_note</span></span>
                             <div class="feature-text">
                                 <h4>填写配置</h4>
                                 <p>在「设置」页面选择登录方式，粘贴对应的授权码</p>
                             </div>
                         </div>
                         <div class="feature-item">
-                            <span class="feature-icon">✨</span>
+                            <span class="feature-icon"><span class="mi">auto_awesome</span></span>
                             <div class="feature-text">
                                 <h4>AO3 无需配置</h4>
                                 <p>AO3 功能无需登录，可直接使用</p>
@@ -95,21 +184,21 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
                     <h3 class="step-title"><span class="step-number">3</span>开始使用</h3>
                     <div class="step-features">
                         <div class="feature-item">
-                            <span class="feature-icon">1️⃣</span>
+                            <span class="feature-icon"><span class="mi mi-num">1</span></span>
                             <div class="feature-text">
                                 <h4>选择功能</h4>
                                 <p>从左侧菜单选择需要的功能模块</p>
                             </div>
                         </div>
                         <div class="feature-item">
-                            <span class="feature-icon">2️⃣</span>
+                            <span class="feature-icon"><span class="mi mi-num">2</span></span>
                             <div class="feature-text">
                                 <h4>填写链接</h4>
                                 <p>粘贴要爬取的页面链接，可选择保存格式</p>
                             </div>
                         </div>
                         <div class="feature-item">
-                            <span class="feature-icon">3️⃣</span>
+                            <span class="feature-icon"><span class="mi mi-num">3</span></span>
                             <div class="feature-text">
                                 <h4>开始爬取</h4>
                                 <p>点击按钮开始，文件保存在 ./dir 目录</p>
@@ -132,10 +221,13 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
         </div>
     </div>
 
+    <!-- 通知容器 -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <!-- 标题栏 -->
     <div class="titlebar" id="titlebar">
         <div class="titlebar-left">
-            <div class="titlebar-logo">📚</div>
+            <div class="titlebar-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="13" y2="11"/></svg></div>
             <span class="titlebar-title">LoArchive</span>
         </div>
         <div class="titlebar-controls">
@@ -164,7 +256,7 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="brand">
-                    <div class="brand-icon">📚</div>
+                    <div class="brand-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="13" y2="11"/></svg></div>
                     <div class="brand-text">
                         <h1>LoArchive</h1>
                         <p>Lofter & AO3 存档工具</p>
@@ -176,37 +268,37 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
                 <div class="nav-section-title">Lofter</div>
                 
                 <div class="nav-item active" data-panel="lst">
-                    <span class="nav-icon">❤️</span>
+                    <span class="nav-icon"><span class="mi">favorite</span></span>
                     <span class="nav-label">喜欢 / 推荐 / Tag</span>
                 </div>
                 <div class="nav-item" data-panel="author-img">
-                    <span class="nav-icon">🖼️</span>
+                    <span class="nav-icon"><span class="mi">image</span></span>
                     <span class="nav-label">作者图片</span>
                 </div>
                 <div class="nav-item" data-panel="author-txt">
-                    <span class="nav-icon">📝</span>
+                    <span class="nav-icon"><span class="mi">edit_note</span></span>
                     <span class="nav-label">作者文章</span>
                 </div>
                 <div class="nav-item" data-panel="single">
-                    <span class="nav-icon">📎</span>
+                    <span class="nav-icon"><span class="mi">attach_file</span></span>
                     <span class="nav-label">单篇保存</span>
                 </div>
 
                 <div class="nav-section-title">AO3</div>
                 
                 <div class="nav-item" data-panel="ao3">
-                    <span class="nav-icon">📚</span>
+                    <span class="nav-icon"><span class="mi">auto_stories</span></span>
                     <span class="nav-label">AO3 文章</span>
                 </div>
 
                 <div class="nav-section-title">系统</div>
                 
                 <div class="nav-item" data-panel="history">
-                    <span class="nav-icon">📋</span>
+                    <span class="nav-icon"><span class="mi">content_paste</span></span>
                     <span class="nav-label">下载历史</span>
                 </div>
                 <div class="nav-item" data-panel="settings">
-                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-icon"><span class="mi">settings</span></span>
                     <span class="nav-label">设置</span>
                 </div>
             </nav>
@@ -234,22 +326,22 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
             <div class="panel active" id="panel-lst">
                 <div class="panel-header">
                     <h2 class="panel-title">
-                        <span class="panel-title-icon">❤️</span>
+                        <span class="panel-title-icon"><span class="mi">favorite</span></span>
                         喜欢 / 推荐 / Tag
                     </h2>
                 </div>
 
                 <div class="mode-cards">
                     <div class="mode-card selected" data-mode="like2">
-                        <div class="mode-card-icon">💖</div>
+                        <div class="mode-card-icon"><span class="mi">favorite</span></div>
                         <div class="mode-card-name">我的喜欢</div>
                     </div>
                     <div class="mode-card" data-mode="share">
-                        <div class="mode-card-icon">📤</div>
+                        <div class="mode-card-icon"><span class="mi">outbox</span></div>
                         <div class="mode-card-name">我的推荐</div>
                     </div>
                     <div class="mode-card" data-mode="tag">
-                        <div class="mode-card-icon">🏷️</div>
+                        <div class="mode-card-icon"><span class="mi">sell</span></div>
                         <div class="mode-card-name">Tag 内容</div>
                     </div>
                 </div>
@@ -258,7 +350,7 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
                     <div class="form-group">
                         <label class="form-label">链接地址</label>
                         <input type="text" class="form-input" id="lstUrl" placeholder="https://你的用户名.lofter.com/ 或 Tag 链接">
-                        <p class="form-hint">💡 喜欢/推荐模式填写个人主页链接，Tag 模式填写 Tag 页面链接</p>
+                        <p class="form-hint"><span class="mi">lightbulb</span> 喜欢/推荐模式填写个人主页链接，Tag 模式填写 Tag 页面链接</p>
                     </div>
 
                     <div class="form-group">
@@ -266,23 +358,23 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
                         <div class="checkbox-group">
                             <label class="checkbox-item">
                                 <input type="checkbox" id="saveImg" checked>
-                                <span>📷 图片</span>
+                                <span><span class="mi">add_photo_alternate</span> 图片</span>
                             </label>
                             <label class="checkbox-item">
                                 <input type="checkbox" id="saveArticle" checked>
-                                <span>📄 文章</span>
+                                <span><span class="mi">description</span> 文章</span>
                             </label>
                             <label class="checkbox-item">
                                 <input type="checkbox" id="saveText" checked>
-                                <span>📝 文本</span>
+                                <span><span class="mi">edit_note</span> 文本</span>
                             </label>
                             <label class="checkbox-item">
                                 <input type="checkbox" id="saveLong" checked>
-                                <span>📖 长文章</span>
+                                <span><span class="mi">menu_book</span> 长文章</span>
                             </label>
                             <label class="checkbox-item">
                                 <input type="checkbox" id="lstExportPdf">
-                                <span>📑 导出PDF</span>
+                                <span><span class="mi">bookmark</span> 导出PDF</span>
                             </label>
                         </div>
                     </div>
@@ -293,7 +385,7 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
                     </div>
 
                     <button class="btn btn-primary btn-block" onclick="startLstTask()">
-                        <span class="btn-icon">🚀</span>
+                        <span class="btn-icon"><span class="mi">rocket_launch</span></span>
                         开始爬取
                     </button>
                 </div>
@@ -312,7 +404,7 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
                     <div class="log-container" id="logContainer">
                         <div class="log-header">
                             <span class="log-header-title">
-                                <span>📋</span>
+                                <span><span class="mi">content_paste</span></span>
                                 运行日志
                             </span>
                         </div>
@@ -325,7 +417,7 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
             <div class="panel" id="panel-author-img">
                 <div class="panel-header">
                     <h2 class="panel-title">
-                        <span class="panel-title-icon">🖼️</span>
+                        <span class="panel-title-icon"><span class="mi">image</span></span>
                         作者图片
                     </h2>
                 </div>
@@ -342,7 +434,7 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
                         </div>
                     </div>
                     <button class="btn btn-primary btn-block" onclick="startAuthorImgTask()">
-                        <span class="btn-icon">🚀</span>
+                        <span class="btn-icon"><span class="mi">rocket_launch</span></span>
                         开始爬取
                     </button>
                 </div>
@@ -352,7 +444,7 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
             <div class="panel" id="panel-author-txt">
                 <div class="panel-header">
                     <h2 class="panel-title">
-                        <span class="panel-title-icon">📝</span>
+                        <span class="panel-title-icon"><span class="mi">edit_note</span></span>
                         作者文章
                     </h2>
                 </div>
@@ -362,7 +454,7 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
                         <input type="text" class="form-input" id="authorTxtUrl" placeholder="https://用户名.lofter.com/">
                     </div>
                     <button class="btn btn-primary btn-block" onclick="startAuthorTxtTask()">
-                        <span class="btn-icon">🚀</span>
+                        <span class="btn-icon"><span class="mi">rocket_launch</span></span>
                         开始爬取
                     </button>
                 </div>
@@ -372,17 +464,17 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
             <div class="panel" id="panel-single">
                 <div class="panel-header">
                     <h2 class="panel-title">
-                        <span class="panel-title-icon">📎</span>
+                        <span class="panel-title-icon"><span class="mi">attach_file</span></span>
                         单篇保存
                     </h2>
                 </div>
                 <div class="mode-cards">
                     <div class="mode-card selected" data-single-mode="img">
-                        <div class="mode-card-icon">🖼️</div>
+                        <div class="mode-card-icon"><span class="mi">image</span></div>
                         <div class="mode-card-name">保存图片</div>
                     </div>
                     <div class="mode-card" data-single-mode="txt">
-                        <div class="mode-card-icon">📝</div>
+                        <div class="mode-card-icon"><span class="mi">edit_note</span></div>
                         <div class="mode-card-name">保存文章</div>
                     </div>
                 </div>
@@ -392,7 +484,7 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
                         <textarea class="form-input" id="singleUrls" rows="5" placeholder="https://用户名.lofter.com/post/xxx&#10;https://用户名.lofter.com/post/yyy"></textarea>
                     </div>
                     <button class="btn btn-primary btn-block" onclick="startSingleTask()">
-                        <span class="btn-icon">🚀</span>
+                        <span class="btn-icon"><span class="mi">rocket_launch</span></span>
                         开始保存
                     </button>
                 </div>
@@ -402,25 +494,25 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
             <div class="panel" id="panel-ao3">
                 <div class="panel-header">
                     <h2 class="panel-title">
-                        <span class="panel-title-icon">📚</span>
+                        <span class="panel-title-icon"><span class="mi">auto_stories</span></span>
                         AO3 文章
                     </h2>
                 </div>
                 <div class="mode-cards">
                     <div class="mode-card selected" data-ao3-mode="work">
-                        <div class="mode-card-icon">📖</div>
+                        <div class="mode-card-icon"><span class="mi">menu_book</span></div>
                         <div class="mode-card-name">单篇作品</div>
                     </div>
                     <div class="mode-card" data-ao3-mode="series">
-                        <div class="mode-card-icon">📚</div>
+                        <div class="mode-card-icon"><span class="mi">auto_stories</span></div>
                         <div class="mode-card-name">系列</div>
                     </div>
                     <div class="mode-card" data-ao3-mode="author">
-                        <div class="mode-card-icon">👤</div>
+                        <div class="mode-card-icon"><span class="mi">person</span></div>
                         <div class="mode-card-name">作者</div>
                     </div>
                     <div class="mode-card" data-ao3-mode="tag">
-                        <div class="mode-card-icon">🏷️</div>
+                        <div class="mode-card-icon"><span class="mi">sell</span></div>
                         <div class="mode-card-name">Tag</div>
                     </div>
                 </div>
@@ -432,31 +524,31 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
                     <div class="form-group">
                         <label class="form-label">最大页数</label>
                         <input type="number" class="form-input" id="ao3MaxPages" value="5" min="1" max="50" style="max-width: 140px;">
-                        <p class="form-hint">💡 用于 Tag/作者模式，限制爬取的页数</p>
+                        <p class="form-hint"><span class="mi">lightbulb</span> 用于 Tag/作者模式，限制爬取的页数</p>
                     </div>
                     <div class="form-group">
                         <label class="form-label">下载选项</label>
                         <div class="checkbox-group">
                             <label class="checkbox-item">
                                 <input type="checkbox" id="ao3DownloadChapters" checked>
-                                <span>📑 全部章节</span>
+                                <span><span class="mi">bookmark</span> 全部章节</span>
                             </label>
                             <label class="checkbox-item">
                                 <input type="checkbox" id="ao3SaveMetadata" checked>
-                                <span>📋 元数据</span>
+                                <span><span class="mi">content_paste</span> 元数据</span>
                             </label>
                             <label class="checkbox-item">
                                 <input type="checkbox" id="ao3ExportPdf">
-                                <span>📄 导出PDF</span>
+                                <span><span class="mi">description</span> 导出PDF</span>
                             </label>
                             <label class="checkbox-item">
                                 <input type="checkbox" id="ao3ExportEpub">
-                                <span>📖 导出EPUB</span>
+                                <span><span class="mi">menu_book</span> 导出EPUB</span>
                             </label>
                         </div>
                     </div>
                     <button class="btn btn-primary btn-block" onclick="startAo3Task()">
-                        <span class="btn-icon">🚀</span>
+                        <span class="btn-icon"><span class="mi">rocket_launch</span></span>
                         开始下载
                     </button>
                 </div>
@@ -466,37 +558,42 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
             <div class="panel" id="panel-history">
                 <div class="panel-header">
                     <h2 class="panel-title">
-                        <span class="panel-title-icon">📋</span>
+                        <span class="panel-title-icon"><span class="mi">content_paste</span></span>
                         下载历史
                     </h2>
                 </div>
-                
+
                 <div class="form-card" style="margin-bottom: 20px;">
-                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-                        <input type="text" class="form-input" id="historySearch" placeholder="搜索标题或作者..." style="flex: 1; min-width: 200px;">
-                        <select class="form-input" id="historyFilter" style="width: 140px;">
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <input type="text" class="form-input" id="historySearch" placeholder="搜索标题、作者或链接..." style="flex: 1; min-width: 180px;" onkeydown="if(event.key==='Enter')loadHistory(1)">
+                        <select class="form-input" id="historyFilter" style="width: 120px;">
                             <option value="">全部类型</option>
-                            <option value="image">图片</option>
-                            <option value="article">文章</option>
+                            <option value="image"><span class="mi">add_photo_alternate</span> 图片</option>
+                            <option value="article"><span class="mi">edit_note</span> 文章</option>
+                            <option value="ao3"><span class="mi">auto_stories</span> AO3</option>
+                        </select>
+                        <select class="form-input" id="historySource" style="width: 120px;">
+                            <option value="">全部来源</option>
+                            <option value="lofter">Lofter</option>
                             <option value="ao3">AO3</option>
                         </select>
-                        <button class="btn btn-primary" onclick="loadHistory()" style="padding: 12px 20px;">
-                            🔍 搜索
+                        <button class="btn btn-primary" onclick="loadHistory(1)" style="padding: 12px 20px;">
+                            <span class="mi">search</span> 搜索
                         </button>
                         <button class="btn btn-primary" onclick="clearHistory()" style="padding: 12px 20px; background: #e57373;">
-                            🗑️ 清空
+                            <span class="mi">delete_sweep</span> 清空
                         </button>
                     </div>
-                    <div id="historyStats" style="margin-top: 16px; font-size: 14px; color: var(--text-muted);"></div>
+                    <div id="historyStats" style="margin-top: 14px; font-size: 13px; color: var(--text-muted);"></div>
                 </div>
-                
+
                 <div class="form-card">
-                    <div id="historyList" style="max-height: 500px; overflow-y: auto;">
-                        <div style="text-align: center; padding: 40px; color: var(--text-muted);">
-                            点击搜索加载历史记录
-                        </div>
+                    <div id="historyLoading" style="display:none; text-align:center; padding:30px; color:var(--text-muted);">
+                        <div style="font-size:24px; margin-bottom:8px;"><span class="mi">hourglass_empty</span></div>
+                        加载中...
                     </div>
-                    <div id="historyPagination" style="margin-top: 16px; display: flex; justify-content: center; gap: 8px;"></div>
+                    <div id="historyList" style="max-height: 600px; overflow-y: auto;"></div>
+                    <div id="historyPagination" style="margin-top: 16px; display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: wrap;"></div>
                 </div>
             </div>
 
@@ -504,14 +601,14 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
             <div class="panel" id="panel-settings">
                 <div class="panel-header">
                     <h2 class="panel-title">
-                        <span class="panel-title-icon">⚙️</span>
+                        <span class="panel-title-icon"><span class="mi">settings</span></span>
                         设置
                     </h2>
                 </div>
                 
                 <div class="settings-section">
                     <h3 class="settings-title">
-                        <span class="settings-title-icon">🔐</span>
+                        <span class="settings-title-icon"><span class="mi">key</span></span>
                         登录配置
                     </h3>
                     <div class="form-group">
@@ -526,17 +623,17 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
                     <div class="form-group">
                         <label class="form-label">授权码</label>
                         <textarea class="form-input" id="loginAuth" rows="3" placeholder="从浏览器开发者工具获取"></textarea>
-                        <p class="form-hint">💡 打开 Lofter → F12 → Application → Cookies → 找到对应值</p>
+                        <p class="form-hint"><span class="mi">lightbulb</span> 打开 Lofter → F12 → Application → Cookies → 找到对应值</p>
                     </div>
                     <button class="btn btn-primary" onclick="saveConfig()">
-                        <span class="btn-icon">💾</span>
+                        <span class="btn-icon"><span class="mi">save</span></span>
                         保存配置
                     </button>
                 </div>
 
                 <div class="settings-section">
                     <h3 class="settings-title">
-                        <span class="settings-title-icon">📁</span>
+                        <span class="settings-title-icon"><span class="mi">folder</span></span>
                         存储设置
                     </h3>
                     <div class="form-group">
@@ -544,31 +641,42 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
                         <div style="display: flex; gap: 12px; align-items: center;">
                             <input type="text" class="form-input" id="savePath" placeholder="./dir" style="flex: 1;">
                             <button class="btn btn-primary" onclick="browseSavePath()" style="padding: 12px 16px; white-space: nowrap;" title="选择文件夹">
-                                📂 浏览
+                                <span class="mi">folder_open</span> 浏览
                             </button>
                             <button class="btn btn-primary" onclick="saveSavePath()" style="padding: 12px 16px; white-space: nowrap;">
-                                💾 保存
+                                <span class="mi">save</span> 保存
                             </button>
                         </div>
-                        <p class="form-hint">💡 设置下载文件的保存目录，支持相对路径（如 ./dir）或绝对路径（如 D:\Downloads）</p>
+                        <p class="form-hint"><span class="mi">lightbulb</span> 设置下载文件的保存目录，支持相对路径（如 ./dir）或绝对路径（如 D:\Downloads）</p>
                     </div>
                 </div>
 
                 <div class="settings-section">
                     <h3 class="settings-title">
-                        <span class="settings-title-icon">🎨</span>
+                        <span class="settings-title-icon"><span class="mi">palette</span></span>
                         外观设置
                     </h3>
                     <div class="form-group">
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <div>
-                                <label class="form-label" style="margin-bottom: 0;">深色模式</label>
-                                <p class="form-hint" style="margin-top: 4px;">切换深色/浅色主题</p>
+                        <label class="form-label">主题风格</label>
+                        <div class="theme-cards" id="themeCards">
+                            <div class="theme-card selected" data-theme="light" onclick="setTheme('light')">
+                                <div class="theme-preview theme-preview-light">
+                                    <div class="tp-bar"></div><div class="tp-side"><div class="tp-dot"></div></div><div class="tp-main"><div class="tp-block"></div><div class="tp-line"></div></div>
+                                </div>
+                                <span class="theme-card-label">默认</span>
                             </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
-                                <span class="toggle-slider"></span>
-                            </label>
+                            <div class="theme-card" data-theme="dark" onclick="setTheme('dark')">
+                                <div class="theme-preview theme-preview-dark">
+                                    <div class="tp-bar"></div><div class="tp-side"><div class="tp-dot"></div></div><div class="tp-main"><div class="tp-block"></div><div class="tp-line"></div></div>
+                                </div>
+                                <span class="theme-card-label">深色</span>
+                            </div>
+                            <div class="theme-card" data-theme="bw" onclick="setTheme('bw')">
+                                <div class="theme-preview theme-preview-bw">
+                                    <div class="tp-bar"></div><div class="tp-side"><div class="tp-dot"></div></div><div class="tp-main"><div class="tp-block"></div><div class="tp-line"></div></div>
+                                </div>
+                                <span class="theme-card-label">黑白块</span>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -587,35 +695,70 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
 
                 <div class="settings-section">
                     <h3 class="settings-title">
-                        <span class="settings-title-icon">🔄</span>
+                        <span class="settings-title-icon"><span class="mi">sync</span></span>
                         软件更新
                     </h3>
                     <div class="form-group">
                         <div style="display: flex; align-items: center; justify-content: space-between;">
                             <div>
                                 <label class="form-label" style="margin-bottom: 0;">版本信息</label>
-                                <p class="form-hint" style="margin-top: 4px;">当前版本：v1.0.0</p>
+                                <p class="form-hint" style="margin-top: 4px;">当前版本：v1.1.0</p>
                             </div>
                             <button class="btn btn-primary" onclick="checkForUpdates(false)" style="padding: 12px 20px;">
-                                <span class="btn-icon">🔍</span>
+                                <span class="btn-icon"><span class="mi">search</span></span>
                                 检查更新
                             </button>
                         </div>
-                        <p class="form-hint" style="margin-top: 12px;">💡 应用启动时会自动检查更新，也可以点击按钮手动检查</p>
+                        <p class="form-hint" style="margin-top: 12px;"><span class="mi">lightbulb</span> 应用启动时会自动检查更新，也可以点击按钮手动检查</p>
                     </div>
                 </div>
 
                 <div class="settings-section">
                     <h3 class="settings-title">
-                        <span class="settings-title-icon">📖</span>
+                        <span class="settings-title-icon"><span class="mi">menu_book</span></span>
                         使用说明
                     </h3>
                     <div class="help-list">
-                        <p>1️⃣ 首次使用请先在上方配置登录信息</p>
-                        <p>2️⃣ 从左侧选择对应的爬取功能</p>
-                        <p>3️⃣ 填写链接后点击开始按钮</p>
-                        <p>4️⃣ 下载的文件保存在 <code>./dir</code> 目录</p>
-                        <p>5️⃣ AO3 功能无需配置登录信息</p>
+                        <p><span class="mi mi-num">1</span> 首次使用请先在上方配置登录信息</p>
+                        <p><span class="mi mi-num">2</span> 从左侧选择对应的爬取功能</p>
+                        <p><span class="mi mi-num">3</span> 填写链接后点击开始按钮</p>
+                        <p><span class="mi mi-num">4</span> 下载的文件保存在 <code>./dir</code> 目录</p>
+                        <p><span class="mi mi-num">5</span> AO3 功能无需配置登录信息</p>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3 class="settings-title">
+                        <span class="settings-title-icon"><span class="mi">build</span></span>
+                        开发者模式
+                    </h3>
+                    <div class="form-group">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <label class="form-label" style="margin-bottom: 0;">启用开发者模式</label>
+                                <p class="form-hint" style="margin-top: 4px;">开启后可在控制台中使用 <code>dev.*</code> 接口测试各控件</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="devModeToggle" onchange="toggleDevMode()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="devModeHelp" style="display:none; margin-top:12px;">
+                        <div class="help-list">
+                            <p><span class="mi">science</span> <code>dev.help()</code> — 查看所有可用命令</p>
+                            <p><span class="mi">sync</span> <code>dev.switchPanel('ao3')</code> — 切换面板</p>
+                            <p><span class="mi">content_paste</span> <code>dev.listPanels()</code> — 列出所有面板</p>
+                            <p><span class="mi">palette</span> <code>dev.setMode('tag')</code> — 设置 LST 模式</p>
+                            <p><span class="mi">dark_mode</span> <code>dev.toggleDark()</code> — 切换深色模式</p>
+                            <p><span class="mi">palette</span> <code>dev.setTheme('bw')</code> — 设置主题(light|dark|bw)</p>
+                            <p><span class="mi">search</span> <code>dev.checkUpdate()</code> — 检查更新</p>
+                            <p><span class="mi">science</span> <code>dev.notify('消息')</code> — 测试通知</p>
+                            <p><span class="mi">bar_chart</span> <code>dev.state()</code> — 查看应用状态</p>
+                            <p><span class="mi">cell_tower</span> <code>dev.testApi()</code> — 测试后端连接</p>
+                            <p><span class="mi">link</span> <code>dev.fillUrl('https://...')</code> — 填入测试链接</p>
+                            <p><span class="mi">rocket_launch</span> <code>dev.startTask('ao3')</code> — 启动测试任务</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -623,25 +766,259 @@ body.dark-mode select.form-input{background-image:url("data:image/svg+xml,%3Csvg
     </div>
 
     <script>
+
+function mi(name) { return '<span class="mi">' + name + '</span>'; }
+function miFor(emoji) { return MI[emoji] ? mi(MI[emoji]) : emoji; }
+
 /* API基础地址 - Tauri环境需要完整URL */
 function getApiBase(){const isTauri=window.__TAURI__!==undefined||window.__TAURI_INTERNALS__!==undefined||navigator.userAgent.includes('Tauri');return isTauri?'http://localhost:5000':''}
 const API_BASE=getApiBase();
-const AppState={currentPanel:'lst',currentMode:'like2',currentSingleMode:'img',currentAo3Mode:'work',isRunning:false,pollInterval:null};document.addEventListener('DOMContentLoaded',()=>{initDarkMode();initNavigation();initModeCards();initTauri();initContextMenu();initTooltips();initOnboarding();loadConfig();loadAppSettings()});
+const AppState={currentPanel:'lst',currentMode:'like2',currentSingleMode:'img',currentAo3Mode:'work',isRunning:false,pollInterval:null};document.addEventListener('DOMContentLoaded',()=>{initTheme();initNavigation();initModeCards();initTauri();initContextMenu();initTooltips();initOnboarding();loadConfig();loadAppSettings();initDevMode()});
 /* 新手引导 */
-let onboardingStep=1;const totalSteps=3;function initOnboarding(){if(localStorage.getItem('loarchive_onboarding_done')==='true'){return}const overlay=document.getElementById('onboarding');const nextBtn=document.getElementById('onboarding-next');const skipBtn=document.getElementById('onboarding-skip');const dots=document.querySelectorAll('.onboarding-dot');setTimeout(()=>{overlay.classList.add('show')},300);nextBtn.addEventListener('click',()=>{if(onboardingStep<totalSteps){onboardingStep++;updateOnboardingStep()}else{finishOnboarding()}});skipBtn.addEventListener('click',finishOnboarding);dots.forEach(dot=>{dot.addEventListener('click',()=>{onboardingStep=parseInt(dot.dataset.step);updateOnboardingStep()})})}function updateOnboardingStep(){document.querySelectorAll('.onboarding-steps').forEach(s=>s.classList.remove('active'));document.querySelector(`.onboarding-steps[data-step="${onboardingStep}"]`).classList.add('active');document.querySelectorAll('.onboarding-dot').forEach(d=>{d.classList.toggle('active',parseInt(d.dataset.step)===onboardingStep)});const nextBtn=document.getElementById('onboarding-next');if(onboardingStep===totalSteps){nextBtn.textContent='开始使用 🚀'}else{nextBtn.textContent='下一步 →'}}function finishOnboarding(){const overlay=document.getElementById('onboarding');overlay.classList.remove('show');localStorage.setItem('loarchive_onboarding_done','true');createConfetti();showNotification('欢迎使用！如需查看帮助，请前往「设置」页面','success')}function createConfetti(){const colors=['#00bcd4','#26c6da','#ff6b9d','#ffd700','#00897b'];for(let i=0;i<50;i++){const confetti=document.createElement('div');confetti.className='confetti';confetti.style.cssText=`position:fixed;width:10px;height:10px;background:${colors[Math.floor(Math.random()*colors.length)]};left:${Math.random()*100}vw;top:-20px;border-radius:${Math.random()>.5?'50%':'2px'};z-index:20001;pointer-events:none`;document.body.appendChild(confetti);const duration=2000+Math.random()*2000;const rotation=Math.random()*720-360;confetti.animate([{transform:'translateY(0) rotate(0deg)',opacity:1},{transform:`translateY(100vh) rotate(${rotation}deg)`,opacity:0}],{duration,easing:'cubic-bezier(.25,.46,.45,.94)'});setTimeout(()=>confetti.remove(),duration)}}function initNavigation(){document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{switchPanel(item.dataset.panel)})})}function switchPanel(panelId){document.querySelectorAll('.nav-item').forEach(nav=>{nav.classList.toggle('active',nav.dataset.panel===panelId)});document.querySelectorAll('.panel').forEach(panel=>{panel.classList.remove('active')});document.getElementById(`panel-${panelId}`).classList.add('active');AppState.currentPanel=panelId;if(panelId==='history'){loadHistory(1)}}function initModeCards(){document.querySelectorAll('[data-mode]').forEach(card=>{card.addEventListener('click',()=>{document.querySelectorAll('[data-mode]').forEach(c=>c.classList.remove('selected'));card.classList.add('selected');AppState.currentMode=card.dataset.mode})});document.querySelectorAll('[data-single-mode]').forEach(card=>{card.addEventListener('click',()=>{document.querySelectorAll('[data-single-mode]').forEach(c=>c.classList.remove('selected'));card.classList.add('selected');AppState.currentSingleMode=card.dataset.singleMode})});document.querySelectorAll('[data-ao3-mode]').forEach(card=>{card.addEventListener('click',()=>{document.querySelectorAll('[data-ao3-mode]').forEach(c=>c.classList.remove('selected'));card.classList.add('selected');AppState.currentAo3Mode=card.dataset.ao3Mode})})}function initTauri(){const isTauri=window.__TAURI__!==undefined||window.__TAURI_INTERNALS__!==undefined||navigator.userAgent.includes('Tauri');if(!isTauri){const titlebar=document.getElementById('titlebar');if(titlebar)titlebar.style.display='none';const container=document.querySelector('.app-container');if(container)container.style.paddingTop='0';return}console.log('📚 LoArchive: Tauri 环境已检测');const setupWindowControls=async()=>{try{let appWindow;if(window.__TAURI__&&window.__TAURI__.window){const{getCurrentWindow}=window.__TAURI__.window;appWindow=getCurrentWindow()}else{const{getCurrentWindow}=await import('@tauri-apps/api/window');appWindow=getCurrentWindow()}if(!appWindow){console.error('无法获取 Tauri 窗口实例');return}const btnMinimize=document.getElementById('btn-minimize');const btnMaximize=document.getElementById('btn-maximize');const btnClose=document.getElementById('btn-close');if(btnMinimize)btnMinimize.onclick=()=>appWindow.minimize();if(btnMaximize)btnMaximize.onclick=async()=>{(await appWindow.isMaximized())?appWindow.unmaximize():appWindow.maximize()};if(btnClose)btnClose.onclick=()=>appWindow.close();const titlebarLeft=document.querySelector('.titlebar-left');if(titlebarLeft){titlebarLeft.addEventListener('dblclick',async()=>{(await appWindow.isMaximized())?appWindow.unmaximize():appWindow.maximize()})}console.log('窗口控制按钮已绑定')}catch(e){console.error('Tauri 窗口控制初始化失败:',e)}};if(document.readyState==='complete'){setupWindowControls()}else{window.addEventListener('load',setupWindowControls)}}async function loadConfig(){try{const res=await fetch(API_BASE+'/api/config');if(!res.ok)throw new Error('HTTP '+res.status);const ct=res.headers.get('content-type');if(!ct||!ct.includes('application/json')){throw new Error('后端未启动')}const data=await res.json();const loginKeyEl=document.getElementById('loginKey');if(loginKeyEl)loginKeyEl.value=data.login_key;updateAuthStatus(data.has_auth)}catch(e){console.error('加载配置失败:',e);setTimeout(loadConfig,2000)}}window.saveConfig=async function(){const loginKey=document.getElementById('loginKey').value;const loginAuth=document.getElementById('loginAuth').value;try{const res=await fetch(API_BASE+'/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({login_key:loginKey,login_auth:loginAuth})});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();if(data.success){showNotification('配置保存成功！','success');loadConfig()}}catch(e){showNotification('保存失败: '+e.message,'error')}};function updateAuthStatus(hasAuth){const el=document.getElementById('authStatus');if(!el)return;if(hasAuth){el.textContent='已配置 ✓';el.classList.add('success');el.classList.remove('error')}else{el.textContent='未配置';el.classList.add('error');el.classList.remove('success')}}window.startLstTask=async function(){const url=document.getElementById('lstUrl').value.trim();if(!url)return showNotification('请输入链接地址','error');await startTask('like_share_tag',{url,mode:AppState.currentMode,save_mode:{article:document.getElementById('saveArticle').checked?1:0,text:document.getElementById('saveText').checked?1:0,'long article':document.getElementById('saveLong').checked?1:0,img:document.getElementById('saveImg').checked?1:0},start_time:document.getElementById('startTime').value,export_pdf:document.getElementById('lstExportPdf').checked})};window.startAuthorImgTask=async function(){const url=document.getElementById('authorImgUrl').value.trim();if(!url)return showNotification('请输入作者主页链接','error');await startTask('author_img',{author_url:url,start_time:document.getElementById('imgStartTime').value,end_time:document.getElementById('imgEndTime').value})};window.startAuthorTxtTask=async function(){const url=document.getElementById('authorTxtUrl').value.trim();if(!url)return showNotification('请输入作者主页链接','error');await startTask('author_txt',{author_url:url})};window.startSingleTask=async function(){const urls=document.getElementById('singleUrls').value.split('\n').map(u=>u.trim()).filter(u=>u);if(!urls.length)return showNotification('请输入至少一个链接','error');const type=AppState.currentSingleMode==='img'?'single_img':'single_txt';await startTask(type,{urls})};window.startAo3Task=async function(){const urls=document.getElementById('ao3Urls').value.split('\n').map(u=>u.trim()).filter(u=>u);if(!urls.length)return showNotification('请输入至少一个 AO3 链接','error');await startTask('ao3',{urls,mode:AppState.currentAo3Mode,download_chapters:document.getElementById('ao3DownloadChapters').checked,save_metadata:document.getElementById('ao3SaveMetadata').checked,export_pdf:document.getElementById('ao3ExportPdf').checked,export_epub:document.getElementById('ao3ExportEpub').checked,max_pages:parseInt(document.getElementById('ao3MaxPages').value)||5})};async function startTask(type,params){try{const res=await fetch(API_BASE+'/api/task/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type,params})});const ct=res.headers.get('content-type');if(!ct||!ct.includes('application/json')){throw new Error('后端服务未启动')}if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();if(data.success){AppState.isRunning=true;updateRunningState(true);showProgress(true);startPolling();showNotification('任务已启动','success')}else{showNotification(data.message,'error')}}catch(e){showNotification('启动失败: '+e.message,'error')}}function showProgress(show){const section=document.getElementById('progressSection');if(section)section.classList.toggle('active',show)}function updateRunningState(running){const dot=document.getElementById('statusDot');const label=document.getElementById('statusLabel');if(dot&&label){if(running){dot.classList.add('running');label.textContent='运行中'}else{dot.classList.remove('running');label.textContent='就绪'}}}function startPolling(){if(AppState.pollInterval)clearInterval(AppState.pollInterval);AppState.pollInterval=setInterval(async()=>{try{const res=await fetch(API_BASE+'/api/task/status');const ct=res.headers.get('content-type');if(!ct||!ct.includes('application/json'))return;const data=await res.json();const progressFill=document.getElementById('progressFill');const progressPercent=document.getElementById('progressPercent');const progressMessage=document.getElementById('progressMessage');if(progressFill)progressFill.style.width=data.progress+'%';if(progressPercent)progressPercent.textContent=data.progress+'%';if(progressMessage)progressMessage.textContent=data.message;const logContent=document.getElementById('logContent');if(logContent){logContent.innerHTML=data.logs.map(log=>`<div class="log-line">${escapeHtml(log)}</div>`).join('');logContent.scrollTop=logContent.scrollHeight}if(!data.running&&data.progress>=100){clearInterval(AppState.pollInterval);AppState.isRunning=false;updateRunningState(false);showNotification('任务完成！','success')}}catch(e){console.error('状态获取失败:',e)}},500)}function escapeHtml(text){const div=document.createElement('div');div.textContent=text;return div.innerHTML}function showNotification(message,type='info'){const toast=document.createElement('div');toast.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:8px;color:white;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:10001;font-size:14px;font-weight:500;opacity:0;transition:opacity .3s ease,transform .3s ease';toast.style.background=type==='error'?'#b00020':'#00bcd4';toast.textContent=message;document.body.appendChild(toast);requestAnimationFrame(()=>{toast.style.opacity='1';toast.style.transform='translateX(-50%) translateY(-10px)'});setTimeout(()=>{toast.style.opacity='0';toast.style.transform='translateX(-50%) translateY(0)';setTimeout(()=>document.body.removeChild(toast),300)},3000)}let contextMenu=null;function initContextMenu(){contextMenu=document.createElement('div');contextMenu.className='context-menu';contextMenu.innerHTML=`<div class="context-menu-item" data-action="copy"><span class="context-menu-item-icon">📋</span><span class="context-menu-item-text">复制</span><span class="context-menu-item-shortcut">Ctrl+C</span></div><div class="context-menu-item" data-action="paste"><span class="context-menu-item-icon">📄</span><span class="context-menu-item-text">粘贴</span><span class="context-menu-item-shortcut">Ctrl+V</span></div><div class="context-menu-item" data-action="cut"><span class="context-menu-item-icon">✂️</span><span class="context-menu-item-text">剪切</span><span class="context-menu-item-shortcut">Ctrl+X</span></div><div class="context-menu-divider"></div><div class="context-menu-item" data-action="selectall"><span class="context-menu-item-icon">📝</span><span class="context-menu-item-text">全选</span><span class="context-menu-item-shortcut">Ctrl+A</span></div><div class="context-menu-divider"></div><div class="context-menu-item" data-action="refresh"><span class="context-menu-item-icon">🔄</span><span class="context-menu-item-text">刷新页面</span><span class="context-menu-item-shortcut">F5</span></div>`;document.body.appendChild(contextMenu);document.addEventListener('contextmenu',(e)=>{e.preventDefault();showContextMenu(e.clientX,e.clientY,e.target)});document.addEventListener('click',()=>hideContextMenu());document.addEventListener('keydown',(e)=>{if(e.key==='Escape')hideContextMenu()});contextMenu.querySelectorAll('.context-menu-item').forEach(item=>{item.addEventListener('click',(e)=>{e.stopPropagation();executeContextAction(item.dataset.action);hideContextMenu()})})}function showContextMenu(x,y,target){updateContextMenuItems(target);contextMenu.classList.add('show');const menuRect=contextMenu.getBoundingClientRect();let posX=x,posY=y;if(x+menuRect.width>window.innerWidth)posX=window.innerWidth-menuRect.width-10;if(y+menuRect.height>window.innerHeight)posY=window.innerHeight-menuRect.height-10;contextMenu.style.left=posX+'px';contextMenu.style.top=posY+'px'}function hideContextMenu(){if(contextMenu)contextMenu.classList.remove('show')}function updateContextMenuItems(target){const hasSelection=window.getSelection().toString().length>0;const isEditable=target.tagName==='INPUT'||target.tagName==='TEXTAREA'||target.isContentEditable;const copyItem=contextMenu.querySelector('[data-action="copy"]');if(copyItem)copyItem.classList.toggle('disabled',!hasSelection);const cutItem=contextMenu.querySelector('[data-action="cut"]');if(cutItem)cutItem.classList.toggle('disabled',!hasSelection||!isEditable);const pasteItem=contextMenu.querySelector('[data-action="paste"]');if(pasteItem)pasteItem.classList.toggle('disabled',!isEditable)}async function executeContextAction(action){switch(action){case 'copy':try{const selection=window.getSelection().toString();if(selection){await navigator.clipboard.writeText(selection);showNotification('已复制到剪贴板','success')}}catch(e){document.execCommand('copy')}break;case 'paste':try{const text=await navigator.clipboard.readText();const activeEl=document.activeElement;if(activeEl.tagName==='INPUT'||activeEl.tagName==='TEXTAREA'){const start=activeEl.selectionStart;const end=activeEl.selectionEnd;activeEl.value=activeEl.value.slice(0,start)+text+activeEl.value.slice(end);activeEl.selectionStart=activeEl.selectionEnd=start+text.length}}catch(e){document.execCommand('paste')}break;case 'cut':try{const selection=window.getSelection().toString();if(selection){await navigator.clipboard.writeText(selection);document.execCommand('delete');showNotification('已剪切到剪贴板','success')}}catch(e){document.execCommand('cut')}break;case 'selectall':const activeEl=document.activeElement;if(activeEl.tagName==='INPUT'||activeEl.tagName==='TEXTAREA'){activeEl.select()}else{document.execCommand('selectAll')}break;case 'refresh':window.location.reload();break}}let tooltipEl=null;function initTooltips(){tooltipEl=document.createElement('div');tooltipEl.className='tooltip';document.body.appendChild(tooltipEl);document.querySelectorAll('[title]').forEach(el=>{const title=el.getAttribute('title');el.removeAttribute('title');el.dataset.tooltip=title;el.addEventListener('mouseenter',showTooltip);el.addEventListener('mouseleave',hideTooltip);el.addEventListener('mousemove',moveTooltip)})}function showTooltip(e){const text=e.target.dataset.tooltip;if(!text)return;tooltipEl.textContent=text;tooltipEl.classList.add('show','top');positionTooltip(e)}function hideTooltip(){tooltipEl.classList.remove('show')}function moveTooltip(e){positionTooltip(e)}function positionTooltip(e){const x=e.clientX;const y=e.clientY;const rect=tooltipEl.getBoundingClientRect();let posX=x-rect.width/2;let posY=y-rect.height-12;if(posX<10)posX=10;if(posX+rect.width>window.innerWidth-10)posX=window.innerWidth-rect.width-10;if(posY<10){posY=y+20;tooltipEl.classList.remove('top');tooltipEl.classList.add('bottom')}tooltipEl.style.left=posX+'px';tooltipEl.style.top=posY+'px'}
-/* 深色模式功能 */
-function initDarkMode(){
-    const saved=localStorage.getItem('loarchive_dark_mode');
-    if(saved==='true'){
-        document.body.classList.add('dark-mode');
-        const toggle=document.getElementById('darkModeToggle');
-        if(toggle)toggle.checked=true;
-    }
+let onboardingStep=1;const totalSteps=3;function initOnboarding(){if(localStorage.getItem('loarchive_onboarding_done')==='true'){return}const overlay=document.getElementById('onboarding');const nextBtn=document.getElementById('onboarding-next');const skipBtn=document.getElementById('onboarding-skip');const dots=document.querySelectorAll('.onboarding-dot');setTimeout(()=>{overlay.classList.add('show')},300);nextBtn.addEventListener('click',()=>{if(onboardingStep<totalSteps){onboardingStep++;updateOnboardingStep()}else{finishOnboarding()}});skipBtn.addEventListener('click',finishOnboarding);dots.forEach(dot=>{dot.addEventListener('click',()=>{onboardingStep=parseInt(dot.dataset.step);updateOnboardingStep()})})}function updateOnboardingStep(){document.querySelectorAll('.onboarding-steps').forEach(s=>s.classList.remove('active'));document.querySelector(`.onboarding-steps[data-step="${onboardingStep}"]`).classList.add('active');document.querySelectorAll('.onboarding-dot').forEach(d=>{d.classList.toggle('active',parseInt(d.dataset.step)===onboardingStep)});const nextBtn=document.getElementById('onboarding-next');if(onboardingStep===totalSteps){nextBtn.textContent=mi('rocket_launch')+' 开始使用'}else{nextBtn.textContent='下一步 →'}}function finishOnboarding(){const overlay=document.getElementById('onboarding');overlay.classList.remove('show');localStorage.setItem('loarchive_onboarding_done','true');createConfetti();showNotification('欢迎使用！如需查看帮助，请前往「设置」页面','success')}function createConfetti(){const colors=['#00bcd4','#26c6da','#ff6b9d','#ffd700','#00897b'];for(let i=0;i<50;i++){const confetti=document.createElement('div');confetti.className='confetti';confetti.style.cssText=`position:fixed;width:10px;height:10px;background:${colors[Math.floor(Math.random()*colors.length)]};left:${Math.random()*100}vw;top:-20px;border-radius:${Math.random()>.5?'50%':'2px'};z-index:20001;pointer-events:none`;document.body.appendChild(confetti);const duration=2000+Math.random()*2000;const rotation=Math.random()*720-360;confetti.animate([{transform:'translateY(0) rotate(0deg)',opacity:1},{transform:`translateY(100vh) rotate(${rotation}deg)`,opacity:0}],{duration,easing:'cubic-bezier(.25,.46,.45,.94)'});setTimeout(()=>confetti.remove(),duration)}}function initNavigation(){document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{switchPanel(item.dataset.panel)})})}function switchPanel(panelId){document.querySelectorAll('.nav-item').forEach(nav=>{nav.classList.toggle('active',nav.dataset.panel===panelId)});document.querySelectorAll('.panel').forEach(panel=>{panel.classList.remove('active')});document.getElementById(`panel-${panelId}`).classList.add('active');AppState.currentPanel=panelId;if(panelId==='history'){loadHistory(1)}}
+function initModeCards(){document.querySelectorAll('[data-mode]').forEach(card=>{card.addEventListener('click',()=>{document.querySelectorAll('[data-mode]').forEach(c=>c.classList.remove('selected'));card.classList.add('selected');AppState.currentMode=card.dataset.mode})});document.querySelectorAll('[data-single-mode]').forEach(card=>{card.addEventListener('click',()=>{document.querySelectorAll('[data-single-mode]').forEach(c=>c.classList.remove('selected'));card.classList.add('selected');AppState.currentSingleMode=card.dataset.singleMode})});document.querySelectorAll('[data-ao3-mode]').forEach(card=>{card.addEventListener('click',()=>{document.querySelectorAll('[data-ao3-mode]').forEach(c=>c.classList.remove('selected'));card.classList.add('selected');AppState.currentAo3Mode=card.dataset.ao3Mode})})}function initTauri(){const isTauri=window.__TAURI__!==undefined||window.__TAURI_INTERNALS__!==undefined||navigator.userAgent.includes('Tauri');if(!isTauri){const titlebar=document.getElementById('titlebar');if(titlebar)titlebar.style.display='none';const container=document.querySelector('.app-container');if(container)container.style.paddingTop='0';return}console.log('LoArchive: Tauri 环境已检测');const setupWindowControls=async()=>{try{let appWindow;if(window.__TAURI__&&window.__TAURI__.window){const{getCurrentWindow}=window.__TAURI__.window;appWindow=getCurrentWindow()}else{const{getCurrentWindow}=await import('@tauri-apps/api/window');appWindow=getCurrentWindow()}if(!appWindow){console.error('无法获取 Tauri 窗口实例');return}const btnMinimize=document.getElementById('btn-minimize');const btnMaximize=document.getElementById('btn-maximize');const btnClose=document.getElementById('btn-close');if(btnMinimize)btnMinimize.onclick=()=>appWindow.minimize();if(btnMaximize)btnMaximize.onclick=async()=>{(await appWindow.isMaximized())?appWindow.unmaximize():appWindow.maximize()};if(btnClose)btnClose.onclick=()=>appWindow.close();const titlebarLeft=document.querySelector('.titlebar-left');if(titlebarLeft){titlebarLeft.addEventListener('dblclick',async()=>{(await appWindow.isMaximized())?appWindow.unmaximize():appWindow.maximize()})}console.log('窗口控制按钮已绑定')}catch(e){console.error('Tauri 窗口控制初始化失败:',e)}};if(document.readyState==='complete'){setupWindowControls()}else{window.addEventListener('load',setupWindowControls)}}async function loadConfig(){try{const res=await fetch(API_BASE+'/api/config');if(!res.ok)throw new Error('HTTP '+res.status);const ct=res.headers.get('content-type');if(!ct||!ct.includes('application/json')){throw new Error('后端未启动')}const data=await res.json();const loginKeyEl=document.getElementById('loginKey');if(loginKeyEl)loginKeyEl.value=data.login_key;updateAuthStatus(data.has_auth)}catch(e){console.error('加载配置失败:',e);setTimeout(loadConfig,2000)}}window.saveConfig=async function(){const loginKey=document.getElementById('loginKey').value;const loginAuth=document.getElementById('loginAuth').value;try{const res=await fetch(API_BASE+'/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({login_key:loginKey,login_auth:loginAuth})});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();if(data.success){showNotification('配置保存成功！','success');loadConfig()}}catch(e){showNotification('保存失败: '+e.message,'error')}};function updateAuthStatus(hasAuth){const el=document.getElementById('authStatus');if(!el)return;if(hasAuth){el.textContent='已配置';el.classList.add('success');el.classList.remove('error')}else{el.textContent='未配置';el.classList.add('error');el.classList.remove('success')}}window.startLstTask=async function(){const url=document.getElementById('lstUrl').value.trim();if(!url)return showNotification('请输入链接地址','error');await startTask('like_share_tag',{url,mode:AppState.currentMode,save_mode:{article:document.getElementById('saveArticle').checked?1:0,text:document.getElementById('saveText').checked?1:0,'long article':document.getElementById('saveLong').checked?1:0,img:document.getElementById('saveImg').checked?1:0},start_time:document.getElementById('startTime').value,export_pdf:document.getElementById('lstExportPdf').checked})};window.startAuthorImgTask=async function(){const url=document.getElementById('authorImgUrl').value.trim();if(!url)return showNotification('请输入作者主页链接','error');await startTask('author_img',{author_url:url,start_time:document.getElementById('imgStartTime').value,end_time:document.getElementById('imgEndTime').value})};window.startAuthorTxtTask=async function(){const url=document.getElementById('authorTxtUrl').value.trim();if(!url)return showNotification('请输入作者主页链接','error');await startTask('author_txt',{author_url:url})};window.startSingleTask=async function(){const urls=document.getElementById('singleUrls').value.split('\n').map(u=>u.trim()).filter(u=>u);if(!urls.length)return showNotification('请输入至少一个链接','error');const type=AppState.currentSingleMode==='img'?'single_img':'single_txt';await startTask(type,{urls})};window.startAo3Task=async function(){const urls=document.getElementById('ao3Urls').value.split('\n').map(u=>u.trim()).filter(u=>u);if(!urls.length)return showNotification('请输入至少一个 AO3 链接','error');await startTask('ao3',{urls,mode:AppState.currentAo3Mode,download_chapters:document.getElementById('ao3DownloadChapters').checked,save_metadata:document.getElementById('ao3SaveMetadata').checked,export_pdf:document.getElementById('ao3ExportPdf').checked,export_epub:document.getElementById('ao3ExportEpub').checked,max_pages:parseInt(document.getElementById('ao3MaxPages').value)||5})};async function startTask(type,params){try{const res=await fetch(API_BASE+'/api/task/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type,params})});const ct=res.headers.get('content-type');if(!ct||!ct.includes('application/json')){throw new Error('后端服务未启动')}if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();if(data.success){AppState.isRunning=true;updateRunningState(true);showProgress(true);startPolling();showNotification('任务已启动','success')}else{showNotification(data.message,'error')}}catch(e){showNotification('启动失败: '+e.message,'error')}}function showProgress(show){const section=document.getElementById('progressSection');if(section)section.classList.toggle('active',show)}function updateRunningState(running){const dot=document.getElementById('statusDot');const label=document.getElementById('statusLabel');if(dot&&label){if(running){dot.classList.add('running');label.textContent='运行中'}else{dot.classList.remove('running');label.textContent='就绪'}}}function startPolling(){if(AppState.pollInterval)clearInterval(AppState.pollInterval);AppState.pollInterval=setInterval(async()=>{try{const res=await fetch(API_BASE+'/api/task/status');const ct=res.headers.get('content-type');if(!ct||!ct.includes('application/json'))return;const data=await res.json();const progressFill=document.getElementById('progressFill');const progressPercent=document.getElementById('progressPercent');const progressMessage=document.getElementById('progressMessage');if(progressFill)progressFill.style.width=data.progress+'%';if(progressPercent)progressPercent.textContent=data.progress+'%';if(progressMessage)progressMessage.textContent=data.message;const logContent=document.getElementById('logContent');if(logContent){logContent.innerHTML=data.logs.map(log=>`<div class="log-line">${escapeHtml(log)}</div>`).join('');logContent.scrollTop=logContent.scrollHeight}if(!data.running&&data.progress>=100){clearInterval(AppState.pollInterval);AppState.isRunning=false;updateRunningState(false);showNotification('任务完成！','success')}}catch(e){console.error('状态获取失败:',e)}},500)}function escapeHtml(text){const div=document.createElement('div');div.textContent=text;return div.innerHTML}function showNotification(message,type='info',duration=4000){const container=document.getElementById('toastContainer');const toast=document.createElement('div');toast.className='toast timer';const icons={info:mi('info'),success:mi('check_circle'),error:mi('error'),warning:mi('warning')};toast.innerHTML=`<span class="toast-icon">${icons[type]||mi('info')}</span><div class="toast-body"><div class="toast-text">${escapeHtml(message)}</div></div><button class="toast-close" onclick="this.parentElement.remove()"><span class="mi" style="font-size:18px">close</span></button><div class="toast-bar" style="width:100%"></div>`;container.appendChild(toast);requestAnimationFrame(()=>{toast.classList.add('show')});const bar=toast.querySelector('.toast-bar');if(bar){bar.style.transitionDuration=duration+'ms';requestAnimationFrame(()=>{bar.style.width='0%'})}setTimeout(()=>{toast.classList.remove('show');toast.classList.add('hide');setTimeout(()=>toast.remove(),400)},duration)}let contextMenu=null;function initContextMenu(){contextMenu=document.createElement('div');contextMenu.className='context-menu';contextMenu.innerHTML=`<div class="context-menu-item" data-action="copy"><span class="context-menu-item-icon"><span class="mi">content_copy</span></span><span class="context-menu-item-text">复制</span><span class="context-menu-item-shortcut">Ctrl+C</span></div><div class="context-menu-item" data-action="paste"><span class="context-menu-item-icon"><span class="mi">content_paste</span></span><span class="context-menu-item-text">粘贴</span><span class="context-menu-item-shortcut">Ctrl+V</span></div><div class="context-menu-item" data-action="cut"><span class="context-menu-item-icon"><span class="mi">content_cut</span></span><span class="context-menu-item-text">剪切</span><span class="context-menu-item-shortcut">Ctrl+X</span></div><div class="context-menu-divider"></div><div class="context-menu-item" data-action="selectall"><span class="context-menu-item-icon"><span class="mi">select_all</span></span><span class="context-menu-item-text">全选</span><span class="context-menu-item-shortcut">Ctrl+A</span></div><div class="context-menu-divider"></div><div class="context-menu-item" data-action="refresh"><span class="context-menu-item-icon"><span class="mi">refresh</span></span><span class="context-menu-item-text">刷新页面</span><span class="context-menu-item-shortcut">F5</span></div>`;document.body.appendChild(contextMenu);document.addEventListener('contextmenu',(e)=>{e.preventDefault();showContextMenu(e.clientX,e.clientY,e.target)});document.addEventListener('click',()=>hideContextMenu());document.addEventListener('keydown',(e)=>{if(e.key==='Escape')hideContextMenu()});contextMenu.querySelectorAll('.context-menu-item').forEach(item=>{item.addEventListener('click',(e)=>{e.stopPropagation();executeContextAction(item.dataset.action);hideContextMenu()})})}function showContextMenu(x,y,target){updateContextMenuItems(target);contextMenu.classList.add('show');const menuRect=contextMenu.getBoundingClientRect();let posX=x,posY=y;if(x+menuRect.width>window.innerWidth)posX=window.innerWidth-menuRect.width-10;if(y+menuRect.height>window.innerHeight)posY=window.innerHeight-menuRect.height-10;contextMenu.style.left=posX+'px';contextMenu.style.top=posY+'px'}function hideContextMenu(){if(contextMenu)contextMenu.classList.remove('show')}function updateContextMenuItems(target){const hasSelection=window.getSelection().toString().length>0;const isEditable=target.tagName==='INPUT'||target.tagName==='TEXTAREA'||target.isContentEditable;const copyItem=contextMenu.querySelector('[data-action="copy"]');if(copyItem)copyItem.classList.toggle('disabled',!hasSelection);const cutItem=contextMenu.querySelector('[data-action="cut"]');if(cutItem)cutItem.classList.toggle('disabled',!hasSelection||!isEditable);const pasteItem=contextMenu.querySelector('[data-action="paste"]');if(pasteItem)pasteItem.classList.toggle('disabled',!isEditable)}async function executeContextAction(action){switch(action){case 'copy':try{const selection=window.getSelection().toString();if(selection){await navigator.clipboard.writeText(selection);showNotification('已复制到剪贴板','success')}}catch(e){document.execCommand('copy')}break;case 'paste':try{const text=await navigator.clipboard.readText();const activeEl=document.activeElement;if(activeEl.tagName==='INPUT'||activeEl.tagName==='TEXTAREA'){const start=activeEl.selectionStart;const end=activeEl.selectionEnd;activeEl.value=activeEl.value.slice(0,start)+text+activeEl.value.slice(end);activeEl.selectionStart=activeEl.selectionEnd=start+text.length}}catch(e){document.execCommand('paste')}break;case 'cut':try{const selection=window.getSelection().toString();if(selection){await navigator.clipboard.writeText(selection);document.execCommand('delete');showNotification('已剪切到剪贴板','success')}}catch(e){document.execCommand('cut')}break;case 'selectall':const activeEl=document.activeElement;if(activeEl.tagName==='INPUT'||activeEl.tagName==='TEXTAREA'){activeEl.select()}else{document.execCommand('selectAll')}break;case 'refresh':window.location.reload();break}}let tooltipEl=null;function initTooltips(){tooltipEl=document.createElement('div');tooltipEl.className='tooltip';document.body.appendChild(tooltipEl);document.querySelectorAll('[title]').forEach(el=>{const title=el.getAttribute('title');el.removeAttribute('title');el.dataset.tooltip=title;el.addEventListener('mouseenter',showTooltip);el.addEventListener('mouseleave',hideTooltip);el.addEventListener('mousemove',moveTooltip)})}function showTooltip(e){const text=e.target.dataset.tooltip;if(!text)return;tooltipEl.textContent=text;tooltipEl.classList.add('show','top');positionTooltip(e)}function hideTooltip(){tooltipEl.classList.remove('show')}function moveTooltip(e){positionTooltip(e)}function positionTooltip(e){const x=e.clientX;const y=e.clientY;const rect=tooltipEl.getBoundingClientRect();let posX=x-rect.width/2;let posY=y-rect.height-12;if(posX<10)posX=10;if(posX+rect.width>window.innerWidth-10)posX=window.innerWidth-rect.width-10;if(posY<10){posY=y+20;tooltipEl.classList.remove('top');tooltipEl.classList.add('bottom')}tooltipEl.style.left=posX+'px';tooltipEl.style.top=posY+'px'}
+/* ========== 开发者模式 ========== */
+let devMode = false;
+const PANELS = {lst:'喜欢/推荐/Tag','author-img':'作者图片','author-txt':'作者文章',single:'单篇保存',ao3:'AO3文章',history:'下载历史',settings:'设置'};
+const LST_MODES = {like2:'我的喜欢',share:'我的推荐',tag:'Tag内容',like1:'他人喜欢'};
+const SINGLE_MODES = {img:'保存图片',txt:'保存文章'};
+const AO3_MODES = {work:'单篇作品',series:'系列',author:'作者',tag:'Tag'};
+
+function initDevMode() {
+    const saved = localStorage.getItem('loarchive_dev_mode');
+    if (saved === 'true') enableDevMode(false);
 }
-function toggleDarkMode(){
-    const isDark=document.body.classList.toggle('dark-mode');
-    localStorage.setItem('loarchive_dark_mode',isDark);
-    showNotification(isDark?'已切换到深色模式':'已切换到浅色模式','success');
+
+function toggleDevMode() {
+    const toggle = document.getElementById('devModeToggle');
+    if (toggle.checked) enableDevMode(true);
+    else disableDevMode();
+}
+
+function enableDevMode(save) {
+    devMode = true;
+    const toggle = document.getElementById('devModeToggle');
+    if (toggle) toggle.checked = true;
+    const help = document.getElementById('devModeHelp');
+    if (help) help.style.display = 'block';
+
+    // 创建底部指示器
+    let indicator = document.getElementById('devIndicator');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'devIndicator';
+        indicator.className = 'dev-indicator';
+        indicator.innerHTML = '<span class="dev-dot"></span> DEV';
+        document.body.appendChild(indicator);
+    }
+
+    if (save) localStorage.setItem('loarchive_dev_mode', 'true');
+
+    // 暴露 dev API 到全局
+    window.dev = {
+        // 帮助
+        help() {
+            const cmds = [
+                '%cLoArchive Developer Console',
+                '',
+                '%c=== 面板控制 ===',
+                'dev.switchPanel(id)     — 切换面板: ' + Object.keys(PANELS).join(', '),
+                'dev.listPanels()        — 列出所有面板',
+                'dev.currentPanel()      — 当前面板',
+                '',
+                '%c=== 模式控制 ===',
+                'dev.setMode(mode)       — 设置LST模式: ' + Object.keys(LST_MODES).join(', '),
+                'dev.setSingleMode(m)    — 设置单篇模式: ' + Object.keys(SINGLE_MODES).join(', '),
+                'dev.setAo3Mode(m)       — 设置AO3模式: ' + Object.keys(AO3_MODES).join(', '),
+                'dev.listModes()         — 列出所有模式',
+                '',
+                '%c=== 任务控制 ===',
+                'dev.startTask(type)     — 启动任务(使用当前面板的默认参数)',
+                'dev.stopTask()          — 停止当前任务',
+                'dev.fillUrl(url)        — 填入链接到当前面板',
+                'dev.fillTestUrl()       — 填入测试链接',
+                '',
+                '%c=== UI 测试 ===',
+                'dev.toggleDark()        — 切换深色模式',
+                'dev.setTheme(name)      — 设置主题: light, dark, bw',
+                'dev.listThemes()        — 列出所有主题',
+                'dev.notify(msg, type)   — 显示通知(info|success|error|warning)',
+                'dev.checkUpdate()       — 检查更新',
+                '',
+                '%c=== 系统信息 ===',
+                'dev.state()             — 应用状态',
+                'dev.testApi()           — 测试后端API',
+                'dev.getHistory(page)    — 获取下载历史',
+                'dev.getConfig()         — 获取配置',
+                ''
+            ];
+            console.log(cmds.join('\n'), 'font-size:16px;font-weight:bold;color:#00bcd4', 'color:#00bcd4;font-weight:bold', 'color:#aaa', 'color:#aaa', 'color:#aaa', 'color:#aaa');
+            return mi('check_circle')+' 命令列表已输出到控制台';
+        },
+
+        // 面板
+        switchPanel(id) {
+            if (!PANELS[id]) return console.error('未知面板:', id, '可用:', Object.keys(PANELS));
+            switchPanel(id);
+            return mi('check_circle')+` 已切换到: ${PANELS[id]}`;
+        },
+        listPanels() { console.table(PANELS); return PANELS; },
+        currentPanel() { return {id: AppState.currentPanel, name: PANELS[AppState.currentPanel]}; },
+
+        // 模式
+        setMode(m) {
+            if (!LST_MODES[m]) return console.error('未知LST模式:', m, '可用:', Object.keys(LST_MODES));
+            document.querySelectorAll('[data-mode]').forEach(c => {
+                c.classList.toggle('selected', c.dataset.mode === m);
+            });
+            AppState.currentMode = m;
+            return mi('check_circle')+` LST模式: ${LST_MODES[m]}`;
+        },
+        setSingleMode(m) {
+            if (!SINGLE_MODES[m]) return console.error('未知单篇模式:', m);
+            document.querySelectorAll('[data-single-mode]').forEach(c => {
+                c.classList.toggle('selected', c.dataset.singleMode === m);
+            });
+            AppState.currentSingleMode = m;
+            return mi('check_circle')+` 单篇模式: ${SINGLE_MODES[m]}`;
+        },
+        setAo3Mode(m) {
+            if (!AO3_MODES[m]) return console.error('未知AO3模式:', m);
+            document.querySelectorAll('[data-ao3-mode]').forEach(c => {
+                c.classList.toggle('selected', c.dataset.ao3Mode === m);
+            });
+            AppState.currentAo3Mode = m;
+            return mi('check_circle')+` AO3模式: ${AO3_MODES[m]}`;
+        },
+        listModes() {
+            console.log('LST模式:', LST_MODES);
+            console.log('单篇模式:', SINGLE_MODES);
+            console.log('AO3模式:', AO3_MODES);
+            return {lst: LST_MODES, single: SINGLE_MODES, ao3: AO3_MODES};
+        },
+
+        // 任务
+        startTask(type) {
+            const panel = AppState.currentPanel;
+            if (!type) type = panel === 'ao3' ? 'ao3' : panel === 'single' ? (AppState.currentSingleMode === 'img' ? 'single_img' : 'single_txt') : panel === 'author-img' ? 'author_img' : panel === 'author-txt' ? 'author_txt' : 'like_share_tag';
+            const urls = {'ao3':'https://archiveofourown.org/works/12345678','single':'https://用户名.lofter.com/post/xxx','author-img':'https://用户名.lofter.com/','lst':'https://用户名.lofter.com/'};
+            const url = urls[panel] || urls['lst'];
+            console.log(mi('rocket_launch')+` 启动任务: ${type}`);
+            return startTask(type, {url, urls:[url], mode: AppState.currentMode, author_url: url});
+        },
+        stopTask() {
+            fetch(API_BASE + '/api/task/stop', {method:'POST'});
+            return '⏹️ 已发送停止请求';
+        },
+        fillUrl(url) {
+            const map = {lst:'lstUrl','author-img':'authorImgUrl','author-txt':'authorTxtUrl','single':'singleUrls','ao3':'ao3Urls'};
+            const elId = map[AppState.currentPanel];
+            if (!elId) return '当前面板没有链接输入框';
+            const el = document.getElementById(elId);
+            if (!el) return '找不到输入框: ' + elId;
+            el.value = url;
+            return mi('check_circle')+` 已填入: ${url}`;
+        },
+        fillTestUrl() {
+            const urls = {
+                lst: 'https://test-user.lofter.com/',
+                'author-img': 'https://test-user.lofter.com/',
+                'author-txt': 'https://test-user.lofter.com/',
+                single: 'https://test-user.lofter.com/post/12345',
+                ao3: 'https://archiveofourown.org/works/12345678'
+            };
+            return this.fillUrl(urls[AppState.currentPanel] || urls.lst);
+        },
+
+        // UI
+        toggleDark() { setTheme(document.body.classList.contains('dark-mode') ? 'light' : 'dark'); return document.body.classList.contains('dark-mode') ? mi('dark_mode')+' 深色模式' : mi('light_mode')+' 浅色模式'; },
+        setTheme(name) { setTheme(name); return mi('palette')+' 主题: ' + (THEMES[name]?.label || name); },
+        listThemes() { console.table(THEMES); return THEMES; },
+        notify(msg, type) { showNotification(msg || '测试通知', type || 'info'); return mi('check_circle')+` 通知: ${msg}`; },
+        checkUpdate() { checkForUpdates(false); return mi('search')+' 检查中...'; },
+
+        // 系统
+        state() {
+            const s = {...AppState, devMode, version: APP_VERSION};
+            console.table(s);
+            return s;
+        },
+        async testApi() {
+            try {
+                const res = await fetch(API_BASE + '/api/config');
+                const data = await res.json();
+                console.log(mi('check_circle')+' API 连接成功:', data);
+                return data;
+            } catch (e) {
+                console.error(mi('error')+' API 连接失败:', e);
+                return null;
+            }
+        },
+        async getHistory(page) {
+            try {
+                const res = await fetch(`${API_BASE}/api/history?page=${page||1}`);
+                const data = await res.json();
+                console.table(data.items);
+                return data;
+            } catch (e) {
+                console.error(mi('error')+' 获取历史失败:', e);
+                return null;
+            }
+        },
+        async getConfig() {
+            try {
+                const res = await fetch(API_BASE + '/api/config');
+                const data = await res.json();
+                console.table(data);
+                return data;
+            } catch (e) {
+                console.error(mi('error')+' 获取配置失败:', e);
+                return null;
+            }
+        }
+    };
+
+    showNotification(mi('build')+' 开发者模式已启用 — 在控制台输入 dev.help() 查看命令', 'info', 5000);
+    console.log('%c'+mi('build')+' 开发者模式已启用 — 输入 dev.help() 查看所有命令', 'color:#00bcd4;font-size:14px;font-weight:bold');
+}
+
+function disableDevMode() {
+    devMode = false;
+    localStorage.removeItem('loarchive_dev_mode');
+    const help = document.getElementById('devModeHelp');
+    if (help) help.style.display = 'none';
+    const indicator = document.getElementById('devIndicator');
+    if (indicator) indicator.remove();
+    delete window.dev;
+    showNotification('开发者模式已关闭', 'info');
+}
+
+/* 主题切换功能 */
+const THEMES = {light: {label: '默认', class: ''}, dark: {label: '深色', class: 'dark-mode'}, bw: {label: '黑白块', class: 'bw-mode'}};
+
+function initTheme() {
+    const saved = localStorage.getItem('loarchive_theme') || 'light';
+    applyTheme(saved, false);
+}
+
+function setTheme(name) {
+    if (!THEMES[name]) return;
+    applyTheme(name, true);
+}
+
+function applyTheme(name, notify) {
+    // 清除所有主题 class
+    document.body.classList.remove('dark-mode', 'bw-mode');
+    // 应用新主题
+    const theme = THEMES[name];
+    if (theme.class) document.body.classList.add(theme.class);
+    // 更新选择卡片
+    document.querySelectorAll('#themeCards .theme-card').forEach(c => {
+        c.classList.toggle('selected', c.dataset.theme === name);
+    });
+    // 持久化
+    localStorage.setItem('loarchive_theme', name);
+    if (notify) showNotification('已切换到' + theme.label + '主题', 'success');
 }
 async function saveAppSettings(){
     const autoDedup=document.getElementById('autoDedupToggle').checked;
@@ -706,89 +1083,136 @@ async function browseSavePath(){
     }
 }
 /* 下载历史功能 */
-let historyPage=1;
-async function loadHistory(page=1){
-    historyPage=page;
-    const search=document.getElementById('historySearch').value;
-    const filter=document.getElementById('historyFilter').value;
-    try{
-        const res=await fetch(`${API_BASE}/api/history?page=${page}&search=${encodeURIComponent(search)}&type=${filter}`);
-        if(!res.ok)throw new Error('HTTP '+res.status);
-        const data=await res.json();
-        renderHistoryList(data.items);
-        renderHistoryStats(data.stats);
-        renderPagination(data.page,data.total_pages);
-    }catch(e){
-        showNotification('加载历史失败: '+e.message,'error');
+let historyPage = 1;
+
+async function loadHistory(page) {
+    if (page === undefined) page = historyPage;
+    historyPage = page;
+
+    const search = document.getElementById('historySearch').value.trim();
+    const filter = document.getElementById('historyFilter').value;
+    const source = document.getElementById('historySource').value;
+    const loading = document.getElementById('historyLoading');
+    const list = document.getElementById('historyList');
+
+    loading.style.display = 'block';
+    list.style.display = 'none';
+
+    try {
+        const params = new URLSearchParams({page, search, type: filter, source});
+        const res = await fetch(`${API_BASE}/api/history?${params}`);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+
+        loading.style.display = 'none';
+        list.style.display = 'block';
+
+        renderHistoryList(data.items, data.total);
+        renderHistoryStats(data.stats, data.page, data.per_page, data.total);
+        renderPagination(data.page, data.total_pages);
+    } catch (e) {
+        loading.style.display = 'none';
+        list.style.display = 'block';
+        list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--md3-error);">加载失败: ' + escapeHtml(e.message) + '</div>';
     }
 }
-function renderHistoryList(items){
-    const container=document.getElementById('historyList');
-    if(!items.length){
-        container.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);">暂无下载记录</div>';
+
+function renderHistoryList(items, total) {
+    const container = document.getElementById('historyList');
+    if (!items.length) {
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">' +
+            (total === 0 ? '<span class="mi">mark_email_read</span> 暂无下载记录' : '<span class="mi">search</span> 没有匹配的记录') + '</div>';
         return;
     }
-    container.innerHTML=items.map(item=>{
-        const icon=item.type==='image'?'🖼️':item.type==='ao3'?'📚':'📝';
-        const source=item.source==='ao3'?'AO3':'Lofter';
+    container.innerHTML = items.map(item => {
+        const icon = item.type === 'image' ? mi('image') : item.type === 'ao3' ? mi('auto_stories') : mi('edit_note');
+        const source = item.source === 'ao3' ? 'AO3' : 'Lofter';
+        const filePath = item.file_path ? escapeHtml(item.file_path) : '';
         return `<div class="history-item">
             <span class="history-icon">${icon}</span>
             <div class="history-info">
-                <div class="history-title">${escapeHtml(item.title||'未知标题')}</div>
+                <div class="history-title">${escapeHtml(item.title || '未知标题')}</div>
                 <div class="history-meta">
-                    <span>👤 ${escapeHtml(item.author||'未知作者')}</span>
-                    <span>📁 ${source}</span>
-                    <span>🕐 ${item.download_time||''}</span>
+                    <span><span class="mi">person</span> ${escapeHtml(item.author || '未知作者')}</span>
+                    <span><span class="mi">folder</span> ${source}</span>
+                    <span><span class="mi">schedule</span> ${item.download_time || ''}</span>
                 </div>
+                ${filePath ? `<div class="history-meta"><span><span class="mi">folder_open</span> ${filePath}</span></div>` : ''}
             </div>
             <div class="history-actions">
+                <button class="history-btn open" onclick="copyFilePath('${escapeHtml(item.file_path || '')}')">复制路径</button>
                 <button class="history-btn delete" onclick="deleteHistoryItem('${item.id}')">删除</button>
             </div>
         </div>`;
     }).join('');
 }
-function renderHistoryStats(stats){
-    const el=document.getElementById('historyStats');
-    if(el){
-        el.innerHTML=`📊 总计: <strong>${stats.total}</strong> 条 | 📷 图片: <strong>${stats.images}</strong> | 📝 文章: <strong>${stats.articles}</strong>`;
-    }
+
+function renderHistoryStats(stats, page, perPage, total) {
+    const el = document.getElementById('historyStats');
+    if (!el) return;
+    const start = (page - 1) * perPage + 1;
+    const end = Math.min(page * perPage, total);
+    el.innerHTML = total > 0
+        ? mi('bar_chart')+' 共 <strong>'+stats.total+'</strong> 条（'+start+'-'+end+'）| '+mi('add_photo_alternate')+' 图片 <strong>'+stats.images+'</strong> | '+mi('edit_note')+' 文章 <strong>'+stats.articles+'</strong>'
+        : mi('bar_chart')+' 暂无记录';
 }
-function renderPagination(current,total){
-    const container=document.getElementById('historyPagination');
-    if(total<=1){container.innerHTML='';return;}
-    let html='';
-    html+=`<button class="page-btn" onclick="loadHistory(${current-1})" ${current<=1?'disabled':''}>上一页</button>`;
-    for(let i=1;i<=total&&i<=5;i++){
-        html+=`<button class="page-btn ${i===current?'active':''}" onclick="loadHistory(${i})">${i}</button>`;
+
+function renderPagination(current, total) {
+    const container = document.getElementById('historyPagination');
+    if (total <= 1) { container.innerHTML = ''; return; }
+
+    let html = `<button class="page-btn" onclick="loadHistory(1)" ${current <= 1 ? 'disabled' : ''}>首页</button>`;
+    html += `<button class="page-btn" onclick="loadHistory(${current - 1})" ${current <= 1 ? 'disabled' : ''}>‹</button>`;
+
+    // 显示当前页附近的页码
+    let startP = Math.max(1, current - 2);
+    let endP = Math.min(total, current + 2);
+    if (startP > 1) html += '<span style="padding:0 6px;color:var(--text-muted);">…</span>';
+    for (let i = startP; i <= endP; i++) {
+        html += `<button class="page-btn ${i === current ? 'active' : ''}" onclick="loadHistory(${i})">${i}</button>`;
     }
-    html+=`<button class="page-btn" onclick="loadHistory(${current+1})" ${current>=total?'disabled':''}>下一页</button>`;
-    container.innerHTML=html;
+    if (endP < total) html += '<span style="padding:0 6px;color:var(--text-muted);">…</span>';
+
+    html += `<button class="page-btn" onclick="loadHistory(${current + 1})" ${current >= total ? 'disabled' : ''}>›</button>`;
+    html += `<button class="page-btn" onclick="loadHistory(${total})" ${current >= total ? 'disabled' : ''}>末页</button>`;
+    html += `<span style="margin-left:8px;font-size:12px;color:var(--text-muted);">共${total}页</span>`;
+    container.innerHTML = html;
 }
-async function deleteHistoryItem(id){
-    if(!confirm('确定删除这条记录吗？'))return;
-    try{
-        const res=await fetch(`${API_BASE}/api/history/delete/${id}`,{method:'DELETE'});
-        if(!res.ok)throw new Error('HTTP '+res.status);
-        showNotification('已删除','success');
+
+function copyFilePath(path) {
+    if (!path) return showNotification('无文件路径', 'warning');
+    navigator.clipboard.writeText(path).then(
+        () => showNotification('路径已复制', 'success'),
+        () => showNotification('复制失败', 'error')
+    );
+}
+
+async function deleteHistoryItem(id) {
+    if (!confirm('确定删除这条记录吗？')) return;
+    try {
+        const res = await fetch(`${API_BASE}/api/history/delete/${id}`, {method: 'DELETE'});
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        showNotification('已删除', 'success');
         loadHistory(historyPage);
-    }catch(e){
-        showNotification('删除失败: '+e.message,'error');
+    } catch (e) {
+        showNotification('删除失败: ' + e.message, 'error');
     }
 }
-async function clearHistory(){
-    if(!confirm('确定清空所有下载历史吗？此操作不可恢复！'))return;
-    try{
-        const res=await fetch(`${API_BASE}/api/history/clear`,{method:'POST'});
-        if(!res.ok)throw new Error('HTTP '+res.status);
-        showNotification('历史已清空','success');
+
+async function clearHistory() {
+    if (!confirm('确定清空所有下载历史吗？此操作不可恢复！')) return;
+    try {
+        const res = await fetch(`${API_BASE}/api/history/clear`, {method: 'POST'});
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        showNotification('历史已清空', 'success');
         loadHistory(1);
-    }catch(e){
-        showNotification('清空失败: '+e.message,'error');
+    } catch (e) {
+        showNotification('清空失败: ' + e.message, 'error');
     }
 }
 
 /* ========== 自动更新功能（GitHub API） ========== */
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.1.0';
 const GITHUB_REPO = 'Yar1991-Translation/LoArchive';
 let latestRelease = null;
 
@@ -810,9 +1234,9 @@ async function checkForUpdates(silent = false) {
         const latestVersion = release.tag_name.replace(/^v/, '');
         
         if (isNewerVersion(latestVersion, APP_VERSION)) {
-            showUpdateDialog(release, latestVersion);
+            showUpdateNotification(release, latestVersion);
         } else {
-            if (!silent) showNotification(`当前已是最新版本 v${APP_VERSION} ✓`, 'success');
+            if (!silent) showNotification(`当前已是最新版本 v${APP_VERSION} "+mi('check_circle')+"`, 'success');
         }
     } catch (e) {
         console.error('检查更新失败:', e);
@@ -830,65 +1254,53 @@ function isNewerVersion(latest, current) {
     return false;
 }
 
-function showUpdateDialog(release, newVersion) {
-    const existing = document.getElementById('update-overlay');
-    if (existing) existing.remove();
-    
-    const overlay = document.createElement('div');
-    overlay.id = 'update-overlay';
-    overlay.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:20000;backdrop-filter:blur(4px);`;
-    
+function showUpdateNotification(release, newVersion) {
+    const container = document.getElementById('toastContainer');
     const msiAsset = release.assets.find(a => a.name.endsWith('.msi'));
     const exeAsset = release.assets.find(a => a.name.endsWith('-setup.exe'));
     const downloadUrl = msiAsset?.browser_download_url || exeAsset?.browser_download_url || release.html_url;
-    
-    const dialog = document.createElement('div');
-    dialog.style.cssText = `background:var(--bg-card);border-radius:16px;padding:32px;max-width:500px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:slideUp 0.3s ease;`;
-    
-    const bodyHtml = release.body ? release.body
-        .replace(/^### (.+)$/gm, '<strong style="display:block;margin:8px 0 4px;">$1</strong>')
-        .replace(/^## (.+)$/gm, '<strong style="display:block;margin:12px 0 6px;">$1</strong>')
-        .replace(/^- (.+)$/gm, '• $1<br>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\n\n/g, '<br>') : '';
-    
-    dialog.innerHTML = `
-        <div style="text-align:center;margin-bottom:24px;">
-            <div style="font-size:48px;margin-bottom:16px;">🎉</div>
-            <h2 style="margin:0 0 8px;font-size:20px;color:var(--text-primary);">发现新版本！</h2>
-            <p style="margin:0;color:var(--text-muted);font-size:14px;">v${APP_VERSION} → <strong style="color:var(--primary);">v${newVersion}</strong></p>
+
+    const summary = release.body ? release.body
+        .split('\n').filter(l => l.trim() && !l.startsWith('#')).slice(0, 3).join('\n') : '';
+
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+        <span class="toast-icon"><span class="mi">celebration</span></span>
+        <div class="toast-body">
+            <div class="toast-title">发现新版本 v${newVersion}</div>
+            <div class="toast-text" style="white-space:pre-line;">${escapeHtml(summary || '点击查看更新详情')}</div>
+            <div class="toast-actions">
+                <button class="toast-btn primary" data-action="download"><span class="mi">download</span> 下载</button>
+                <button class="toast-btn secondary" data-action="github"><span class="mi">open_in_new</span> GitHub</button>
+                <button class="toast-btn secondary" data-action="dismiss">忽略</button>
+            </div>
         </div>
-        ${bodyHtml ? `<div style="background:var(--bg-secondary);border-radius:8px;padding:16px;margin-bottom:24px;max-height:200px;overflow-y:auto;">
-            <h4 style="margin:0 0 12px;font-size:14px;color:var(--text-primary);">📝 更新内容</h4>
-            <div style="font-size:13px;color:var(--text-secondary);line-height:1.8;">${bodyHtml}</div>
-        </div>` : ''}
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-            <button id="update-later" style="flex:1;min-width:100px;padding:12px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text-secondary);cursor:pointer;font-size:14px;">稍后提醒</button>
-            <button id="update-github" style="flex:1;min-width:100px;padding:12px;border:none;border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);cursor:pointer;font-size:14px;">📋 GitHub</button>
-            <button id="update-download" style="flex:1;min-width:100px;padding:12px;border:none;border-radius:8px;background:var(--primary);color:white;cursor:pointer;font-size:14px;font-weight:600;">⬇️ 下载</button>
-        </div>`;
-    
-    overlay.appendChild(dialog);
-    document.body.appendChild(overlay);
-    
-    if (!document.getElementById('update-anim-style')) {
-        const style = document.createElement('style');
-        style.id = 'update-anim-style';
-        style.textContent = `@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}`;
-        document.head.appendChild(style);
-    }
-    
-    document.getElementById('update-later').onclick = () => {
-        overlay.remove();
-        localStorage.setItem('loarchive_update_skip', Date.now().toString());
+        <button class="toast-close"><span class="mi" style="font-size:18px">close</span></button>`;
+
+    container.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+
+    toast.querySelector('.toast-close').onclick = () => {
+        toast.classList.remove('show');
+        toast.classList.add('hide');
+        setTimeout(() => toast.remove(), 400);
     };
-    document.getElementById('update-github').onclick = () => window.open(release.html_url, '_blank');
-    document.getElementById('update-download').onclick = () => {
+
+    toast.querySelector('[data-action="download"]').onclick = () => {
         window.open(downloadUrl, '_blank');
         showNotification('下载已开始，安装后请重启应用', 'success');
-        overlay.remove();
+        toast.querySelector('.toast-close').click();
     };
-    overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+
+    toast.querySelector('[data-action="github"]').onclick = () => {
+        window.open(release.html_url, '_blank');
+    };
+
+    toast.querySelector('[data-action="dismiss"]').onclick = () => {
+        localStorage.setItem('loarchive_update_skip', Date.now().toString());
+        toast.querySelector('.toast-close').click();
+    };
 }
 
 // 应用启动时检查更新
