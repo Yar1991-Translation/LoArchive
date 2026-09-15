@@ -71,7 +71,7 @@ jobs:
         run: npm ci
 
       - name: Build backend
-        run: python build_backend.py
+        run: python scripts/build_backend.py
 
       - name: Build Tauri app
         uses: tauri-apps/tauri-action@v0
