@@ -1,6 +1,7 @@
 """FastAPI 应用工厂与 uvicorn 启动入口。"""
 
 import os
+import sys
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -71,9 +72,22 @@ def create_app(data_dir: str | None = None, serve_frontend: bool = True) -> Fast
     return app
 
 
+def ensure_standard_streams() -> None:
+    """保证 stdout / stderr 可用。
+
+    PyInstaller 的窗口模式（--noconsole）下这两个流是 None，而 uvicorn 在配置
+    日志时会调用 sys.stdout.isatty()，导致应用启动即崩溃。这里退化为 os.devnull。
+    """
+    for name in ("stdout", "stderr"):
+        if getattr(sys, name, None) is None:
+            setattr(sys, name, open(os.devnull, "w", encoding="utf-8"))
+
+
 def run(host: str = "0.0.0.0", port: int = 5000) -> None:
     """以 uvicorn 启动应用（供 run.py / PyInstaller 入口调用）。"""
     import uvicorn
+
+    ensure_standard_streams()
 
     app = create_app()
 
