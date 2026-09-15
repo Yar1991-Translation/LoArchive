@@ -50,6 +50,12 @@ dir/
 my_downloads/
 *_save/
 
+# 旧的 CLI 工具（已由 loarchive/spiders 取代）
+web_app.py
+
+# 一次性迁移脚本 / 临时产物
+.refactor-tmp/
+
 # 旧的命令行工具（已弃用）
 l4_*.py
 l8_*.py
@@ -88,6 +94,12 @@ blogs_info
 # PyInstaller 构建文件
 loarchive-backend.spec
 *.spec
+
+# 测试与工具缓存
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
 # ==================== 发布包 ====================
 *.msi

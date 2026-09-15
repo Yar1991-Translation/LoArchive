@@ -65,7 +65,7 @@
 ### 方式二：源码运行（推荐开发者）
 
 **环境要求：**
-- Python 3.8+
+- Python 3.11+
 - Node.js 18+ (仅打包桌面应用需要)
 
 ```bash
@@ -77,10 +77,24 @@ cd LoArchive
 pip install -r requirements.txt
 
 # 启动 Web 界面
-python web_app.py
+python run.py
 ```
 
 访问 http://localhost:5000 即可使用。
+
+### 开发与测试
+
+```bash
+# 安装开发依赖（ruff + pytest）
+pip install -r requirements-dev.txt
+
+# 代码检查与格式检查
+ruff check .
+ruff format --check .
+
+# 运行测试
+pytest
+```
 
 ---
 
@@ -180,12 +194,48 @@ Lofter 需要登录后才能访问大部分内容，请按以下步骤获取授�
 
 ```
 LoArchive/
-├── web_app.py          # Flask 后端
-├── templates/          # 前端页面
-├── static/             # 静态资源
-├── src-tauri/          # Tauri 桌面应用
-└── dir/                # 下载内容目录
+├── run.py                  # 启动入口
+├── loarchive/              # FastAPI 后端包
+│   ├── main.py             # 应用工厂 + uvicorn 入口
+│   ├── config.py           # 配置读写
+│   ├── history.py          # 下载历史
+│   ├── state.py            # 任务管理（线程 + 取消标志 + SSE 事件）
+│   ├── schemas.py          # Pydantic 请求模型
+│   ├── routers/            # API 路由（config / tasks / files / history）
+│   ├── spiders/            # 爬虫（lofter 单篇 / 作者 / 收藏，ao3）
+│   └── exporters/          # 导出（PDF / EPUB）
+├── frontend/               # 原生 ES Modules 前端（无构建步骤）
+│   ├── index.html
+│   ├── css/main.css
+│   └── js/                 # 按职责拆分的模块
+├── scripts/build_backend.py  # 打包 sidecar 可执行文件
+├── src-tauri/              # Tauri 桌面应用
+├── tests/                  # pytest 测试
+└── dir/                    # 下载内容目录
 ```
+
+### 后端接口
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET/POST | `/api/config` | 读取 / 保存 Lofter 登录信息（读取时授权码遮蔽返回） |
+| GET/POST | `/api/settings` | 读取 / 保存保存路径与开关项 |
+| POST | `/api/task/start` | 启动任务（参数按任务类型校验） |
+| GET | `/api/task/status` | 轮询任务状态（SSE 不可用时回退） |
+| GET | `/api/task/events` | SSE 实时推送日志与进度 |
+| POST | `/api/task/stop` | 请求停止任务 |
+| GET | `/api/files` | 列出已下载文件 |
+| GET | `/api/history` | 分页查询下载历史（支持类型 / 来源 / 搜索过滤） |
+| POST | `/api/history/clear` | 清空历史 |
+| DELETE | `/api/history/delete/{id}` | 删除单条历史 |
+| POST | `/api/history/check` | 检查 URL 是否已下载 |
+
+交互式 API 文档：应用运行时访问 http://localhost:5000/docs
+
+### 数据存储位置
+
+- 源码运行：配置文件与下载历史保存在项目根目录（`loarchive_config.json`、`download_history.json`）。
+- 打包运行：保存在用户数据目录（Windows 为 `%APPDATA%\LoArchive`），首次启动会自动导入安装目录旁的旧配置，不会覆盖已有数据。
 
 ### 构建桌面应用
 
@@ -212,6 +262,11 @@ npm run tauri build
 - PDF 导出功能
 - Tauri 桌面应用
 - 新手引导功能
+
+### 已知限制
+
+- PDF 导出依赖 xhtml2pdf，当前版本不支持 `@page` 内的页码框（`@bottom-center`），因此导出的 PDF 不含页码。
+- Lofter 的 Tag 抓取上限为最新 1099 条、热度榜 500 条；喜欢/推荐/Tag 模式单次最多抓取 500 条。
 
 ---
 
