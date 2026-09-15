@@ -31,6 +31,49 @@ def test_frontend_assets_are_served(tmp_path):
         assert client.get("/js/api.js").status_code == 200
 
 
+def test_frontend_assets_require_revalidation(tmp_path):
+    """前端资源必须带 no-cache，否则浏览器会长时间复用旧样式/脚本。"""
+    from fastapi.testclient import TestClient
+
+    from loarchive.main import create_app
+
+    app = create_app(data_dir=str(tmp_path / "data"))
+    with TestClient(app) as client:
+        page = client.get("/")
+        css = client.get("/css/main.css")
+
+    assert page.headers.get("cache-control") == "no-cache"
+    assert css.headers.get("cache-control") == "no-cache"
+    # 接口响应不受影响
+    assert client.get("/api/task/status").headers.get("cache-control") is None
+
+
+def test_select_dropdown_arrow_background_is_not_reset_by_specificity():
+    """下拉箭头依赖 background-repeat/position/size 三个长属性。
+
+    `select.form-input` 的特异度是 (0,1,1)，而带伪类（(0,2,0)）或带主题祖先类
+    （(0,2,1)）的 `.form-input` 规则特异度更高，一旦这些规则使用 `background` 简写，
+    就会把上述长属性重置为初始值，箭头便平铺满整个下拉框。
+    基础规则 `.form-input { background: ... }` 特异度更低、随后被覆盖，属于合法写法。
+    """
+    import re
+    from pathlib import Path
+
+    css = (Path(__file__).resolve().parents[1] / "frontend" / "css" / "main.css").read_text(encoding="utf-8")
+    rules = re.findall(r"([^{}]*\.form-input[^{}]*)\{([^{}]*)\}", css)
+
+    assert any("select.form-input" in selector for selector, _ in rules), "未找到 select.form-input 基础规则"
+    assert "background-repeat: no-repeat" in css
+
+    higher_specificity = [
+        selector.strip()
+        for selector, declarations in rules
+        if any(token in selector for token in (":hover", ":focus", ":active", "bw-mode", "dark-mode"))
+        and re.search(r"(?m)^\s*background\s*:", declarations)
+    ]
+    assert not higher_specificity, f"这些规则用 background 简写重置了下拉箭头: {higher_specificity}"
+
+
 # ---------- 配置 / 设置 ----------
 
 

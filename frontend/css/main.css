@@ -274,13 +274,15 @@ body.bw-mode .form-card {
 body.bw-mode .form-input {
   border: 2px solid #000;
   border-radius: 0;
-  background: #fff;
+  /* 必须用 background-color：background 简写会把 select 下拉箭头的
+     background-repeat/position/size 一并重置为初始值，导致箭头平铺满整个下拉框 */
+  background-color: #fff;
 }
 body.bw-mode .form-input:focus {
   box-shadow: 4px 4px 0 #000;
 }
 body.bw-mode .form-input:hover {
-  background: #f8f8f8;
+  background-color: #f8f8f8;
 }
 body.bw-mode select.form-input {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
@@ -902,11 +904,13 @@ body {
   appearance: none;
 }
 .form-input:hover {
-  background: var(--md3-secondary-container);
+  /* 用 background-color 而非 background 简写：简写的特异度会覆盖
+     select.form-input 的 background-repeat/position/size，导致下拉箭头平铺 */
+  background-color: var(--md3-secondary-container);
 }
 .form-input:focus {
   outline: none;
-  background: var(--md3-surface);
+  background-color: var(--md3-surface);
   border-color: var(--md3-primary);
   box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.15);
 }

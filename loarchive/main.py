@@ -50,6 +50,20 @@ def create_app(data_dir: str | None = None, serve_frontend: bool = True) -> Fast
         allow_headers=["*"],
     )
 
+    @app.middleware("http")
+    async def revalidate_frontend_assets(request, call_next):
+        """前端资源要求每次使用前回源校验。
+
+        前端是无构建、无版本号的文件（index.html / main.css / js 模块），静态挂载
+        默认只给 ETag 与 Last-Modified，浏览器会按启发式规则长时间复用缓存，
+        导致升级应用后 UI 修复不生效。no-cache 表示「用前必须校验」，
+        内容未变时仍返回 304，本地服务下开销可忽略。
+        """
+        response = await call_next(request)
+        if not request.url.path.startswith("/api/"):
+            response.headers["Cache-Control"] = "no-cache"
+        return response
+
     app.include_router(config_router.router)
     app.include_router(tasks_router.router)
     app.include_router(files_router.router)
