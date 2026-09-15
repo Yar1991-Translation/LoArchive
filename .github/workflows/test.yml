@@ -34,3 +34,6 @@ jobs:
 
       - name: Test (pytest)
         run: pytest -q
+
+      - name: Check frontend module graph
+        run: node scripts/check_esm.mjs

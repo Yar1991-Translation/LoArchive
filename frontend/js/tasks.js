@@ -140,13 +140,22 @@ export function startPolling() {
 /* ========== 任务事件：SSE 实时推送，失败时回退轮询 ========== */
 export function startTaskEvents() {
   startTaskEventStream({
-    onSnapshot: (data) => renderStatus(data),
+    // 快照是权威状态：短任务可能在订阅建立前就结束，done 事件会错过，
+    // 因此这里也要按「已结束」收尾（与轮询回退的判定条件保持一致）。
+    onSnapshot: (data) => {
+      renderStatus(data);
+      if (!data.running && data.progress >= 100) finishTask();
+    },
     onLog: ({ line, message }) => {
       appendLogLine(line);
       setProgressMessage(message);
     },
     onProgress: ({ progress }) => setProgressPercent(progress),
-    onDone: () => finishTask(),
+    onDone: (data) => {
+      // done 事件携带最终状态（进度 100 / 最终消息 / 完整日志），先渲染再收尾
+      if (data) renderStatus(data);
+      finishTask();
+    },
     onFallback: () => startPolling(),
   });
 }

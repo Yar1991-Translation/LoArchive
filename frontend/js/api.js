@@ -6,4 +6,4 @@ export function getApiBase() {
     navigator.userAgent.includes("Tauri");
   return isTauri ? "http://localhost:5000" : "";
 }
-const API_BASE = getApiBase();
+export const API_BASE = getApiBase();
