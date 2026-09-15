@@ -1,0 +1,24 @@
+[project]
+name = "loarchive"
+version = "1.1.0"
+description = "LoArchive - Lofter & AO3 content archiving tool"
+requires-python = ">=3.11"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+src = ["loarchive", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4"]
+ignore = [
+    "E501",   # line length handled by review; spider regexes/templates are long
+    "B008",   # FastAPI Depends(...) idiom
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["loarchive"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
