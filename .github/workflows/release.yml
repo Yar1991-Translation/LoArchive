@@ -4,9 +4,15 @@ on:
   push:
     branches:
       - master
+    # pre-release（dev/beta/rc）通过打 tag 触发，无需合并到 master
+    tags:
+      - 'v*'
     paths-ignore:
       - '**.md'
       - '.gitignore'
+
+  # 允许在 Actions 页面手动重跑发布
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -27,16 +33,25 @@ jobs:
           $VERSION = (Get-Content src-tauri/tauri.conf.json | ConvertFrom-Json).version
           echo "version=$VERSION" >> $env:GITHUB_OUTPUT
           echo "Resolved version: $VERSION"
+
+          # 版本号含 "-"（如 1.2.0-dev.1）时发布为 pre-release
+          $IS_PRERELEASE = if ($VERSION -match '-') { 'true' } else { 'false' }
+          echo "prerelease=$IS_PRERELEASE" >> $env:GITHUB_OUTPUT
+          echo "Pre-release: $IS_PRERELEASE"
         shell: pwsh
 
       - name: Get commit messages since last tag
         id: changelog
         run: |
-          $LAST_TAG = git describe --tags --abbrev=0 2>$null
+          # 用 HEAD^ 取「上一个」tag：在 tag 触发的运行里，HEAD 自身就是本次 tag，
+          # 直接 git describe 会拿到自己，导致变更列表为空。
+          $LAST_TAG = git describe --tags --abbrev=0 HEAD^ 2>$null
           if ($LAST_TAG) {
             $COMMITS = git log "$LAST_TAG..HEAD" --pretty=format:"- %s"
+            echo "changelog base: $LAST_TAG"
           } else {
             $COMMITS = git log --pretty=format:"- %s" -20
+            echo "changelog base: none (using last 20 commits)"
           }
           if (-not $COMMITS) { $COMMITS = "- Initial release" }
           echo "commits<<EOF" >> $env:GITHUB_OUTPUT
@@ -110,4 +125,4 @@ jobs:
             ---
             <sub>构建时间: ${{ github.event.head_commit.timestamp }}</sub>
           releaseDraft: false
-          prerelease: false
+          prerelease: ${{ steps.version.outputs.prerelease == 'true' }}

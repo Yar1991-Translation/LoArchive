@@ -1,6 +1,6 @@
 {
   "name": "loarchive",
-  "version": "1.0.0",
+  "version": "1.2.0-dev.1",
   "description": "LoArchive - Lofter & AO3 内容存档工具",
   "main": "index.js",
   "scripts": {

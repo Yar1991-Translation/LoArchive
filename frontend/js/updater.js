@@ -2,7 +2,7 @@ import { mi } from "./icons.js";
 import { escapeHtml, showNotification } from "./ui.js";
 
 /* ========== 自动更新功能（GitHub API） ========== */
-export const APP_VERSION = "1.1.0";
+export const APP_VERSION = "1.2.0-dev.1";
 const GITHUB_REPO = "Yar1991-Translation/LoArchive";
 let latestRelease = null;
 
@@ -41,8 +41,11 @@ export async function checkForUpdates(silent = false) {
 }
 
 export function isNewerVersion(latest, current) {
-  const l = latest.split(".").map(Number);
-  const c = current.split(".").map(Number);
+  // 比较主版本号数字部分，忽略 -dev.1 / -beta.1 这类 pre-release 后缀，
+  // 否则 dev 构建无法识别同版本的正式发布（"1.2.0" 应被视为新于 "1.2.0-dev.1"）。
+  const numericParts = (version) => version.split("-")[0].split("+")[0].split(".").map(Number);
+  const l = numericParts(latest);
+  const c = numericParts(current);
   for (let i = 0; i < Math.max(l.length, c.length); i++) {
     if ((l[i] || 0) > (c[i] || 0)) return true;
     if ((l[i] || 0) < (c[i] || 0)) return false;
