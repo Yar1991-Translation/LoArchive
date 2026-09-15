@@ -1,5 +1,6 @@
 """EPUB 电子书生成（ebooklib）。"""
 
+import os
 import uuid
 
 
@@ -81,8 +82,12 @@ def generate_epub(title, author, content_parts, chapters_info, metadata_list, fi
         book.add_item(epub.EpubNav())
         book.spine = ["nav"] + chapters
 
-        # 保存
+        # 保存。ebooklib 当前版本会吞掉写入异常，因此这里显式校验产物是否落盘，
+        # 避免上层的“已生成 EPUB”日志与实际结果不符。
         epub.write_epub(filepath, book)
+        if not os.path.exists(filepath):
+            log(f"EPUB生成失败: 文件未写入 {filepath}")
+            return False
         return True
     except Exception as e:
         log(f"EPUB生成失败: {e}")

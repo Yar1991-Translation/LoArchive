@@ -87,7 +87,9 @@ def parse_archive_records(all_blog_info: list) -> list:
     for blog_info in all_blog_info:
         try:
             img_url_match = re.findall(r'[\d]*.imgurl="(.*?)"', blog_info)
-            blog_index = re.search(r's[\d]*.permalink="(.*)"', blog_info).group(1)
+            # 非贪婪匹配：原实现用 (.*) 依赖 permalink 是记录最后一个字段，
+            # 字段顺序变化时会吞掉后续内容，此处收紧为 (.*?)
+            blog_index = re.search(r's[\d]*.permalink="(.*?)"', blog_info).group(1)
             timestamp = re.search(r"s[\d]*.time=(\d*);", blog_info).group(1)
             dt_time = time.strftime("%Y-%m-%d", time.localtime(int(int(timestamp) / 1000)))
             records.append(

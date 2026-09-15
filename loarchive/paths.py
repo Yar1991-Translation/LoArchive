@@ -42,3 +42,38 @@ def get_data_dir() -> str:
 
 CONFIG_FILENAME = "loarchive_config.json"
 HISTORY_FILENAME = "download_history.json"
+
+
+def get_executable_dir() -> str:
+    """可执行文件所在目录（打包环境用于查找旧版配置）。"""
+    if is_frozen():
+        return os.path.dirname(os.path.abspath(sys.executable))
+    return PROJECT_ROOT
+
+
+def migrate_legacy_data(data_dir: str) -> list:
+    """把安装目录旁的旧版配置文件导入新的数据目录（仅打包环境）。
+
+    只在目标文件不存在时复制，绝不覆盖已有数据，也不删除源文件。
+    返回实际迁移的文件名列表。
+    """
+    import shutil
+
+    if not is_frozen():
+        return []
+
+    executable_dir = get_executable_dir()
+    if os.path.abspath(executable_dir) == os.path.abspath(data_dir):
+        return []
+
+    migrated = []
+    for filename in (CONFIG_FILENAME, HISTORY_FILENAME):
+        source = os.path.join(executable_dir, filename)
+        target = os.path.join(data_dir, filename)
+        if os.path.exists(source) and not os.path.exists(target):
+            try:
+                shutil.copy2(source, target)
+                migrated.append(filename)
+            except Exception as e:
+                print(f"迁移旧配置失败 {filename}: {e}")
+    return migrated

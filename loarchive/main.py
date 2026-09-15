@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from . import __version__
 from .config import ConfigStore
 from .history import HistoryManager
-from .paths import CONFIG_FILENAME, HISTORY_FILENAME, get_data_dir, get_resource_path
+from .paths import CONFIG_FILENAME, HISTORY_FILENAME, get_data_dir, get_resource_path, migrate_legacy_data
 from .routers import config as config_router
 from .routers import files as files_router
 from .routers import history as history_router
@@ -24,6 +24,12 @@ def create_app(data_dir: str | None = None, serve_frontend: bool = True) -> Fast
     serve_frontend: 是否托管 frontend/ 静态文件（浏览器开发模式）。
     """
     data_dir = data_dir or get_data_dir()
+    os.makedirs(data_dir, exist_ok=True)
+
+    # 打包环境首次启动时，导入安装目录旁的旧版配置/历史（不覆盖已有数据）
+    migrated = migrate_legacy_data(data_dir)
+    if migrated:
+        print(f"已迁移旧版数据到 {data_dir}: {', '.join(migrated)}")
 
     config_store = ConfigStore(os.path.join(data_dir, CONFIG_FILENAME))
     history = HistoryManager(os.path.join(data_dir, HISTORY_FILENAME))

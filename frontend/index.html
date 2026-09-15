@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoArchive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <!-- 新手引导 -->
+  <div class="onboarding-overlay" id="onboarding">
+    <div class="onboarding-modal">
+      <div class="onboarding-header">
+        <div class="onboarding-logo">
+          <svg
+            width="56"
+            height="56"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path
+              d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+            />
+            <line x1="8" y1="7" x2="16" y2="7" />
+            <line x1="8" y1="11" x2="13" y2="11" />
+          </svg>
+        </div>
+        <h2 class="onboarding-welcome">欢迎使用 LoArchive</h2>
+        <p class="onboarding-subtitle">Lofter & AO3 内容存档工具</p>
+      </div>
+      <div class="onboarding-content">
+        <!-- 步骤 1: 功能介绍 -->
+        <div class="onboarding-steps active" data-step="1">
+          <h3 class="step-title"><span class="step-number">1</span>主要功能</h3>
+          <div class="step-features">
+            <div class="feature-item">
+              <span class="feature-icon"><span class="mi">favorite</span></span>
+              <div class="feature-text">
+                <h4>Lofter 内容爬取</h4>
+                <p>保存喜欢、推荐、Tag 内容，支持图片和文章批量下载</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon"
+                ><span class="mi">auto_stories</span></span
+              >
+              <div class="feature-text">
+                <h4>AO3 文章下载</h4>
+                <p>下载 AO3 作品、系列、作者全部文章，支持导出 PDF</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon"><span class="mi">bookmark</span></span>
+              <div class="feature-text">
+                <h4>PDF 导出</h4>
+                <p>将下载的内容转换为精美排版的 PDF 文件</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 步骤 2: 配置说明 -->
+        <div class="onboarding-steps" data-step="2">
+          <h3 class="step-title">
+            <span class="step-number">2</span>配置登录信息
+          </h3>
+          <div class="step-features">
+            <div class="feature-item">
+              <span class="feature-icon"><span class="mi">key</span></span>
+              <div class="feature-text">
+                <h4>获取授权码</h4>
+                <p>
+                  打开 Lofter 网页版 → 按 F12 打开开发者工具 → Application →
+                  Cookies
+                </p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon"
+                ><span class="mi">edit_note</span></span
+              >
+              <div class="feature-text">
+                <h4>填写配置</h4>
+                <p>在「设置」页面选择登录方式，粘贴对应的授权码</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon"
+                ><span class="mi">auto_awesome</span></span
+              >
+              <div class="feature-text">
+                <h4>AO3 无需配置</h4>
+                <p>AO3 功能无需登录，可直接使用</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 步骤 3: 使用指南 -->
+        <div class="onboarding-steps" data-step="3">
+          <h3 class="step-title"><span class="step-number">3</span>开始使用</h3>
+          <div class="step-features">
+            <div class="feature-item">
+              <span class="feature-icon"><span class="mi mi-num">1</span></span>
+              <div class="feature-text">
+                <h4>选择功能</h4>
+                <p>从左侧菜单选择需要的功能模块</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon"><span class="mi mi-num">2</span></span>
+              <div class="feature-text">
+                <h4>填写链接</h4>
+                <p>粘贴要爬取的页面链接，可选择保存格式</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon"><span class="mi mi-num">3</span></span>
+              <div class="feature-text">
+                <h4>开始爬取</h4>
+                <p>点击按钮开始，文件保存在 ./dir 目录</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="onboarding-footer">
+        <div class="onboarding-dots">
+          <div class="onboarding-dot active" data-step="1"></div>
+          <div class="onboarding-dot" data-step="2"></div>
+          <div class="onboarding-dot" data-step="3"></div>
+        </div>
+        <div class="onboarding-btns">
+          <button class="onboarding-btn secondary" id="onboarding-skip">
+            跳过
+          </button>
+          <button class="onboarding-btn primary" id="onboarding-next">
+            下一步 →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 通知容器 -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- 标题栏 -->
+  <div class="titlebar" id="titlebar">
+    <div class="titlebar-left">
+      <div class="titlebar-logo">
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          <path
+            d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+          />
+          <line x1="8" y1="7" x2="16" y2="7" />
+          <line x1="8" y1="11" x2="13" y2="11" />
+        </svg>
+      </div>
+      <span class="titlebar-title">LoArchive</span>
+    </div>
+    <div class="titlebar-controls">
+      <button
+        class="titlebar-btn btn-minimize"
+        id="btn-minimize"
+        title="最小化"
+      >
+        <svg viewBox="0 0 12 12">
+          <line x1="2" y1="6" x2="10" y2="6" />
+        </svg>
+      </button>
+      <button
+        class="titlebar-btn btn-maximize"
+        id="btn-maximize"
+        title="最大化"
+      >
+        <svg viewBox="0 0 12 12">
+          <rect x="2" y="2" width="8" height="8" rx="1.5" />
+        </svg>
+      </button>
+      <button class="titlebar-btn btn-close" id="btn-close" title="关闭">
+        <svg viewBox="0 0 12 12">
+          <line x1="3" y1="3" x2="9" y2="9" />
+          <line x1="9" y1="3" x2="3" y2="9" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- 主容器 -->
+  <div class="app-container">
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path
+                d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+              />
+              <line x1="8" y1="7" x2="16" y2="7" />
+              <line x1="8" y1="11" x2="13" y2="11" />
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h1>LoArchive</h1>
+            <p>Lofter & AO3 存档工具</p>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Lofter</div>
+
+        <div class="nav-item active" data-panel="lst">
+          <span class="nav-icon"><span class="mi">favorite</span></span>
+          <span class="nav-label">喜欢 / 推荐 / Tag</span>
+        </div>
+        <div class="nav-item" data-panel="author-img">
+          <span class="nav-icon"><span class="mi">image</span></span>
+          <span class="nav-label">作者图片</span>
+        </div>
+        <div class="nav-item" data-panel="author-txt">
+          <span class="nav-icon"><span class="mi">edit_note</span></span>
+          <span class="nav-label">作者文章</span>
+        </div>
+        <div class="nav-item" data-panel="single">
+          <span class="nav-icon"><span class="mi">attach_file</span></span>
+          <span class="nav-label">单篇保存</span>
+        </div>
+
+        <div class="nav-section-title">AO3</div>
+
+        <div class="nav-item" data-panel="ao3">
+          <span class="nav-icon"><span class="mi">auto_stories</span></span>
+          <span class="nav-label">AO3 文章</span>
+        </div>
+
+        <div class="nav-section-title">系统</div>
+
+        <div class="nav-item" data-panel="history">
+          <span class="nav-icon"><span class="mi">content_paste</span></span>
+          <span class="nav-label">下载历史</span>
+        </div>
+        <div class="nav-item" data-panel="settings">
+          <span class="nav-icon"><span class="mi">settings</span></span>
+          <span class="nav-label">设置</span>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="status-card">
+          <div class="status-row">
+            <span class="status-label">运行状态</span>
+            <span class="status-value" id="statusText">
+              <span class="status-dot" id="statusDot"></span>
+              <span id="statusLabel">就绪</span>
+            </span>
+          </div>
+          <div class="status-row">
+            <span class="status-label">登录状态</span>
+            <span class="status-value" id="authStatus">未配置</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 主内容 -->
+    <main class="main-content">
+      <!-- 喜欢/推荐/Tag 面板 -->
+      <div class="panel active" id="panel-lst">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span class="panel-title-icon"
+              ><span class="mi">favorite</span></span
+            >
+            喜欢 / 推荐 / Tag
+          </h2>
+        </div>
+
+        <div class="mode-cards">
+          <div class="mode-card selected" data-mode="like2">
+            <div class="mode-card-icon"><span class="mi">favorite</span></div>
+            <div class="mode-card-name">我的喜欢</div>
+          </div>
+          <div class="mode-card" data-mode="share">
+            <div class="mode-card-icon"><span class="mi">outbox</span></div>
+            <div class="mode-card-name">我的推荐</div>
+          </div>
+          <div class="mode-card" data-mode="tag">
+            <div class="mode-card-icon"><span class="mi">sell</span></div>
+            <div class="mode-card-name">Tag 内容</div>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-group">
+            <label class="form-label">链接地址</label>
+            <input
+              type="text"
+              class="form-input"
+              id="lstUrl"
+              placeholder="https://你的用户名.lofter.com/ 或 Tag 链接"
+            />
+            <p class="form-hint">
+              <span class="mi">lightbulb</span>
+              喜欢/推荐模式填写个人主页链接，Tag 模式填写 Tag 页面链接
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">保存内容</label>
+            <div class="checkbox-group">
+              <label class="checkbox-item">
+                <input type="checkbox" id="saveImg" checked />
+                <span><span class="mi">add_photo_alternate</span> 图片</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="saveArticle" checked />
+                <span><span class="mi">description</span> 文章</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="saveText" checked />
+                <span><span class="mi">edit_note</span> 文本</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="saveLong" checked />
+                <span><span class="mi">menu_book</span> 长文章</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="lstExportPdf" />
+                <span><span class="mi">bookmark</span> 导出PDF</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">开始时间（可选）</label>
+            <input
+              type="date"
+              class="form-input"
+              id="startTime"
+              style="max-width: 280px"
+            />
+          </div>
+
+          <button class="btn btn-primary btn-block" onclick="startLstTask()">
+            <span class="btn-icon"><span class="mi">rocket_launch</span></span>
+            开始爬取
+          </button>
+        </div>
+
+        <div class="progress-section" id="progressSection">
+          <div class="progress-card">
+            <div class="progress-header">
+              <span class="progress-title" id="progressMessage">准备中...</span>
+              <span class="progress-percent" id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                id="progressFill"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+
+          <div class="log-container" id="logContainer">
+            <div class="log-header">
+              <span class="log-header-title">
+                <span><span class="mi">content_paste</span></span>
+                运行日志
+              </span>
+            </div>
+            <div class="log-content" id="logContent"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 作者图片面板 -->
+      <div class="panel" id="panel-author-img">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span class="panel-title-icon"><span class="mi">image</span></span>
+            作者图片
+          </h2>
+        </div>
+        <div class="form-card">
+          <div class="form-group">
+            <label class="form-label">作者主页链接</label>
+            <input
+              type="text"
+              class="form-input"
+              id="authorImgUrl"
+              placeholder="https://用户名.lofter.com/"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">时间范围（可选）</label>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 14px;
+                max-width: 400px;
+              "
+            >
+              <input
+                type="date"
+                class="form-input"
+                id="imgStartTime"
+                placeholder="开始时间"
+              />
+              <input
+                type="date"
+                class="form-input"
+                id="imgEndTime"
+                placeholder="结束时间"
+              />
+            </div>
+          </div>
+          <button
+            class="btn btn-primary btn-block"
+            onclick="startAuthorImgTask()"
+          >
+            <span class="btn-icon"><span class="mi">rocket_launch</span></span>
+            开始爬取
+          </button>
+        </div>
+      </div>
+
+      <!-- 作者文章面板 -->
+      <div class="panel" id="panel-author-txt">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span class="panel-title-icon"
+              ><span class="mi">edit_note</span></span
+            >
+            作者文章
+          </h2>
+        </div>
+        <div class="form-card">
+          <div class="form-group">
+            <label class="form-label">作者主页链接</label>
+            <input
+              type="text"
+              class="form-input"
+              id="authorTxtUrl"
+              placeholder="https://用户名.lofter.com/"
+            />
+          </div>
+          <button
+            class="btn btn-primary btn-block"
+            onclick="startAuthorTxtTask()"
+          >
+            <span class="btn-icon"><span class="mi">rocket_launch</span></span>
+            开始爬取
+          </button>
+        </div>
+      </div>
+
+      <!-- 单篇保存面板 -->
+      <div class="panel" id="panel-single">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span class="panel-title-icon"
+              ><span class="mi">attach_file</span></span
+            >
+            单篇保存
+          </h2>
+        </div>
+        <div class="mode-cards">
+          <div class="mode-card selected" data-single-mode="img">
+            <div class="mode-card-icon"><span class="mi">image</span></div>
+            <div class="mode-card-name">保存图片</div>
+          </div>
+          <div class="mode-card" data-single-mode="txt">
+            <div class="mode-card-icon"><span class="mi">edit_note</span></div>
+            <div class="mode-card-name">保存文章</div>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="form-group">
+            <label class="form-label">博客链接（每行一个）</label>
+            <textarea
+              class="form-input"
+              id="singleUrls"
+              rows="5"
+              placeholder="https://用户名.lofter.com/post/xxx&#10;https://用户名.lofter.com/post/yyy"
+            ></textarea>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="startSingleTask()">
+            <span class="btn-icon"><span class="mi">rocket_launch</span></span>
+            开始保存
+          </button>
+        </div>
+      </div>
+
+      <!-- AO3 面板 -->
+      <div class="panel" id="panel-ao3">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span class="panel-title-icon"
+              ><span class="mi">auto_stories</span></span
+            >
+            AO3 文章
+          </h2>
+        </div>
+        <div class="mode-cards">
+          <div class="mode-card selected" data-ao3-mode="work">
+            <div class="mode-card-icon"><span class="mi">menu_book</span></div>
+            <div class="mode-card-name">单篇作品</div>
+          </div>
+          <div class="mode-card" data-ao3-mode="series">
+            <div class="mode-card-icon">
+              <span class="mi">auto_stories</span>
+            </div>
+            <div class="mode-card-name">系列</div>
+          </div>
+          <div class="mode-card" data-ao3-mode="author">
+            <div class="mode-card-icon"><span class="mi">person</span></div>
+            <div class="mode-card-name">作者</div>
+          </div>
+          <div class="mode-card" data-ao3-mode="tag">
+            <div class="mode-card-icon"><span class="mi">sell</span></div>
+            <div class="mode-card-name">Tag</div>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="form-group">
+            <label class="form-label">AO3 链接（每行一个）</label>
+            <textarea
+              class="form-input"
+              id="ao3Urls"
+              rows="4"
+              placeholder="https://archiveofourown.org/works/12345678"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">最大页数</label>
+            <input
+              type="number"
+              class="form-input"
+              id="ao3MaxPages"
+              value="5"
+              min="1"
+              max="50"
+              style="max-width: 140px"
+            />
+            <p class="form-hint">
+              <span class="mi">lightbulb</span> 用于
+              Tag/作者模式，限制爬取的页数
+            </p>
+          </div>
+          <div class="form-group">
+            <label class="form-label">下载选项</label>
+            <div class="checkbox-group">
+              <label class="checkbox-item">
+                <input type="checkbox" id="ao3DownloadChapters" checked />
+                <span><span class="mi">bookmark</span> 全部章节</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="ao3SaveMetadata" checked />
+                <span><span class="mi">content_paste</span> 元数据</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="ao3ExportPdf" />
+                <span><span class="mi">description</span> 导出PDF</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" id="ao3ExportEpub" />
+                <span><span class="mi">menu_book</span> 导出EPUB</span>
+              </label>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="startAo3Task()">
+            <span class="btn-icon"><span class="mi">rocket_launch</span></span>
+            开始下载
+          </button>
+        </div>
+      </div>
+
+      <!-- 下载历史面板 -->
+      <div class="panel" id="panel-history">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span class="panel-title-icon"
+              ><span class="mi">content_paste</span></span
+            >
+            下载历史
+          </h2>
+        </div>
+
+        <div class="form-card" style="margin-bottom: 20px">
+          <div
+            style="
+              display: flex;
+              gap: 10px;
+              align-items: center;
+              flex-wrap: wrap;
+            "
+          >
+            <input
+              type="text"
+              class="form-input"
+              id="historySearch"
+              placeholder="搜索标题、作者或链接..."
+              style="flex: 1; min-width: 180px"
+              onkeydown="if (event.key === 'Enter') loadHistory(1);"
+            />
+            <select class="form-input" id="historyFilter" style="width: 120px">
+              <option value="">全部类型</option>
+              <option value="image">
+                <span class="mi">add_photo_alternate</span> 图片
+              </option>
+              <option value="article">
+                <span class="mi">edit_note</span> 文章
+              </option>
+              <option value="ao3">
+                <span class="mi">auto_stories</span> AO3
+              </option>
+            </select>
+            <select class="form-input" id="historySource" style="width: 120px">
+              <option value="">全部来源</option>
+              <option value="lofter">Lofter</option>
+              <option value="ao3">AO3</option>
+            </select>
+            <button
+              class="btn btn-primary"
+              onclick="loadHistory(1)"
+              style="padding: 12px 20px"
+            >
+              <span class="mi">search</span> 搜索
+            </button>
+            <button
+              class="btn btn-primary"
+              onclick="clearHistory()"
+              style="padding: 12px 20px; background: #e57373"
+            >
+              <span class="mi">delete_sweep</span> 清空
+            </button>
+          </div>
+          <div
+            id="historyStats"
+            style="margin-top: 14px; font-size: 13px; color: var(--text-muted)"
+          ></div>
+        </div>
+
+        <div class="form-card">
+          <div
+            id="historyLoading"
+            style="
+              display: none;
+              text-align: center;
+              padding: 30px;
+              color: var(--text-muted);
+            "
+          >
+            <div style="font-size: 24px; margin-bottom: 8px">
+              <span class="mi">hourglass_empty</span>
+            </div>
+            加载中...
+          </div>
+          <div
+            id="historyList"
+            style="max-height: 600px; overflow-y: auto"
+          ></div>
+          <div
+            id="historyPagination"
+            style="
+              margin-top: 16px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              gap: 6px;
+              flex-wrap: wrap;
+            "
+          ></div>
+        </div>
+      </div>
+
+      <!-- 设置面板 -->
+      <div class="panel" id="panel-settings">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span class="panel-title-icon"
+              ><span class="mi">settings</span></span
+            >
+            设置
+          </h2>
+        </div>
+
+        <div class="settings-section">
+          <h3 class="settings-title">
+            <span class="settings-title-icon"><span class="mi">key</span></span>
+            登录配置
+          </h3>
+          <div class="form-group">
+            <label class="form-label">登录方式</label>
+            <select class="form-input" id="loginKey" style="max-width: 320px">
+              <option value="LOFTER-PHONE-LOGIN-AUTH">手机号登录</option>
+              <option value="Authorization">Lofter ID 登录</option>
+              <option value="LOFTER_SESS">QQ/微信/微博登录</option>
+              <option value="NTES_SESS">邮箱登录</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">授权码</label>
+            <textarea
+              class="form-input"
+              id="loginAuth"
+              rows="3"
+              placeholder="从浏览器开发者工具获取"
+            ></textarea>
+            <p class="form-hint">
+              <span class="mi">lightbulb</span> 打开 Lofter → F12 → Application
+              → Cookies → 找到对应值
+            </p>
+          </div>
+          <button class="btn btn-primary" onclick="saveConfig()">
+            <span class="btn-icon"><span class="mi">save</span></span>
+            保存配置
+          </button>
+        </div>
+
+        <div class="settings-section">
+          <h3 class="settings-title">
+            <span class="settings-title-icon"
+              ><span class="mi">folder</span></span
+            >
+            存储设置
+          </h3>
+          <div class="form-group">
+            <label class="form-label">保存路径</label>
+            <div style="display: flex; gap: 12px; align-items: center">
+              <input
+                type="text"
+                class="form-input"
+                id="savePath"
+                placeholder="./dir"
+                style="flex: 1"
+              />
+              <button
+                class="btn btn-primary"
+                onclick="browseSavePath()"
+                style="padding: 12px 16px; white-space: nowrap"
+                title="选择文件夹"
+              >
+                <span class="mi">folder_open</span> 浏览
+              </button>
+              <button
+                class="btn btn-primary"
+                onclick="saveSavePath()"
+                style="padding: 12px 16px; white-space: nowrap"
+              >
+                <span class="mi">save</span> 保存
+              </button>
+            </div>
+            <p class="form-hint">
+              <span class="mi">lightbulb</span>
+              设置下载文件的保存目录，支持相对路径（如 ./dir）或绝对路径（如
+              D:\Downloads）
+            </p>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3 class="settings-title">
+            <span class="settings-title-icon"
+              ><span class="mi">palette</span></span
+            >
+            外观设置
+          </h3>
+          <div class="form-group">
+            <label class="form-label">主题风格</label>
+            <div class="theme-cards" id="themeCards">
+              <div
+                class="theme-card selected"
+                data-theme="light"
+                onclick="setTheme('light')"
+              >
+                <div class="theme-preview theme-preview-light">
+                  <div class="tp-bar"></div>
+                  <div class="tp-side"><div class="tp-dot"></div></div>
+                  <div class="tp-main">
+                    <div class="tp-block"></div>
+                    <div class="tp-line"></div>
+                  </div>
+                </div>
+                <span class="theme-card-label">默认</span>
+              </div>
+              <div
+                class="theme-card"
+                data-theme="dark"
+                onclick="setTheme('dark')"
+              >
+                <div class="theme-preview theme-preview-dark">
+                  <div class="tp-bar"></div>
+                  <div class="tp-side"><div class="tp-dot"></div></div>
+                  <div class="tp-main">
+                    <div class="tp-block"></div>
+                    <div class="tp-line"></div>
+                  </div>
+                </div>
+                <span class="theme-card-label">深色</span>
+              </div>
+              <div class="theme-card" data-theme="bw" onclick="setTheme('bw')">
+                <div class="theme-preview theme-preview-bw">
+                  <div class="tp-bar"></div>
+                  <div class="tp-side"><div class="tp-dot"></div></div>
+                  <div class="tp-main">
+                    <div class="tp-block"></div>
+                    <div class="tp-line"></div>
+                  </div>
+                </div>
+                <span class="theme-card-label">黑白块</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
+              <div>
+                <label class="form-label" style="margin-bottom: 0"
+                  >自动去重</label
+                >
+                <p class="form-hint" style="margin-top: 4px">
+                  跳过已下载的内容
+                </p>
+              </div>
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  id="autoDedupToggle"
+                  checked
+                  onchange="saveAppSettings()"
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3 class="settings-title">
+            <span class="settings-title-icon"
+              ><span class="mi">sync</span></span
+            >
+            软件更新
+          </h3>
+          <div class="form-group">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
+              <div>
+                <label class="form-label" style="margin-bottom: 0"
+                  >版本信息</label
+                >
+                <p class="form-hint" style="margin-top: 4px">
+                  当前版本：v1.1.0
+                </p>
+              </div>
+              <button
+                class="btn btn-primary"
+                onclick="checkForUpdates(false)"
+                style="padding: 12px 20px"
+              >
+                <span class="btn-icon"><span class="mi">search</span></span>
+                检查更新
+              </button>
+            </div>
+            <p class="form-hint" style="margin-top: 12px">
+              <span class="mi">lightbulb</span>
+              应用启动时会自动检查更新，也可以点击按钮手动检查
+            </p>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3 class="settings-title">
+            <span class="settings-title-icon"
+              ><span class="mi">menu_book</span></span
+            >
+            使用说明
+          </h3>
+          <div class="help-list">
+            <p>
+              <span class="mi mi-num">1</span> 首次使用请先在上方配置登录信息
+            </p>
+            <p><span class="mi mi-num">2</span> 从左侧选择对应的爬取功能</p>
+            <p><span class="mi mi-num">3</span> 填写链接后点击开始按钮</p>
+            <p>
+              <span class="mi mi-num">4</span> 下载的文件保存在
+              <code>./dir</code> 目录
+            </p>
+            <p><span class="mi mi-num">5</span> AO3 功能无需配置登录信息</p>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3 class="settings-title">
+            <span class="settings-title-icon"
+              ><span class="mi">build</span></span
+            >
+            开发者模式
+          </h3>
+          <div class="form-group">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
+              <div>
+                <label class="form-label" style="margin-bottom: 0"
+                  >启用开发者模式</label
+                >
+                <p class="form-hint" style="margin-top: 4px">
+                  开启后可在控制台中使用 <code>dev.*</code> 接口测试各控件
+                </p>
+              </div>
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  id="devModeToggle"
+                  onchange="toggleDevMode()"
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          <div id="devModeHelp" style="display: none; margin-top: 12px">
+            <div class="help-list">
+              <p>
+                <span class="mi">science</span> <code>dev.help()</code> —
+                查看所有可用命令
+              </p>
+              <p>
+                <span class="mi">sync</span>
+                <code>dev.switchPanel('ao3')</code> — 切换面板
+              </p>
+              <p>
+                <span class="mi">content_paste</span>
+                <code>dev.listPanels()</code> — 列出所有面板
+              </p>
+              <p>
+                <span class="mi">palette</span>
+                <code>dev.setMode('tag')</code> — 设置 LST 模式
+              </p>
+              <p>
+                <span class="mi">dark_mode</span>
+                <code>dev.toggleDark()</code> — 切换深色模式
+              </p>
+              <p>
+                <span class="mi">palette</span>
+                <code>dev.setTheme('bw')</code> — 设置主题(light|dark|bw)
+              </p>
+              <p>
+                <span class="mi">search</span> <code>dev.checkUpdate()</code> —
+                检查更新
+              </p>
+              <p>
+                <span class="mi">science</span>
+                <code>dev.notify('消息')</code> — 测试通知
+              </p>
+              <p>
+                <span class="mi">bar_chart</span> <code>dev.state()</code> —
+                查看应用状态
+              </p>
+              <p>
+                <span class="mi">cell_tower</span> <code>dev.testApi()</code> —
+                测试后端连接
+              </p>
+              <p>
+                <span class="mi">link</span>
+                <code>dev.fillUrl('https://...')</code> — 填入测试链接
+              </p>
+              <p>
+                <span class="mi">rocket_launch</span>
+                <code>dev.startTask('ao3')</code> — 启动测试任务
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

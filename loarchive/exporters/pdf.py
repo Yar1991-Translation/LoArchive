@@ -33,11 +33,6 @@ def generate_lofter_pdf(title, author, author_ip, public_time, url, content, pdf
         @page {{
             size: A4;
             margin: 2.5cm 2cm;
-            @bottom-center {{
-                content: counter(page);
-                font-size: 10pt;
-                color: #666;
-            }}
         }}
 
         body {{ font-family: STSong-Light, SimSun, serif; font-size: 12pt; line-height: 1.8; color: #333; }}
@@ -211,11 +206,6 @@ def build_ao3_html(title, author, work_url, metadata_list, content_parts, chapte
         @page {{
             size: A4;
             margin: 2.5cm 2cm;
-            @bottom-center {{
-                content: counter(page);
-                font-size: 10pt;
-                color: #666;
-            }}
         }}
 
         body {{

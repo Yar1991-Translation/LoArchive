@@ -44,24 +44,32 @@ def stop_task(manager: TaskManager = Depends(get_task_manager)):
 @router.get("/api/task/events")
 async def task_events(request: Request, manager: TaskManager = Depends(get_task_manager)):
     """SSE 事件流：实时推送日志 / 进度 / 状态快照。"""
-    q = manager.subscribe()
+    return EventSourceResponse(stream_task_events(request, manager))
 
-    async def event_generator():
-        try:
-            while True:
+
+async def stream_task_events(request: Request, manager: TaskManager):
+    """产出 SSE 事件：实时推送日志 / 进度 / 状态快照。
+
+    每秒醒来一次以便及时感知客户端断开；空闲约 15 秒发送一次心跳。
+    """
+    q = manager.subscribe()
+    idle_ticks = 0
+    try:
+        while True:
+            try:
+                event = await asyncio.to_thread(q.get, True, 1.0)
+            except Exception:
+                idle_ticks += 1
                 if await request.is_disconnected():
                     break
-                try:
-                    event = await asyncio.to_thread(q.get, True, 25.0)
-                except Exception:
-                    # 超时发送心跳，保持连接
+                if idle_ticks >= 15:
+                    idle_ticks = 0
                     yield {"event": "ping", "data": ""}
-                    continue
-                yield {
-                    "event": event["event"],
-                    "data": json.dumps(event["data"], ensure_ascii=False),
-                }
-        finally:
-            manager.unsubscribe(q)
-
-    return EventSourceResponse(event_generator())
+                continue
+            idle_ticks = 0
+            yield {
+                "event": event["event"],
+                "data": json.dumps(event["data"], ensure_ascii=False),
+            }
+    finally:
+        manager.unsubscribe(q)
