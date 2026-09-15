@@ -1,0 +1,82 @@
+"""FastAPI 应用工厂与 uvicorn 启动入口。"""
+
+import os
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+
+from . import __version__
+from .config import ConfigStore
+from .history import HistoryManager
+from .paths import CONFIG_FILENAME, HISTORY_FILENAME, get_data_dir, get_resource_path
+from .routers import config as config_router
+from .routers import files as files_router
+from .routers import history as history_router
+from .routers import tasks as tasks_router
+from .state import TaskManager
+
+
+def create_app(data_dir: str | None = None, serve_frontend: bool = True) -> FastAPI:
+    """创建 FastAPI 应用。
+
+    data_dir: 配置/历史文件目录（默认按环境自动解析；测试可注入临时目录）。
+    serve_frontend: 是否托管 frontend/ 静态文件（浏览器开发模式）。
+    """
+    data_dir = data_dir or get_data_dir()
+
+    config_store = ConfigStore(os.path.join(data_dir, CONFIG_FILENAME))
+    history = HistoryManager(os.path.join(data_dir, HISTORY_FILENAME))
+    task_manager = TaskManager(config_store, history)
+
+    app = FastAPI(title="LoArchive", version=__version__)
+    app.state.config_store = config_store
+    app.state.history = history
+    app.state.task_manager = task_manager
+
+    # Tauri webview 从应用内协议加载页面，跨域调用 localhost:5000
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    app.include_router(config_router.router)
+    app.include_router(tasks_router.router)
+    app.include_router(files_router.router)
+    app.include_router(history_router.router)
+
+    # 确保保存目录存在（与原启动行为一致）
+    save_path = config_store.get("save_path", "./dir")
+    for d in (save_path, os.path.join(save_path, "img"), os.path.join(save_path, "article")):
+        try:
+            os.makedirs(d, exist_ok=True)
+        except Exception as e:
+            print(f"创建保存目录失败 {d}: {e}")
+
+    if serve_frontend:
+        frontend_dir = get_resource_path("frontend")
+        if os.path.isdir(frontend_dir):
+            # 挂在最后：/api/* 路由优先，其余路径回退到静态文件（含 / -> index.html）
+            app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
+
+    return app
+
+
+def run(host: str = "0.0.0.0", port: int = 5000) -> None:
+    """以 uvicorn 启动应用（供 run.py / PyInstaller 入口调用）。"""
+    import uvicorn
+
+    app = create_app()
+
+    save_path = app.state.config_store.get("save_path", "./dir")
+    print("=" * 50)
+    print("LoArchive Web Application")
+    print("=" * 50)
+    print(f"保存路径: {save_path}")
+    print("Visit http://localhost:5000 to start")
+    print("=" * 50)
+
+    uvicorn.run(app, host=host, port=port, log_level="info")
