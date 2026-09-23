@@ -1,6 +1,6 @@
 {
   "name": "loarchive",
-  "version": "2.0.0-dev.1",
+  "version": "2.0.0",
   "description": "LoArchive - Lofter & AO3 内容存档工具",
   "type": "module",
   "scripts": {
