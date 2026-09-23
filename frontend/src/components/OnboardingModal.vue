@@ -2,6 +2,8 @@
 import { NModal, NButton } from "naive-ui";
 import { ref } from "vue";
 
+import AppLogo from "@/components/AppLogo.vue";
+
 const props = defineProps<{ show: boolean }>();
 const emit = defineEmits<{ done: [] }>();
 
@@ -62,7 +64,9 @@ function skip() {
   <NModal :show="props.show" :mask-closable="false" :close-on-esc="false" transform-origin="center">
     <div class="onboarding" role="dialog" aria-label="新手引导">
       <div class="onb-hero">
-        <span class="mi mi-filled onb-logo" aria-hidden="true">menu_book</span>
+        <span class="onb-logo">
+          <AppLogo :size="30" />
+        </span>
         <h2>欢迎使用 LoArchive</h2>
         <p>Lofter &amp; AO3 内容存档工具</p>
       </div>
@@ -115,9 +119,15 @@ function skip() {
 }
 
 .onb-logo {
-  font-size: 40px;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--la-radius);
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 10px;
-  display: inline-block;
 }
 
 .onb-hero h2 {

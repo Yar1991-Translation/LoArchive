@@ -11,18 +11,21 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
-            let app_handle = app.handle().clone();
-            
-            // 启动后端 sidecar
-            std::thread::spawn(move || {
-                match start_backend_sidecar(&app_handle) {
-                    Ok(_) => println!("Backend sidecar started successfully"),
-                    Err(e) => eprintln!("Failed to start backend sidecar: {}", e),
-                }
-            });
-            
-            // 等待后端启动
-            std::thread::sleep(std::time::Duration::from_secs(2));
+            // 仅 release 构建启动打包的 sidecar 后端；开发模式（tauri dev）由
+            // beforeDevCommand（npm run dev）拉起 python 后端，避免两者争抢 5000 端口
+            if !cfg!(debug_assertions) {
+                let app_handle = app.handle().clone();
+
+                std::thread::spawn(move || {
+                    match start_backend_sidecar(&app_handle) {
+                        Ok(_) => println!("Backend sidecar started successfully"),
+                        Err(e) => eprintln!("Failed to start backend sidecar: {}", e),
+                    }
+                });
+
+                // 等待后端启动
+                std::thread::sleep(std::time::Duration::from_secs(2));
+            }
             
             // 日志插件 (仅开发模式)
             if cfg!(debug_assertions) {

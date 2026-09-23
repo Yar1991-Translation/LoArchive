@@ -101,8 +101,11 @@ ruff format --check .
 # 后端测试
 pytest
 
-# 前端开发服务器（API 自动代理到 localhost:5000，需同时运行后端）
+# 前端开发服务器（一条命令同时拉起 Python 后端与 Vite 前端）
 npm run dev
+
+# 桌面开发模式（beforeDevCommand 同样会自动启动后端与前端）
+npm run tauri:dev
 
 # 前端类型检查 / 测试 / 构建
 npm run typecheck

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import AppLogo from "@/components/AppLogo.vue";
 import { useSettingsStore } from "@/stores/settings";
 import { useTaskStore } from "@/stores/task";
 import { useUiStore, type ViewName } from "@/stores/ui";
@@ -51,7 +52,7 @@ const authText = computed(() => (settings.config.has_auth ? "已配置" : "未�
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-icon">
-        <span class="mi mi-filled" aria-hidden="true">menu_book</span>
+        <AppLogo :size="24" />
       </div>
       <div class="brand-text">
         <h1>LoArchive</h1>
@@ -119,15 +120,12 @@ const authText = computed(() => (settings.config.has_auth ? "已配置" : "未�
   width: 42px;
   height: 42px;
   border-radius: var(--la-radius);
-  background: var(--la-primary);
-  color: var(--la-primary-text);
+  background: linear-gradient(135deg, var(--la-primary) 0%, color-mix(in srgb, var(--la-primary) 78%, #000) 100%);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.brand-icon .mi {
-  font-size: 24px;
+  box-shadow: var(--la-shadow);
 }
 
 .brand-text h1 {

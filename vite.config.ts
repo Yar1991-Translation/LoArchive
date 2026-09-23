@@ -20,11 +20,15 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    // 开发时把 API 转发到本地 FastAPI 后端
+    // 开发时把 API 转发到本地 FastAPI 后端（npm run dev 会自动拉起后端）
     proxy: {
       "/api": {
         target: "http://127.0.0.1:5000",
         changeOrigin: true,
+        configure: (proxy) => {
+          // 后端启动需要数秒（或未单独启动时），静默等待而不是刷屏报错
+          proxy.on("error", () => {});
+        },
       },
     },
   },

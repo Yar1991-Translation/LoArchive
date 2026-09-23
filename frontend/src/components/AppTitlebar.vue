@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 
+import AppLogo from "@/components/AppLogo.vue";
 import { isTauri } from "@/composables/usePlatform";
 
 const maximized = ref(false);
@@ -36,7 +37,9 @@ onMounted(async () => {
 <template>
   <header v-if="isTauri" class="titlebar" data-tauri-drag-region>
     <div class="titlebar-brand" data-tauri-drag-region>
-      <span class="mi mi-filled titlebar-logo" aria-hidden="true">menu_book</span>
+      <span class="titlebar-logo">
+        <AppLogo :size="16" />
+      </span>
       <span class="titlebar-name">LoArchive</span>
     </div>
     <div class="titlebar-actions">
@@ -88,8 +91,14 @@ onMounted(async () => {
 }
 
 .titlebar-logo {
-  font-size: 18px;
-  color: var(--la-primary);
+  width: 24px;
+  height: 24px;
+  border-radius: var(--la-radius-small);
+  background: linear-gradient(135deg, var(--la-primary) 0%, color-mix(in srgb, var(--la-primary) 78%, #000) 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .titlebar-name {
