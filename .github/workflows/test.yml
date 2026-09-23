@@ -23,8 +23,17 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Install dependencies
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Python dependencies
         run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Install Node dependencies
+        run: npm ci
 
       - name: Lint (ruff)
         run: ruff check .
@@ -35,5 +44,8 @@ jobs:
       - name: Test (pytest)
         run: pytest -q
 
-      - name: Check frontend module graph
-        run: node scripts/check_esm.mjs
+      - name: Typecheck frontend (vue-tsc)
+        run: npx vue-tsc -b
+
+      - name: Test frontend (vitest)
+        run: npx vitest run

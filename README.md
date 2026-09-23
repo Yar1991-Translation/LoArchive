@@ -66,15 +66,21 @@
 
 **环境要求：**
 - Python 3.11+
-- Node.js 18+ (仅打包桌面应用需要)
+- Node.js 20+
 
 ```bash
 # 克隆项目
 git clone https://github.com/Yar1991-Translation/LoArchive.git
 cd LoArchive
 
-# 安装依赖
+# 安装后端依赖
 pip install -r requirements.txt
+
+# 安装前端依赖
+npm install
+
+# 构建前端（浏览器模式需要）
+npm run build
 
 # 启动 Web 界面
 python run.py
@@ -85,15 +91,26 @@ python run.py
 ### 开发与测试
 
 ```bash
-# 安装开发依赖（ruff + pytest）
+# 后端开发依赖（ruff + pytest）
 pip install -r requirements-dev.txt
 
 # 代码检查与格式检查
 ruff check .
 ruff format --check .
 
-# 运行测试
+# 后端测试
 pytest
+
+# 前端开发服务器（API 自动代理到 localhost:5000，需同时运行后端）
+npm run dev
+
+# 前端类型检查 / 测试 / 构建
+npm run typecheck
+npm run test
+npm run build
+
+# 版本号同步（以 loarchive/__init__.py 为单一来源）
+python scripts/sync_version.py
 ```
 
 ---
@@ -198,44 +215,49 @@ LoArchive/
 ├── loarchive/              # FastAPI 后端包
 │   ├── main.py             # 应用工厂 + uvicorn 入口
 │   ├── config.py           # 配置读写
-│   ├── history.py          # 下载历史
+│   ├── history.py          # 下载历史（SQLite，自动迁移旧 JSON）
 │   ├── state.py            # 任务管理（线程 + 取消标志 + SSE 事件）
-│   ├── schemas.py          # Pydantic 请求模型
-│   ├── routers/            # API 路由（config / tasks / files / history）
-│   ├── spiders/            # 爬虫（lofter 单篇 / 作者 / 收藏，ao3）
+│   ├── errors.py           # 异常层级
+│   ├── schemas.py          # Pydantic 请求/响应模型
+│   ├── routers/            # API 路由（config / tasks / files / history / meta）
+│   ├── spiders/            # 爬虫（lofter 单篇 / 作者 / 收藏，ao3 + common 公共逻辑）
 │   └── exporters/          # 导出（PDF / EPUB）
-├── frontend/               # 原生 ES Modules 前端（无构建步骤）
+├── frontend/               # Vue 3 + Vite + TypeScript 前端
 │   ├── index.html
-│   ├── css/main.css
-│   └── js/                 # 按职责拆分的模块
-├── scripts/build_backend.py  # 打包 sidecar 可执行文件
+│   └── src/                # 组件 / 视图 / stores / API 层 / 主题令牌
+├── tests/                  # pytest 后端测试
+├── tests-frontend/         # vitest 前端测试
+├── scripts/                # 打包与版本同步脚本
 ├── src-tauri/              # Tauri 桌面应用
-├── tests/                  # pytest 测试
 └── dir/                    # 下载内容目录
 ```
 
 ### 后端接口
 
+完整契约见 [docs/api.md](docs/api.md)。
+
 | 方法 | 路径 | 说明 |
 |------|------|------|
+| GET | `/api/version` | 应用版本（前端展示与更新检查的单一来源） |
 | GET/POST | `/api/config` | 读取 / 保存 Lofter 登录信息（读取时授权码遮蔽返回） |
 | GET/POST | `/api/settings` | 读取 / 保存保存路径与开关项 |
-| POST | `/api/task/start` | 启动任务（参数按任务类型校验） |
+| POST | `/api/task/start` | 启动任务（冲突返回 409，参数错误返回 400） |
 | GET | `/api/task/status` | 轮询任务状态（SSE 不可用时回退） |
 | GET | `/api/task/events` | SSE 实时推送日志与进度 |
 | POST | `/api/task/stop` | 请求停止任务 |
 | GET | `/api/files` | 列出已下载文件 |
 | GET | `/api/history` | 分页查询下载历史（支持类型 / 来源 / 搜索过滤） |
 | POST | `/api/history/clear` | 清空历史 |
-| DELETE | `/api/history/delete/{id}` | 删除单条历史 |
+| DELETE | `/api/history/delete/{id}` | 删除单条历史（不存在返回 404） |
 | POST | `/api/history/check` | 检查 URL 是否已下载 |
 
 交互式 API 文档：应用运行时访问 http://localhost:5000/docs
 
 ### 数据存储位置
 
-- 源码运行：配置文件与下载历史保存在项目根目录（`loarchive_config.json`、`download_history.json`）。
-- 打包运行：保存在用户数据目录（Windows 为 `%APPDATA%\LoArchive`），首次启动会自动导入安装目录旁的旧配置，不会覆盖已有数据。
+- 配置与历史统一保存在用户数据目录（Windows 为 `%APPDATA%\LoArchive`），不再落在源码根目录或安装目录。
+- 下载历史为 SQLite（`history.db`）；首次启动会自动合并旧版 `download_history.json` 并把源文件改名为 `.bak` 备份。
+- 日志文件 `loarchive.log` 也保存在数据目录（滚动保留 1MB × 3）。
 
 ### 构建桌面应用
 

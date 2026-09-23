@@ -27,6 +27,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Sync version from loarchive/__init__.py
+        run: python scripts/sync_version.py
+
       - name: Get version from tauri.conf.json
         id: version
         run: |
