@@ -23,8 +23,6 @@ body {
 
 #app {
   height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
 /* Material Symbols 图标（本地打包字体） */
@@ -51,8 +49,11 @@ body {
 
 /* ---------- 应用骨架 ---------- */
 
+/* 高度用 100vh 而不是 100%：NConfigProvider/NMessageProvider 会在 #app 与
+ * .app-shell 之间插入无高度样式的包装 div，100% 会解析失败，导致整页高度
+ * 随内容塌缩/膨胀（设置页无法滚动、侧边栏不满屏）。 */
 .app-shell {
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background: var(--la-bg);

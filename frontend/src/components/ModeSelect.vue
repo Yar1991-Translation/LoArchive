@@ -81,11 +81,4 @@ const model = defineModel<string>({ required: true });
   font-size: 13.5px;
   font-weight: 600;
 }
-
-[data-theme="bw"] .mode-card.selected {
-  border-width: 2.5px;
-  background: var(--la-surface);
-  color: #000;
-  box-shadow: 3px 3px 0 #000;
-}
 </style>
