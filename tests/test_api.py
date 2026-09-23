@@ -26,9 +26,9 @@ def test_frontend_assets_are_served(tmp_path):
 
     app = create_app(data_dir=str(tmp_path / "data"))
     with TestClient(app) as client:
-        assert client.get("/js/main.js").status_code == 200
-        assert client.get("/css/main.css").status_code == 200
-        assert client.get("/js/api.js").status_code == 200
+        # / 服务 index.html，favicon 来自构建产物（或源码目录的回退）
+        assert client.get("/").status_code == 200
+        assert client.get("/favicon.ico").status_code == 200
 
 
 def test_frontend_assets_require_revalidation(tmp_path):
@@ -40,10 +40,10 @@ def test_frontend_assets_require_revalidation(tmp_path):
     app = create_app(data_dir=str(tmp_path / "data"))
     with TestClient(app) as client:
         page = client.get("/")
-        css = client.get("/css/main.css")
+        favicon = client.get("/favicon.ico")
 
     assert page.headers.get("cache-control") == "no-cache"
-    assert css.headers.get("cache-control") == "no-cache"
+    assert favicon.headers.get("cache-control") == "no-cache"
     # 接口响应不受影响
     assert client.get("/api/task/status").headers.get("cache-control") is None
 

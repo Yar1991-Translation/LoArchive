@@ -119,10 +119,13 @@ def create_app(data_dir: str | None = None, serve_frontend: bool = True) -> Fast
             logger.warning("创建保存目录失败 %s: %s", d, e)
 
     if serve_frontend:
+        # 优先服务 Vite 构建产物 frontend/dist，未构建时回退到源码目录
         frontend_dir = get_resource_path("frontend")
-        if os.path.isdir(frontend_dir):
+        dist_dir = os.path.join(frontend_dir, "dist")
+        serve_dir = dist_dir if os.path.isdir(dist_dir) else frontend_dir
+        if os.path.isdir(serve_dir):
             # 挂在最后：/api/* 路由优先，其余路径回退到静态文件（含 / -> index.html）
-            app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
+            app.mount("/", StaticFiles(directory=serve_dir, html=True), name="frontend")
 
     return app
 

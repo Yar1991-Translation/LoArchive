@@ -4,10 +4,10 @@
   "version": "1.2.0-dev.1",
   "identifier": "com.loarchive.desktop",
   "build": {
-    "frontendDist": "../frontend",
-    "devUrl": "http://localhost:5000",
-    "beforeDevCommand": "",
-    "beforeBuildCommand": ""
+    "frontendDist": "../frontend/dist",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
   },
   "app": {
     "withGlobalTauri": true,
