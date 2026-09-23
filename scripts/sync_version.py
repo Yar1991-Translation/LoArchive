@@ -11,6 +11,11 @@ import re
 import sys
 from pathlib import Path
 
+# Windows CI / 传统控制台的默认编码（cp1252/cp936）无法输出中文提示
+if sys.stdout and hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 ROOT = Path(__file__).resolve().parents[1]
 INIT_PATH = ROOT / "loarchive" / "__init__.py"
 PYPROJECT_PATH = ROOT / "pyproject.toml"
