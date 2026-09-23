@@ -101,6 +101,9 @@ loarchive-backend.spec
 .coverage
 htmlcov/
 
+# ZCode 工作区
+.zcode/
+
 # ==================== 发布包 ====================
 *.msi
 *.exe
