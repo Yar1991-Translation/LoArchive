@@ -27,6 +27,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      # runner 自带的 python 别名不可用，sync 脚本必须在 setup-python 之后执行
       - name: Sync version from loarchive/__init__.py
         run: python scripts/sync_version.py
 
@@ -95,12 +102,6 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
