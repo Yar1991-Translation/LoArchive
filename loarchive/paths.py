@@ -3,6 +3,10 @@
 import os
 import sys
 
+from .logsetup import get_logger
+
+logger = get_logger("paths")
+
 APP_NAME = "LoArchive"
 
 # 项目根目录（loarchive 包的上一级）
@@ -22,26 +26,26 @@ def get_resource_path(relative_path: str) -> str:
 
 
 def get_data_dir() -> str:
-    """配置/历史等可写数据目录。
+    """配置/历史等可写数据目录（平台应用数据目录）。
 
-    打包环境写入平台数据目录（避免安装目录只读导致写配置失败），
-    源码运行保持当前工作目录（与历史版本行为一致）。
+    打包与源码运行统一使用平台数据目录：配置里含 Lofter 登录令牌，
+    不应落在源码根目录或安装目录。首次启动时由 migrate_legacy_data
+    从旧位置（安装目录旁 / 源码根目录）导入。
     """
-    if is_frozen():
-        if sys.platform == "win32":
-            base = os.environ.get("APPDATA") or os.path.join(os.path.expanduser("~"), "AppData", "Roaming")
-            path = os.path.join(base, APP_NAME)
-        elif sys.platform == "darwin":
-            path = os.path.join(os.path.expanduser("~"), "Library", "Application Support", APP_NAME)
-        else:
-            path = os.path.join(os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share")), "loarchive")
-        os.makedirs(path, exist_ok=True)
-        return path
-    return os.getcwd()
+    if sys.platform == "win32":
+        base = os.environ.get("APPDATA") or os.path.join(os.path.expanduser("~"), "AppData", "Roaming")
+        path = os.path.join(base, APP_NAME)
+    elif sys.platform == "darwin":
+        path = os.path.join(os.path.expanduser("~"), "Library", "Application Support", APP_NAME)
+    else:
+        path = os.path.join(os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share")), "loarchive")
+    os.makedirs(path, exist_ok=True)
+    return path
 
 
 CONFIG_FILENAME = "loarchive_config.json"
-HISTORY_FILENAME = "download_history.json"
+HISTORY_FILENAME = "download_history.json"  # 旧版 JSON（仅作迁移来源）
+HISTORY_DB_FILENAME = "history.db"  # v2 起的 SQLite 存储
 
 
 def get_executable_dir() -> str:
@@ -52,28 +56,30 @@ def get_executable_dir() -> str:
 
 
 def migrate_legacy_data(data_dir: str) -> list:
-    """把安装目录旁的旧版配置文件导入新的数据目录（仅打包环境）。
+    """把旧位置的配置文件导入数据目录（仅默认数据目录的首启迁移会调用）。
 
-    只在目标文件不存在时复制，绝不覆盖已有数据，也不删除源文件。
-    返回实际迁移的文件名列表。
+    候选来源：可执行文件所在目录（打包环境）与当前工作目录（源码运行，
+    历史版本把配置放在源码根目录）。只在目标文件不存在时复制，
+    绝不覆盖已有数据，也不删除源文件。返回实际迁移的文件名列表。
     """
     import shutil
 
-    if not is_frozen():
-        return []
-
-    executable_dir = get_executable_dir()
-    if os.path.abspath(executable_dir) == os.path.abspath(data_dir):
+    candidate_dirs = [get_executable_dir(), os.getcwd()]
+    if all(os.path.abspath(d) == os.path.abspath(data_dir) for d in candidate_dirs):
         return []
 
     migrated = []
     for filename in (CONFIG_FILENAME, HISTORY_FILENAME):
-        source = os.path.join(executable_dir, filename)
         target = os.path.join(data_dir, filename)
-        if os.path.exists(source) and not os.path.exists(target):
-            try:
-                shutil.copy2(source, target)
-                migrated.append(filename)
-            except Exception as e:
-                print(f"迁移旧配置失败 {filename}: {e}")
+        if os.path.exists(target):
+            continue
+        for source_dir in candidate_dirs:
+            source = os.path.join(source_dir, filename)
+            if os.path.exists(source):
+                try:
+                    shutil.copy2(source, target)
+                    migrated.append(filename)
+                    break
+                except Exception as e:
+                    logger.warning("迁移旧配置失败 %s: %s", filename, e)
     return migrated

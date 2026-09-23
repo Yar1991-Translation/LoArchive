@@ -129,8 +129,8 @@ def test_parse_fav_info_extracts_image_urls():
 
 
 def test_safe_filename_replaces_reserved_characters_and_truncates():
-    # 保留旧实现行为：非法字符先替换为下划线，随后与空白一并折叠为单个空格
-    assert safe_filename('a<b>c:d"e/f\\g|h?i*j') == "a b c d e f g h i j"
+    # 统一使用 utils.sanitize_filename 的字符映射清洗（非法字符转全角/&等），再折叠空白并截断
+    assert safe_filename('a<b>c:d"e/f\\g|h?i*j') == "a《b》c：d'e&f&g&h？i·j"
     assert len(safe_filename("x" * 200)) == 100
     assert safe_filename("") == "untitled"
 

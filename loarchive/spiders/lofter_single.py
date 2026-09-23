@@ -1,5 +1,6 @@
 """Lofter 单篇保存：图片 / 文章。"""
 
+import logging
 import os
 import re
 import time
@@ -8,6 +9,9 @@ import requests
 from lxml.html import etree
 
 from ..utils import filter_lofter_image_urls, get_headers, guess_image_type, sanitize_filename
+from .common import LOFTER_IMG_PATTERN, download_file, save_root
+
+logger = logging.getLogger("loarchive.spider.single")
 
 
 def extract_public_time(html: str) -> str:
@@ -20,7 +24,7 @@ def extract_public_time(html: str) -> str:
 
 def find_lofter_images(html: str) -> list:
     """从博客页面 HTML 提取并过滤图片链接（纯函数）。"""
-    imgs_url = re.findall(r'"(http[s]{0,1}://imglf\d{0,1}.lf\d*.[0-9]{0,3}.net.*?)"', html)
+    imgs_url = re.findall(LOFTER_IMG_PATTERN, html)
     return filter_lofter_image_urls(imgs_url)
 
 
@@ -54,7 +58,8 @@ def extract_article_text(blog_parse, blog_html: str, allow_full_fallback: bool =
             content_text = h.handle(blog_html)
             # 清理一些无用内容
             content_text = re.sub(r"\n{3,}", "\n\n", content_text)
-        except Exception:
+        except Exception as e:
+            logger.warning("html2text 整页转换失败: %s", e)
             content_text = "无法解析正文内容"
 
     return content_text
@@ -79,6 +84,8 @@ def fetch_blog_context(blog_url: str, cookies: dict):
     try:
         author_name = author_view_parse.xpath("//h1/a/text()")[0]
     except Exception:
+        # 作者主页结构变化时退化为占位名，不中断单篇保存
+        logger.debug("未从作者主页提取到作者名 %s，按未知作者处理", blog_url)
         author_name = "未知作者"
 
     author_ip = re.search(r"http(s)*://(.*).lofter.com/", blog_url).group(2)
@@ -100,8 +107,7 @@ def run_single_img(ctx, params: dict) -> None:
     cookies = {login_key: login_auth}
 
     # 确保目录存在
-    save_root = ctx.config.get("save_path", "./dir")
-    dir_path = os.path.join(save_root, "img/this")
+    dir_path = os.path.join(save_root(ctx), "img/this")
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
 
@@ -141,12 +147,14 @@ def run_single_img(ctx, params: dict) -> None:
                 )
 
         except Exception as e:
+            logger.warning("解析博客失败 %s: %s", blog_url, e)
             ctx.log(f"   ⚠️ 解析失败: {str(e)}")
             continue
 
     ctx.log(f"📷 共获取到 {len(all_imgs_info)} 张图片，开始下载...")
 
     # 下载图片
+    saved_count = 0
     for idx, img_info in enumerate(all_imgs_info):
         ctx.check_cancel()
         ctx.set_progress(50 + int((idx / len(all_imgs_info)) * 50))
@@ -156,26 +164,22 @@ def run_single_img(ctx, params: dict) -> None:
         img_path = os.path.join(dir_path, pic_name)
 
         try:
-            headers = get_headers()
-            headers["Referer"] = img_info.get("referer", "")
-
-            response = requests.get(pic_url, headers=headers, timeout=30)
-            with open(img_path, "wb") as f:
-                f.write(response.content)
-
+            download_file(pic_url, img_path, referer=img_info.get("referer", ""))
+            saved_count += 1
             ctx.log(f"   💾 [{idx + 1}/{len(all_imgs_info)}] 已保存: {pic_name}")
 
         except Exception as e:
+            logger.warning("下载图片失败 %s: %s", pic_url, e)
             ctx.log(f"   ⚠️ 下载失败: {pic_name} - {str(e)}")
 
         if idx % 5 == 0:
             time.sleep(0.5)  # 防止请求过快
 
     # 记录到下载历史（按博客URL去重）
-    if all_imgs_info:
-        ctx.add_history("image", urls[0], f"{len(all_imgs_info)}张图片", "批量下载", dir_path, "lofter")
+    if saved_count > 0:
+        ctx.add_history("image", urls[0], f"{saved_count}张图片", "批量下载", dir_path, "lofter")
 
-    ctx.log(f"✅ 图片保存完成！共保存 {len(all_imgs_info)} 张图片到 {dir_path}")
+    ctx.log(f"✅ 图片保存完成！共保存 {saved_count} 张图片到 {dir_path}")
 
 
 def run_single_txt(ctx, params: dict) -> None:
@@ -192,8 +196,7 @@ def run_single_txt(ctx, params: dict) -> None:
     cookies = {login_key: login_auth}
 
     # 确保目录存在
-    save_root = ctx.config.get("save_path", "./dir")
-    dir_path = os.path.join(save_root, "article/this")
+    dir_path = os.path.join(save_root(ctx), "article/this")
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
 
@@ -245,6 +248,7 @@ def run_single_txt(ctx, params: dict) -> None:
             )
 
         except Exception as e:
+            logger.warning("保存文章失败 %s: %s", blog_url, e)
             ctx.log(f"   ⚠️ 保存失败: {str(e)}")
             continue
 

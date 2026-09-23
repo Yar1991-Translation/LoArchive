@@ -32,7 +32,7 @@ def config_store(tmp_path):
 
 @pytest.fixture
 def history_manager(tmp_path):
-    """独立可用的 HistoryManager，指向临时文件。"""
+    """独立可用的 HistoryManager，指向临时 SQLite 文件。"""
     from loarchive.history import HistoryManager
 
-    return HistoryManager(str(tmp_path / "history.json"))
+    return HistoryManager(str(tmp_path / "history.db"))

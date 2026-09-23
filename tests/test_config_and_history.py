@@ -156,3 +156,107 @@ def test_compute_stats_counts_images_and_articles():
     ]
 
     assert compute_stats(items) == {"total": 4, "images": 1, "articles": 2}
+
+
+# ---------- 旧版 JSON 自动迁移 ----------
+
+
+def _write_legacy_json(path, items):
+    import json
+
+    path.write_text(json.dumps({"items": items}, ensure_ascii=False), encoding="utf-8")
+
+
+def test_history_migrates_legacy_json_and_backs_it_up(tmp_path):
+    legacy = tmp_path / "download_history.json"
+    # 旧版 JSON 的 items 最新在前（原实现 insert(0)）
+    _write_legacy_json(
+        legacy,
+        [
+            {
+                "id": "a",
+                "type": "image",
+                "url": "https://example.com/2",
+                "title": "较新的",
+                "author": "作者",
+                "file_path": "/2.jpg",
+                "source": "lofter",
+                "download_time": "2026-01-02 10:00:00",
+                "timestamp": 1767312400,
+            },
+            {
+                "id": "b",
+                "type": "article",
+                "url": "https://example.com/1",
+                "title": "较早的",
+                "author": "作者",
+                "file_path": "/1.txt",
+                "source": "lofter",
+                "download_time": "2026-01-01 10:00:00",
+                "timestamp": 1767226000,
+            },
+        ],
+    )
+
+    from loarchive.history import HistoryManager
+
+    manager = HistoryManager(str(tmp_path / "history.db"), legacy_json_path=str(legacy))
+
+    data = manager.query()
+    assert data["total"] == 2
+    # JSON 里最新在前，迁移后仍保持最新在前
+    assert data["items"][0]["title"] == "较新的"
+    assert manager.is_downloaded("https://example.com/1")
+    # 源文件改名备份，避免 clear() 后被重新导入
+    assert not legacy.exists()
+    assert (tmp_path / "download_history.json.bak").exists()
+
+
+def test_history_migration_merges_by_url_without_duplicates(tmp_path):
+    from loarchive.history import HistoryManager
+
+    db = str(tmp_path / "history.db")
+    legacy = tmp_path / "download_history.json"
+
+    manager = HistoryManager(db)
+    manager.add("article", "https://example.com/1", "已有", "作者", "/1.txt")
+    _write_legacy_json(
+        legacy,
+        [
+            {"id": "a", "url": "https://example.com/1", "title": "重复", "type": "article"},
+            {"id": "b", "url": "https://example.com/2", "title": "新增", "type": "article"},
+        ],
+    )
+
+    migrated = HistoryManager(db, legacy_json_path=str(legacy))
+
+    assert migrated.query()["total"] == 2
+    assert migrated.query()["items"][0]["title"] == "新增"
+
+
+def test_history_migration_survives_corrupt_json(tmp_path):
+    from loarchive.history import HistoryManager
+
+    legacy = tmp_path / "download_history.json"
+    legacy.write_text("{ not json", encoding="utf-8")
+
+    manager = HistoryManager(str(tmp_path / "history.db"), legacy_json_path=str(legacy))
+
+    assert manager.query()["total"] == 0
+    # 无法解析时保留源文件，等待人工处理
+    assert legacy.exists()
+
+
+def test_history_capacity_is_enforced(tmp_path):
+    from loarchive.history import MAX_HISTORY_ITEMS, HistoryManager
+
+    manager = HistoryManager(str(tmp_path / "history.db"))
+    for index in range(MAX_HISTORY_ITEMS + 50):
+        manager.add("article", f"https://example.com/{index}", f"第{index}篇", "作者", f"/{index}.txt")
+
+    data = manager.query(per_page=100)
+
+    assert data["total"] == MAX_HISTORY_ITEMS
+    # 最旧的记录被淘汰
+    assert manager.is_downloaded(f"https://example.com/{MAX_HISTORY_ITEMS + 49}") is True
+    assert manager.is_downloaded("https://example.com/0") is False

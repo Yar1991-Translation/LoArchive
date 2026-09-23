@@ -1,5 +1,6 @@
 """Lofter 作者内容爬取：作者图片 / 作者文章。"""
 
+import logging
 import os
 import re
 import time
@@ -8,7 +9,10 @@ import requests
 from lxml.html import etree
 
 from ..utils import CHROME_UA, filter_lofter_image_urls, get_headers, guess_image_type, sanitize_filename
+from .common import LOFTER_IMG_PATTERN, download_file, save_root, unique_file_path
 from .lofter_single import extract_article_text, extract_title
+
+logger = logging.getLogger("loarchive.spider.author")
 
 ARCHIVE_QUERY_NUM = 50
 
@@ -24,7 +28,8 @@ def fetch_author_info(author_url: str, cookies: dict):
         author_name = author_page_parse.xpath("//title//text()")[0]
         author_ip = re.search(r"http[s]*://(.*).lofter.com/", author_url).group(1)
         return author_id, author_name, author_ip
-    except Exception:
+    except Exception as e:
+        logger.warning("从作者主页提取信息失败 %s: %s", author_url, e)
         return None
 
 
@@ -74,6 +79,8 @@ def fetch_archive_records(
         try:
             data["c0-param2"] = "number:" + str(re.search(rf"s{query_num - 1}\.time=(.*);s.*type", page_data).group(1))
         except Exception:
+            # 拿不到下一页游标，视为翻页结束
+            logger.debug("归档页未找到下一页时间戳，停止翻页")
             break
 
         time.sleep(0.5)
@@ -100,6 +107,8 @@ def parse_archive_records(all_blog_info: list) -> list:
                 }
             )
         except Exception:
+            # 单条记录缺字段时跳过（列表页的尾部碎片等）
+            logger.debug("跳过无法解析的归档记录: %s", blog_info[:80])
             continue
     return records
 
@@ -149,8 +158,7 @@ def run_author_img(ctx, params: dict) -> None:
 
         # 创建保存目录
         author_name_safe = sanitize_filename(author_name)
-        save_root = ctx.config.get("save_path", "./dir")
-        dir_path = os.path.join(save_root, f"img/{author_name_safe}[{author_ip}]")
+        dir_path = os.path.join(save_root(ctx), f"img/{author_name_safe}[{author_ip}]")
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
@@ -163,7 +171,7 @@ def run_author_img(ctx, params: dict) -> None:
             try:
                 blog_html = requests.get(blog["url"], headers=get_headers(), cookies=cookies).content.decode("utf-8")
 
-                imgs_url = re.findall(r'"(http[s]{0,1}://imglf\d{0,1}.lf\d*.[0-9]{0,3}.net.*?)"', blog_html)
+                imgs_url = re.findall(LOFTER_IMG_PATTERN, blog_html)
 
                 # 过滤
                 filtered_imgs = filter_lofter_image_urls(imgs_url)
@@ -175,12 +183,7 @@ def run_author_img(ctx, params: dict) -> None:
                     pic_name = f"{author_name_safe}[{author_ip}] {blog['time']}({img_idx + 1}).{img_type}"
                     img_path = os.path.join(dir_path, pic_name)
 
-                    headers = get_headers()
-                    headers["Referer"] = author_url
-
-                    img_content = requests.get(img_url, headers=headers, timeout=30).content
-                    with open(img_path, "wb") as f:
-                        f.write(img_content)
+                    download_file(img_url, img_path, referer=author_url)
 
                     total_saved += 1
 
@@ -188,6 +191,7 @@ def run_author_img(ctx, params: dict) -> None:
                     ctx.log(f"   📥 进度: {idx + 1}/{len(img_blogs)} 博客, 已保存 {total_saved} 张图片")
 
             except Exception as e:
+                logger.warning("处理博客失败 %s: %s", blog["url"], e)
                 ctx.log(f"   ⚠️ 处理博客失败: {blog['url']} - {str(e)}")
                 continue
 
@@ -200,6 +204,7 @@ def run_author_img(ctx, params: dict) -> None:
         ctx.log(f"✅ 完成！共保存 {total_saved} 张图片到 {dir_path}")
 
     except Exception as e:
+        logger.exception("作者图片任务执行失败")
         import traceback
 
         ctx.log(f"❌ 爬取失败: {str(e)}")
@@ -246,8 +251,7 @@ def run_author_txt(ctx, params: dict) -> None:
 
         # 创建保存目录
         author_name_safe = sanitize_filename(author_name)
-        save_root = ctx.config.get("save_path", "./dir")
-        dir_path = os.path.join(save_root, f"article/{author_name_safe}[{author_ip}]")
+        dir_path = os.path.join(save_root(ctx), f"article/{author_name_safe}[{author_ip}]")
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
@@ -286,14 +290,7 @@ def run_author_txt(ctx, params: dict) -> None:
                     file_name = f"{author_name} {record['time']}.txt"
                 file_name = sanitize_filename(file_name)
 
-                # 避免文件名重复
-                file_path = os.path.join(dir_path, file_name)
-                counter = 1
-                original_path = file_path
-                while os.path.exists(file_path):
-                    name_part = original_path.rsplit(".", 1)[0]
-                    file_path = f"{name_part}({counter}).txt"
-                    counter += 1
+                file_path = unique_file_path(dir_path, file_name)
 
                 with open(file_path, "w", encoding="utf-8") as f:
                     f.write(article)
@@ -305,6 +302,7 @@ def run_author_txt(ctx, params: dict) -> None:
                 )
 
             except Exception as e:
+                logger.warning("解析博客失败 %s: %s", blog_url, e)
                 ctx.log(f"   ⚠️ 解析失败: {blog_url} - {str(e)}")
                 continue
 
@@ -318,6 +316,7 @@ def run_author_txt(ctx, params: dict) -> None:
         ctx.log(f"✅ 文章保存完成！共保存 {saved_count} 篇（跳过无正文博客 {skipped_count} 篇）到 {dir_path}")
 
     except Exception as e:
+        logger.exception("作者文章任务执行失败")
         import traceback
 
         ctx.log(f"❌ 爬取失败: {str(e)}")

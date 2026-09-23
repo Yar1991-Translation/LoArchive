@@ -4,12 +4,15 @@ import json
 import os
 import threading
 
+from .logsetup import get_logger
+
+logger = get_logger("config")
+
 DEFAULT_CONFIG = {
     "login_key": "LOFTER-PHONE-LOGIN-AUTH",
     "login_auth": "",
     "file_path": "./dir",
     "save_path": "./dir",  # 用户自定义保存路径
-    "dark_mode": False,
     "auto_dedup": True,  # 自动去重
     "notify_on_complete": True,  # 完成通知
 }
@@ -49,7 +52,7 @@ class ConfigStore:
                         saved_config = json.load(f)
                     self._config.update(saved_config)
                 except Exception as e:
-                    print(f"加载配置文件失败: {e}")
+                    logger.warning("加载配置文件失败 %s: %s", self.path, e)
             return self._config
 
     def save(self) -> None:
@@ -59,7 +62,7 @@ class ConfigStore:
                 with open(self.path, "w", encoding="utf-8") as f:
                     json.dump(self._config, f, ensure_ascii=False, indent=2)
             except Exception as e:
-                print(f"保存配置文件失败: {e}")
+                logger.warning("保存配置文件失败 %s: %s", self.path, e)
 
     def masked_auth(self) -> str:
         """遮蔽后的授权码（用于 API 返回，保持原形状）。"""
