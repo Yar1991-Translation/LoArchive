@@ -110,3 +110,7 @@ htmlcov/
 *.dmg
 *.AppImage
 !src-tauri/icons/
+
+# TypeScript 构建缓存
+tsconfig.tsbuildinfo
+*.tsbuildinfo
