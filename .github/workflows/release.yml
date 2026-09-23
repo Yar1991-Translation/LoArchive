@@ -62,6 +62,34 @@ jobs:
           echo "EOF" >> $env:GITHUB_OUTPUT
         shell: pwsh
 
+      - name: Compose release body
+        id: body
+        run: |
+          # 版本专属发布说明（docs/release-notes/<version>.md），缺失时退回提交列表；
+          # 提交列表在本步骤内直接读取 git，避免多行输出插值破坏脚本
+          $VERSION = "${{ steps.version.outputs.version }}"
+          $NOTES_FILE = "docs/release-notes/$VERSION.md"
+          $BODY = ""
+          if (Test-Path $NOTES_FILE) {
+            $BODY += (Get-Content $NOTES_FILE -Raw)
+            $BODY += "`n---`n`n"
+          }
+          $LAST_TAG = git describe --tags --abbrev=0 HEAD^ 2>$null
+          if ($LAST_TAG) {
+            $COMMITS = git log "$LAST_TAG..HEAD" --pretty=format:"- %s"
+          } else {
+            $COMMITS = git log --pretty=format:"- %s" -20
+          }
+          if (-not $COMMITS) { $COMMITS = @("- Initial release") }
+          $BODY += "<details><summary>📝 完整提交记录</summary>`n`n"
+          $BODY += ($COMMITS -join "`n")
+          $BODY += "`n</details>`n"
+          $BODY += "`n---`n`n<sub>构建时间: ${{ github.event.head_commit.timestamp }}</sub>"
+          echo "body<<BODYEOF" >> $env:GITHUB_OUTPUT
+          echo $BODY >> $env:GITHUB_OUTPUT
+          echo "BODYEOF" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -98,34 +126,6 @@ jobs:
         with:
           tagName: v${{ steps.version.outputs.version }}
           releaseName: 'LoArchive v${{ steps.version.outputs.version }}'
-          releaseBody: |
-            ## LoArchive v${{ steps.version.outputs.version }}
-            
-            ### 📝 更新内容
-            ${{ steps.changelog.outputs.commits }}
-            
-            ---
-            
-            ### 📥 下载说明
-            | 文件 | 说明 |
-            |------|------|
-            | `LoArchive_*_x64-setup.exe` | 🎯 **安装版**（推荐） |
-            
-            ### 🔧 使用方法
-            1. 下载并安装
-            2. 打开应用
-            3. 在「设置」中配置 Lofter 登录信息
-            4. 开始使用！
-            
-            ### ✨ 功能特性
-            - 📚 Lofter 喜欢/分享/标签爬取
-            - 📖 AO3 作品下载
-            - 🖼️ 图片批量下载
-            - 📄 支持导出 PDF/EPUB/TXT
-            - 🌙 深色模式
-            - 🔄 自动检查更新
-            
-            ---
-            <sub>构建时间: ${{ github.event.head_commit.timestamp }}</sub>
+          releaseBody: ${{ steps.body.outputs.body }}
           releaseDraft: false
           prerelease: ${{ steps.version.outputs.prerelease == 'true' }}

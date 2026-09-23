@@ -1,6 +1,6 @@
 [project]
 name = "loarchive"
-version = "1.2.0-dev.1"
+version = "2.0.0-dev.1"
 description = "LoArchive - Lofter & AO3 content archiving tool"
 requires-python = ">=3.11"
 
