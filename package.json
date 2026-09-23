@@ -1,9 +1,16 @@
 {
   "name": "loarchive",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "LoArchive - Lofter & AO3 内容存档工具",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:front": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "vue-tsc -b",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build"
@@ -12,14 +19,32 @@
     "type": "git",
     "url": "git+https://github.com/Yar1991-Translation/LoArchive.git"
   },
-  "keywords": ["lofter", "ao3", "archive", "spider", "tauri"],
+  "keywords": [
+    "lofter",
+    "ao3",
+    "archive",
+    "spider",
+    "tauri"
+  ],
   "author": "Yar1991-Translation",
   "license": "MIT",
-  "type": "commonjs",
   "dependencies": {
-    "@tauri-apps/api": "^2.0.0"
+    "@fontsource/noto-sans-sc": "^5.2.5",
+    "@tauri-apps/api": "^2.0.0",
+    "material-symbols": "^0.31.0",
+    "naive-ui": "^2.42.0",
+    "pinia": "^3.0.0",
+    "vue": "^3.5.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.0.0"
+    "@tauri-apps/cli": "^2.0.0",
+    "@types/node": "^26.6.2",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "@vue/test-utils": "^2.4.6",
+    "jsdom": "^26.0.0",
+    "typescript": "~5.9.0",
+    "vite": "^7.0.0",
+    "vitest": "^3.0.0",
+    "vue-tsc": "^3.0.0"
   }
 }

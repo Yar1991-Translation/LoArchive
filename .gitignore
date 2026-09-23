@@ -101,9 +101,16 @@ loarchive-backend.spec
 .coverage
 htmlcov/
 
+# ZCode 工作区
+.zcode/
+
 # ==================== 发布包 ====================
 *.msi
 *.exe
 *.dmg
 *.AppImage
 !src-tauri/icons/
+
+# TypeScript 构建缓存
+tsconfig.tsbuildinfo
+*.tsbuildinfo

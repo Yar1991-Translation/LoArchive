@@ -4,9 +4,15 @@ on:
   push:
     branches:
       - master
+    # pre-release（dev/beta/rc）通过打 tag 触发，无需合并到 master
+    tags:
+      - 'v*'
     paths-ignore:
       - '**.md'
       - '.gitignore'
+
+  # 允许在 Actions 页面手动重跑发布
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -21,22 +27,41 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      # runner 自带的 python 别名不可用，sync 脚本必须在 setup-python 之后执行
+      - name: Sync version from loarchive/__init__.py
+        run: python scripts/sync_version.py
+
       - name: Get version from tauri.conf.json
         id: version
         run: |
           $VERSION = (Get-Content src-tauri/tauri.conf.json | ConvertFrom-Json).version
           echo "version=$VERSION" >> $env:GITHUB_OUTPUT
           echo "Resolved version: $VERSION"
+
+          # 版本号含 "-"（如 1.2.0-dev.1）时发布为 pre-release
+          $IS_PRERELEASE = if ($VERSION -match '-') { 'true' } else { 'false' }
+          echo "prerelease=$IS_PRERELEASE" >> $env:GITHUB_OUTPUT
+          echo "Pre-release: $IS_PRERELEASE"
         shell: pwsh
 
       - name: Get commit messages since last tag
         id: changelog
         run: |
-          $LAST_TAG = git describe --tags --abbrev=0 2>$null
+          # 用 HEAD^ 取「上一个」tag：在 tag 触发的运行里，HEAD 自身就是本次 tag，
+          # 直接 git describe 会拿到自己，导致变更列表为空。
+          $LAST_TAG = git describe --tags --abbrev=0 HEAD^ 2>$null
           if ($LAST_TAG) {
             $COMMITS = git log "$LAST_TAG..HEAD" --pretty=format:"- %s"
+            echo "changelog base: $LAST_TAG"
           } else {
             $COMMITS = git log --pretty=format:"- %s" -20
+            echo "changelog base: none (using last 20 commits)"
           }
           if (-not $COMMITS) { $COMMITS = "- Initial release" }
           echo "commits<<EOF" >> $env:GITHUB_OUTPUT
@@ -44,17 +69,39 @@ jobs:
           echo "EOF" >> $env:GITHUB_OUTPUT
         shell: pwsh
 
+      - name: Compose release body
+        id: body
+        run: |
+          # 版本专属发布说明（docs/release-notes/<version>.md），缺失时退回提交列表；
+          # 提交列表在本步骤内直接读取 git，避免多行输出插值破坏脚本
+          $VERSION = "${{ steps.version.outputs.version }}"
+          $NOTES_FILE = "docs/release-notes/$VERSION.md"
+          $BODY = ""
+          if (Test-Path $NOTES_FILE) {
+            $BODY += (Get-Content $NOTES_FILE -Raw)
+            $BODY += "`n---`n`n"
+          }
+          $LAST_TAG = git describe --tags --abbrev=0 HEAD^ 2>$null
+          if ($LAST_TAG) {
+            $COMMITS = git log "$LAST_TAG..HEAD" --pretty=format:"- %s"
+          } else {
+            $COMMITS = git log --pretty=format:"- %s" -20
+          }
+          if (-not $COMMITS) { $COMMITS = @("- Initial release") }
+          $BODY += "<details><summary>📝 完整提交记录</summary>`n`n"
+          $BODY += ($COMMITS -join "`n")
+          $BODY += "`n</details>`n"
+          $BODY += "`n---`n`n<sub>构建时间: ${{ github.event.head_commit.timestamp }}</sub>"
+          echo "body<<BODYEOF" >> $env:GITHUB_OUTPUT
+          echo $BODY >> $env:GITHUB_OUTPUT
+          echo "BODYEOF" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -80,34 +127,6 @@ jobs:
         with:
           tagName: v${{ steps.version.outputs.version }}
           releaseName: 'LoArchive v${{ steps.version.outputs.version }}'
-          releaseBody: |
-            ## LoArchive v${{ steps.version.outputs.version }}
-            
-            ### 📝 更新内容
-            ${{ steps.changelog.outputs.commits }}
-            
-            ---
-            
-            ### 📥 下载说明
-            | 文件 | 说明 |
-            |------|------|
-            | `LoArchive_*_x64-setup.exe` | 🎯 **安装版**（推荐） |
-            
-            ### 🔧 使用方法
-            1. 下载并安装
-            2. 打开应用
-            3. 在「设置」中配置 Lofter 登录信息
-            4. 开始使用！
-            
-            ### ✨ 功能特性
-            - 📚 Lofter 喜欢/分享/标签爬取
-            - 📖 AO3 作品下载
-            - 🖼️ 图片批量下载
-            - 📄 支持导出 PDF/EPUB/TXT
-            - 🌙 深色模式
-            - 🔄 自动检查更新
-            
-            ---
-            <sub>构建时间: ${{ github.event.head_commit.timestamp }}</sub>
+          releaseBody: ${{ steps.body.outputs.body }}
           releaseDraft: false
-          prerelease: false
+          prerelease: ${{ steps.version.outputs.prerelease == 'true' }}

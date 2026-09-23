@@ -6,13 +6,13 @@ import time
 import traceback
 
 from .config import ConfigStore
+from .errors import TaskCancelled
 from .history import HistoryManager
+from .logsetup import get_logger
+
+logger = get_logger("task")
 
 MAX_LOG_LINES = 200
-
-
-class TaskCancelled(Exception):
-    """爬虫在检查点发现取消标志后抛出，用于中断任务。"""
 
 
 class SpiderContext:
@@ -140,6 +140,7 @@ class TaskManager:
         except Exception as e:
             with self._lock:
                 self._status["error"] = str(e)
+            logger.exception("任务 %s 执行失败", task_type)
             self.log(f"❌ 任务出错: {e}")
             self.log(traceback.format_exc())
         finally:
@@ -159,7 +160,7 @@ class TaskManager:
             self._status["message"] = message
             if len(self._status["logs"]) > MAX_LOG_LINES:
                 self._status["logs"] = self._status["logs"][-MAX_LOG_LINES:]
-        print(log_entry)  # 同时打印到控制台
+        logger.info("%s", message)
         self._publish({"event": "log", "data": {"line": log_entry, "message": message}})
 
     def set_progress(self, percent: int) -> None:

@@ -29,15 +29,17 @@ LoArchive 是一个在本机运行的图形化存档工具，用于把 Lofter �
 
 ```mermaid
 flowchart LR
-    UI["前端<br/>原生 ES Modules"] -->|HTTP / SSE| API["FastAPI 后端"]
-    API --> SP["爬虫<br/>Lofter / AO3"]
+    UI["前端<br/>Vue 3 + TypeScript"] -->|HTTP / SSE| API["FastAPI 后端"]
+    API --> TM["任务管理<br/>工作线程 + SSE"]
+    TM --> SP["爬虫<br/>Lofter / AO3"]
     SP --> EX["导出<br/>TXT / PDF / EPUB"]
+    SP --> DB[("SQLite 历史")]
     SP --> FS[("本地存档目录")]
     T["Tauri 桌面壳"] -.->|启动 sidecar| API
 ```
 
-- 前端为无构建步骤的原生 ES Modules，由后端直接托管
-- 后端为 FastAPI 应用，任务以工作线程执行，日志与进度通过 SSE 实时推送
+- 前端为 Vue 3 + Vite + TypeScript 单页应用，由 Tauri 应用内协议加载，浏览器模式下由后端托管构建产物
+- 后端为 FastAPI 应用，任务以工作线程执行，日志与进度通过 SSE 实时推送；下载历史存储在 SQLite 中
 - 桌面版由 Tauri 启动内嵌的 Python sidecar，并提供原生窗口与文件夹选择器
 
 ## 功能特性
@@ -84,13 +86,16 @@ flowchart LR
 
 ### 方式二：源码运行
 
-环境要求：Python 3.11 及以上。Node.js 仅打包桌面应用时需要（18 及以上）。
+环境要求：Python 3.11 及以上；Node.js 20 及以上（前端构建与桌面打包需要）。
 
 ```bash
 git clone https://github.com/Yar1991-Translation/LoArchive.git
 cd LoArchive
 
 pip install -r requirements.txt
+npm install
+npm run build
+
 python run.py
 ```
 
@@ -121,7 +126,7 @@ AO3 相关功能无需配置，可直接使用。Lofter 需要登录后才能访
 1. 从左侧菜单选择功能模块
 2. 填入要抓取的链接
 3. 勾选需要的保存选项
-4. 点击「开始」按钮，进度与日志会实时显示在右侧
+4. 点击「开始」按钮，进度、运行日志与停止按钮都在底部任务坞中，任何页面可见
 5. 内容保存在存档目录中，同时记入「下载历史」
 
 ## 使用说明
@@ -142,7 +147,7 @@ Tag 链接可带排序后缀：`/new`（最新）、`/total`（总榜）、`/mon
 
 ### AO3 下载
 
-链接填写作品、系列、作者作品页或 Tag 作品页的地址，支持一次粘贴多个链接（每行一个）。作者与 Tag 模式可限制最大抓取页数，并可选择是否下载全部章节、是否保存元数据。
+链接填写作品、系列、作者作品页或 Tag 作品页的地址，支持一次粘贴多个链接（每行一个）。作者与 Tag 模式可限制最大抓取页数，并可选择是否下载全部章节、是否保存元数据，以及是否导出 PDF / EPUB。
 
 ## 项目结构
 
@@ -152,19 +157,21 @@ LoArchive/
 ├── loarchive/                FastAPI 后端包
 │   ├── main.py               应用工厂与 uvicorn 入口
 │   ├── config.py             配置读写
-│   ├── history.py            下载历史
+│   ├── history.py            下载历史（SQLite，自动迁移旧 JSON）
 │   ├── state.py              任务管理（线程、取消标志、SSE 事件）
-│   ├── schemas.py            请求参数校验
-│   ├── routers/              API 路由
-│   ├── spiders/              爬虫实现
+│   ├── errors.py             异常层级
+│   ├── logsetup.py           日志（控制台 + 滚动文件）
+│   ├── schemas.py            请求 / 响应模型
+│   ├── routers/              API 路由（config / tasks / files / history / meta）
+│   ├── spiders/              爬虫实现（含 common 公共逻辑）
 │   └── exporters/            PDF / EPUB 导出
-├── frontend/                 原生 ES Modules 前端
-│   ├── index.html
-│   ├── css/main.css
-│   └── js/                   按职责拆分的模块
-├── scripts/                  构建与校验脚本
+├── frontend/                 Vue 3 + Vite + TypeScript 前端
+│   └── src/                  组件 / 视图 / stores / API 层 / 主题令牌
+├── scripts/                  构建、开发启动与版本同步脚本
 ├── src-tauri/                Tauri 桌面应用
-├── tests/                    pytest 测试
+├── tests/                    pytest 后端测试
+├── tests-frontend/           vitest 前端测试
+├── docs/                     API 契约与版本发布说明
 └── dir/                      默认存档目录
 ```
 
@@ -173,62 +180,67 @@ LoArchive/
 ### 常用命令
 
 ```bash
-# 安装开发依赖
+# 安装开发依赖（后端 + 前端）
 pip install -r requirements-dev.txt
+npm install
 
-# 启动后端（开发模式）
-python run.py
+# 一键启动后端与前端（带热更新，日常开发用这个）
+npm run dev
+
+# 桌面开发模式（自动启动后端与前端，打开 Tauri 窗口）
+npm run tauri:dev
 
 # 代码检查与格式检查
 ruff check .
 ruff format --check .
 
 # 运行测试
-pytest
+pytest          # 后端
+npm run test    # 前端
+npm run typecheck
 
-# 校验前端模块导入图（前端无打包器，用于捕获缺失导出导致的空白页）
-node scripts/check_esm.mjs
+# 构建前端产物（浏览器模式需要）
+npm run build
+
+# 版本号同步（以 loarchive/__init__.py 为单一来源）
+python scripts/sync_version.py
 ```
 
 ### 构建桌面应用
 
 ```bash
-# 安装 Node 依赖
-npm install
-
 # 先构建后端 sidecar，再打包
 python scripts/build_backend.py
 npm run tauri:build
 ```
 
-如需调试桌面窗口，先启动后端，再另开一个终端运行 `npm run tauri:dev`。
-
 ## 后端接口
+
+完整契约见 [docs/api.md](docs/api.md)。
 
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |
+| GET | `/api/version` | 应用版本（前端展示与更新检查的单一来源） |
 | GET / POST | `/api/config` | 读取或保存 Lofter 登录信息（读取时授权码遮蔽返回） |
 | GET / POST | `/api/settings` | 读取或保存存档路径与开关项 |
-| POST | `/api/task/start` | 启动任务，参数按任务类型校验 |
+| POST | `/api/task/start` | 启动任务，参数按任务类型校验（冲突返回 409） |
 | GET | `/api/task/status` | 轮询任务状态（SSE 不可用时回退） |
 | GET | `/api/task/events` | SSE 实时推送日志与进度 |
 | POST | `/api/task/stop` | 请求停止当前任务 |
 | GET | `/api/files` | 列出已下载文件 |
 | GET | `/api/history` | 分页查询下载历史，支持类型、来源与关键词过滤 |
 | POST | `/api/history/clear` | 清空下载历史 |
-| DELETE | `/api/history/delete/{id}` | 删除单条历史记录 |
+| DELETE | `/api/history/delete/{id}` | 删除单条历史记录（不存在返回 404） |
 | POST | `/api/history/check` | 检查某个链接是否已下载 |
 
 应用运行时访问 <http://localhost:5000/docs> 可查看交互式接口文档。
 
 ## 数据存储位置
 
-| 运行方式 | 位置 |
-| --- | --- |
-| 源码运行 | 项目根目录下的 `loarchive_config.json` 与 `download_history.json` |
-| 桌面版 | 用户数据目录，Windows 为 `%APPDATA%\LoArchive` |
+配置、下载历史与日志统一存放在用户数据目录（Windows 为 `%APPDATA%\LoArchive`），不再落在程序目录。
 
-桌面版首次启动时，如果安装目录旁存在旧版配置，会自动导入到用户数据目录，且不会覆盖已有数据。
+- 下载历史为 SQLite 数据库 `history.db`；从 1.x 升级时首次启动会自动合并旧版 `download_history.json`，并将源文件备份为 `.bak`
+- 运行日志写入 `loarchive.log`（滚动保留）
 
 ## 常见问题
 
@@ -251,7 +263,7 @@ npm run tauri:build
 <details>
 <summary>文件保存到哪里了？</summary>
 
-保存在「设置」页面配置的存档目录中，按来源与作者分子目录存放，默认目录为项目下的 `dir/`。历史记录中可以直接复制单个文件的路径。
+保存在「设置」页面配置的存档目录中，按来源与作者分子目录存放，默认目录为项目下的 `dir/`。「下载历史」中可以直接复制单个文件的路径。
 
 </details>
 

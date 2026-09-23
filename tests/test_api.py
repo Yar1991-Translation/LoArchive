@@ -26,9 +26,37 @@ def test_frontend_assets_are_served(tmp_path):
 
     app = create_app(data_dir=str(tmp_path / "data"))
     with TestClient(app) as client:
-        assert client.get("/js/main.js").status_code == 200
-        assert client.get("/css/main.css").status_code == 200
-        assert client.get("/js/api.js").status_code == 200
+        # / 服务 index.html，favicon 来自构建产物（或源码目录的回退）
+        assert client.get("/").status_code == 200
+        assert client.get("/favicon.ico").status_code == 200
+
+
+def test_frontend_assets_require_revalidation(tmp_path):
+    """前端资源必须带 no-cache，否则浏览器会长时间复用旧样式/脚本。"""
+    from fastapi.testclient import TestClient
+
+    from loarchive.main import create_app
+
+    app = create_app(data_dir=str(tmp_path / "data"))
+    with TestClient(app) as client:
+        page = client.get("/")
+        favicon = client.get("/favicon.ico")
+
+    assert page.headers.get("cache-control") == "no-cache"
+    assert favicon.headers.get("cache-control") == "no-cache"
+    # 接口响应不受影响
+    assert client.get("/api/task/status").headers.get("cache-control") is None
+
+
+# ---------- 元信息 ----------
+
+
+def test_version_endpoint(client):
+    from loarchive import __version__
+
+    data = client.get("/api/version").json()
+
+    assert data["version"] == __version__
 
 
 # ---------- 配置 / 设置 ----------
@@ -59,7 +87,8 @@ def test_settings_round_trip_and_creates_directories(client, tmp_path):
         json={"save_path": str(target), "auto_dedup": False, "notify_on_complete": False},
     )
 
-    assert response.json()["success"] is True
+    assert response.status_code == 200
+    assert "message" in response.json()
     assert (target / "img").is_dir()
     assert (target / "article").is_dir()
 
@@ -79,6 +108,17 @@ def test_settings_partial_update_keeps_other_values(client):
     assert settings["notify_on_complete"] is False
 
 
+def test_settings_rejects_uncreatable_save_path(client, tmp_path):
+    # 在需要创建目录的位置放一个同名文件，使 makedirs 必然失败
+    blocker = tmp_path / "blocker"
+    blocker.write_text("x", encoding="utf-8")
+
+    response = client.post("/api/settings", json={"save_path": str(blocker / "sub")})
+
+    assert response.status_code == 400
+    assert "创建目录失败" in response.json()["detail"]
+
+
 # ---------- 任务 ----------
 
 
@@ -91,14 +131,21 @@ def test_task_status_defaults_to_idle(client):
     assert status["error"] is None
 
 
-def test_start_task_rejects_invalid_params(client, monkeypatch):
+def test_start_task_rejects_invalid_params(client):
     response = client.post(
         "/api/task/start",
         json={"type": "like_share_tag", "params": {"mode": "不存在的模式"}},
     )
 
-    assert response.json()["success"] is False
-    assert "参数错误" in response.json()["message"]
+    assert response.status_code == 400
+    assert "参数错误" in response.json()["detail"]
+
+
+def test_start_task_rejects_unknown_type(client):
+    response = client.post("/api/task/start", json={"type": "no_such_task", "params": {}})
+
+    assert response.status_code == 400
+    assert "不支持的任务类型" in response.json()["detail"]
 
 
 def test_start_task_runs_spider_and_publishes_logs(client, monkeypatch):
@@ -117,7 +164,7 @@ def test_start_task_runs_spider_and_publishes_logs(client, monkeypatch):
         json={"type": "single_txt", "params": {"urls": ["https://example.com/post/1"]}},
     )
 
-    assert response.json()["success"] is True
+    assert response.status_code == 200
 
     for _ in range(50):
         status = client.get("/api/task/status").json()
@@ -138,7 +185,7 @@ def test_start_task_requires_login_for_lofter(client):
         json={"type": "single_txt", "params": {"urls": ["https://example.com/post/1"]}},
     )
 
-    assert response.json()["success"] is True
+    assert response.status_code == 200
 
     for _ in range(50):
         status = client.get("/api/task/status").json()
@@ -163,7 +210,7 @@ def test_second_task_is_rejected_while_running(client, monkeypatch):
     monkeypatch.setitem(spiders.TASK_RUNNERS, "ao3", slow_run)
 
     first = client.post("/api/task/start", json={"type": "ao3", "params": {"urls": ["https://ao3/works/1"]}})
-    assert first.json()["success"] is True
+    assert first.status_code == 200
 
     for _ in range(50):
         if client.get("/api/task/status").json()["running"]:
@@ -171,8 +218,8 @@ def test_second_task_is_rejected_while_running(client, monkeypatch):
         time_module.sleep(0.05)
 
     second = client.post("/api/task/start", json={"type": "ao3", "params": {"urls": ["https://ao3/works/2"]}})
-    assert second.json()["success"] is False
-    assert second.json()["message"] == "已有任务在运行中"
+    assert second.status_code == 409
+    assert second.json()["detail"] == "已有任务在运行中"
 
     release.set()
 
@@ -195,7 +242,7 @@ def test_stop_task_sets_cancel_flag(client, monkeypatch):
     client.post("/api/task/start", json={"type": "ao3", "params": {"urls": ["https://ao3/works/1"]}})
     assert started.wait(timeout=5) is True
 
-    assert client.post("/api/task/stop").json()["success"] is True
+    assert client.post("/api/task/stop").status_code == 200
 
     for _ in range(50):
         status = client.get("/api/task/status").json()
@@ -237,11 +284,18 @@ def test_list_files_reports_downloads(client, tmp_path):
 def test_history_endpoints_round_trip(client):
     client.get("/api/history")
 
-    assert client.post("/api/history/clear").json()["success"] is True
+    assert client.post("/api/history/clear").json()["message"] == "历史记录已清空"
 
     data = client.get("/api/history").json()
     assert data["total"] == 0
     assert data["stats"] == {"total": 0, "images": 0, "articles": 0}
+
+
+def test_delete_missing_history_item_returns_404(client):
+    response = client.delete("/api/history/delete/not-exist-id")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "记录不存在"
 
 
 def test_history_check_respects_auto_dedup_switch(client, tmp_path):

@@ -1,6 +1,7 @@
 """Lofter 喜欢/推荐/Tag 内容爬取。"""
 
 import ast
+import logging
 import os
 import re
 import time
@@ -9,7 +10,10 @@ import requests
 from lxml.html import etree
 
 from ..exporters.pdf import generate_lofter_pdf
-from ..utils import CHROME_UA, get_headers, sanitize_filename
+from ..utils import CHROME_UA, sanitize_filename
+from .common import download_file, guess_image_type, save_root, unique_file_path
+
+logger = logging.getLogger("loarchive.spider.collection")
 
 
 def parse_fav_info(fav_info: str):
@@ -50,8 +54,8 @@ def parse_fav_info(fav_info: str):
                     img_url = url_info.get("raw", "") or url_info.get("orign", "").split("?imageView")[0]
                     if img_url:
                         img_urls.append(img_url)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("解析图片链接列表失败（按无图处理）: %s", e)
 
         # 正文内容
         content_search = re.search(r's\d{1,5}.content="(.*?)";', fav_info)
@@ -63,8 +67,8 @@ def parse_fav_info(fav_info: str):
                 h = html2text.HTML2Text()
                 h.ignore_links = False
                 content = h.handle(content)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("html2text 转换失败（保留原始内容）: %s", e)
         else:
             content = ""
 
@@ -85,7 +89,9 @@ def parse_fav_info(fav_info: str):
             "has_img": len(img_urls) > 0,
         }
 
-    except Exception:
+    except Exception as e:
+        # 单条记录解析失败只影响这一条，跳过并记录，不中断整个任务
+        logger.warning("解析收藏信息失败（跳过该条）: %s", e)
         return None
 
 
@@ -269,6 +275,8 @@ def run_like_share_tag(ctx, params: dict) -> None:
                     data["c0-param7"] = "number:" + str(got_num)
                     data["c0-param8"] = "number:" + str(last_timestamp)
                 except Exception:
+                    # 拿不到下一页游标，视为翻页结束
+                    logger.debug("tag 模式未找到下一页时间戳，停止翻页")
                     break
 
             time.sleep(0.5)
@@ -295,8 +303,7 @@ def run_like_share_tag(ctx, params: dict) -> None:
         ctx.log(f"📊 图片博客: {img_count} 篇, 文字博客: {txt_count} 篇")
 
         # 创建保存目录 - 按作者分类
-        save_root = ctx.config.get("save_path", "./dir")
-        base_dir = os.path.join(save_root, f"{mode}_save")
+        base_dir = os.path.join(save_root(ctx), f"{mode}_save")
         img_base_dir = os.path.join(base_dir, "img")
         txt_base_dir = os.path.join(base_dir, "txt")
         os.makedirs(img_base_dir, exist_ok=True)
@@ -323,21 +330,15 @@ def run_like_share_tag(ctx, params: dict) -> None:
                     for img_idx, img_url in enumerate(blog["img_urls"]):
                         ctx.check_cancel()
                         try:
-                            # 确定图片类型
-                            img_type = "gif" if "gif" in img_url else ("png" if "png" in img_url else "jpg")
-
+                            img_type = guess_image_type(img_url)
                             pic_name = f"{blog['public_time']}({img_idx + 1}).{img_type}"
                             img_path = os.path.join(author_img_dir, pic_name)
 
-                            req_headers = get_headers()
-                            req_headers["Referer"] = blog["url"].split("post")[0]
-
-                            img_content = requests.get(img_url, headers=req_headers, timeout=30).content
-                            with open(img_path, "wb") as f:
-                                f.write(img_content)
+                            download_file(img_url, img_path, referer=blog["url"].split("post")[0])
 
                             saved_img += 1
-                        except Exception:
+                        except Exception as e:
+                            logger.warning("下载图片失败 %s: %s", img_url, e)
                             continue
 
                 # 保存文章/文本 - 按作者分类
@@ -347,20 +348,11 @@ def run_like_share_tag(ctx, params: dict) -> None:
                     os.makedirs(author_txt_dir, exist_ok=True)
 
                     if blog["title"]:
-                        title_safe = sanitize_filename(blog["title"])
-                        file_name = f"{title_safe}.txt"
+                        file_name = f"{sanitize_filename(blog['title'])}.txt"
                     else:
                         file_name = f"{blog['public_time']}.txt"
 
-                    txt_path = os.path.join(author_txt_dir, file_name)
-
-                    # 避免文件名重复
-                    counter = 1
-                    original_path = txt_path
-                    while os.path.exists(txt_path):
-                        name_part = original_path.rsplit(".", 1)[0]
-                        txt_path = f"{name_part}({counter}).txt"
-                        counter += 1
+                    txt_path = unique_file_path(author_txt_dir, file_name)
 
                     article_head = f"{blog['title'] or '无标题'} by {blog['author_name']}[{blog['author_ip']}]\n"
                     article_head += f"发表时间：{blog['public_time']}\n原文链接：{blog['url']}\n"
@@ -409,7 +401,8 @@ def run_like_share_tag(ctx, params: dict) -> None:
                 if idx % 20 == 0:
                     ctx.log(f"   进度: {idx + 1}/{len(blogs_info)}, 已保存图片 {saved_img} 张, 文章 {saved_txt} 篇")
 
-            except Exception:
+            except Exception as e:
+                logger.warning("保存博客失败 %s（跳过）: %s", blog.get("url", "?"), e)
                 continue
 
             time.sleep(0.1)
@@ -419,6 +412,7 @@ def run_like_share_tag(ctx, params: dict) -> None:
         ctx.log(f"   📝 文章: {saved_txt} 篇 → {txt_base_dir}/作者名/")
 
     except Exception as e:
+        logger.exception("like/share/tag 任务执行失败")
         import traceback
 
         ctx.log(f"❌ 爬取失败: {str(e)}")

@@ -5,6 +5,7 @@ import os
 from fastapi import APIRouter, Depends
 
 from ..config import ConfigStore
+from ..schemas import FilesResponse
 from . import get_config_store
 
 router = APIRouter()
@@ -12,9 +13,9 @@ router = APIRouter()
 IMAGE_EXTENSIONS = (".jpg", ".png", ".gif", ".jpeg")
 
 
-@router.get("/api/files")
-def list_files(store: ConfigStore = Depends(get_config_store)):
-    """列出已下载的文件（形状与原实现一致）。"""
+@router.get("/api/files", response_model=FilesResponse)
+def list_files(store: ConfigStore = Depends(get_config_store)) -> dict:
+    """列出已下载的文件（最多 200 条）。"""
     base_path = store.get("save_path", store.get("file_path", "./dir"))
     files = []
 

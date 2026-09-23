@@ -3,9 +3,14 @@
 import os
 import uuid
 
+from ..logsetup import get_logger
 
-def generate_epub(title, author, content_parts, chapters_info, metadata_list, filepath, log=print):
+logger = get_logger("exporter.epub")
+
+
+def generate_epub(title, author, content_parts, chapters_info, metadata_list, filepath, log=None):
     """生成 EPUB 电子书，成功返回 True。"""
+    log = log or (lambda message: logger.info(message))
     try:
         from ebooklib import epub
 

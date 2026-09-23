@@ -1,5 +1,6 @@
 """AO3 文章爬取 - 参考 https://github.com/610yilingliu/download_ao3_v2"""
 
+import logging
 import os
 import re
 import time
@@ -10,15 +11,17 @@ from lxml import etree
 
 from ..exporters.epub import generate_epub
 from ..exporters.pdf import build_ao3_html, save_ao3_pdf
+from ..utils import sanitize_filename
+from .common import save_root, unique_file_path
+
+logger = logging.getLogger("loarchive.spider.ao3")
 
 AO3_BASE = "https://archiveofourown.org"
 
 
 def safe_filename(name: str) -> str:
-    """生成安全的文件名（纯函数）。"""
-    # Windows非法字符
-    invalid_chars = r'[\\/*?:"<>|\r\n\t]'
-    name = re.sub(invalid_chars, "_", name).strip()
+    """生成安全的文件名（纯函数）：字符映射清洗 + 空白折叠 + 截断到 100 字符。"""
+    name = sanitize_filename(name)
     # 移除连续空格和下划线
     name = re.sub(r"[_\s]+", " ", name).strip()
     return name[:100] if name else "untitled"
@@ -277,15 +280,7 @@ def download_work(ctx, session: requests.Session, base_dir: str, work_url: str, 
 
         # 保存TXT文件
         txt_filename = f"{safe_filename(title)}.txt"
-        txt_filepath = os.path.join(author_dir, txt_filename)
-
-        # 避免重名
-        counter = 1
-        original_filepath = txt_filepath
-        while os.path.exists(txt_filepath):
-            name_part = original_filepath.rsplit(".", 1)[0]
-            txt_filepath = f"{name_part}({counter}).txt"
-            counter += 1
+        txt_filepath = unique_file_path(author_dir, txt_filename)
 
         with open(txt_filepath, "w", encoding="utf-8") as f:
             f.write(article)
@@ -346,6 +341,7 @@ def download_work(ctx, session: requests.Session, base_dir: str, work_url: str, 
         return True
 
     except Exception as e:
+        logger.exception("下载作品失败 %s", work_url)
         ctx.log(f"   ❌ 下载失败: {str(e)}")
         return False
 
@@ -489,8 +485,7 @@ def run(ctx, params: dict) -> None:
     ctx.log(f"📍 共 {len(urls)} 个链接")
 
     # 创建保存目录（使用自定义路径）
-    save_root = ctx.config.get("save_path", "./dir")
-    base_dir = os.path.join(save_root, "ao3")
+    base_dir = os.path.join(save_root(ctx), "ao3")
     os.makedirs(base_dir, exist_ok=True)
 
     session = build_session()

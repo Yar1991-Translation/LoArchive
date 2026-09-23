@@ -1,6 +1,6 @@
 [project]
 name = "loarchive"
-version = "1.1.0"
+version = "2.0.0"
 description = "LoArchive - Lofter & AO3 content archiving tool"
 requires-python = ">=3.11"
 
@@ -22,3 +22,6 @@ known-first-party = ["loarchive"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+# 让 `pytest` 控制台脚本也能找到 loarchive 包（`python -m pytest` 会隐式加入当前目录，
+# 但 CI 使用的是控制台脚本，不设置此项会直接 ModuleNotFoundError）
+pythonpath = ["."]

@@ -3,42 +3,45 @@
 import asyncio
 import json
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sse_starlette.sse import EventSourceResponse
 
-from ..schemas import TaskStartPayload
+from ..schemas import MessageResponse, TaskStartPayload, TaskStatusResponse
 from ..state import TaskManager
 from . import get_task_manager
 
 router = APIRouter()
 
 
-@router.post("/api/task/start")
-def start_task(payload: TaskStartPayload, manager: TaskManager = Depends(get_task_manager)):
-    """启动任务。"""
-    if manager.is_running():
-        return {"success": False, "message": "已有任务在运行中"}
-
+@router.post("/api/task/start", response_model=MessageResponse)
+def start_task(payload: TaskStartPayload, manager: TaskManager = Depends(get_task_manager)) -> dict:
+    """启动任务；已有任务运行返回 409，参数错误返回 400。"""
     try:
         params = payload.validated_params()
-    except Exception as e:
-        return {"success": False, "message": f"参数错误: {e}"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"参数错误: {e}") from e
 
-    manager.start(payload.type, params)
-    return {"success": True, "message": "任务已启动"}
+    if manager.is_running():
+        raise HTTPException(status_code=409, detail="已有任务在运行中")
+
+    try:
+        manager.start(payload.type, params)
+    except RuntimeError as e:
+        raise HTTPException(status_code=409, detail=str(e)) from e
+    return {"message": "任务已启动"}
 
 
-@router.get("/api/task/status")
-def get_task_status(manager: TaskManager = Depends(get_task_manager)):
-    """获取任务状态（轮询回退用）。"""
+@router.get("/api/task/status", response_model=TaskStatusResponse)
+def get_task_status(manager: TaskManager = Depends(get_task_manager)) -> dict:
+    """获取任务状态（SSE 不可用时的轮询回退）。"""
     return manager.status()
 
 
-@router.post("/api/task/stop")
-def stop_task(manager: TaskManager = Depends(get_task_manager)):
+@router.post("/api/task/stop", response_model=MessageResponse)
+def stop_task(manager: TaskManager = Depends(get_task_manager)) -> dict:
     """停止任务（设置取消标志，爬虫在检查点中断）。"""
     manager.stop()
-    return {"success": True, "message": "任务已停止"}
+    return {"message": "已请求停止任务"}
 
 
 @router.get("/api/task/events")
