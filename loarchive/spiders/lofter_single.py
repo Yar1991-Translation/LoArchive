@@ -10,6 +10,7 @@ from lxml.html import etree
 
 from ..utils import filter_lofter_image_urls, get_headers, guess_image_type, sanitize_filename
 from .common import LOFTER_IMG_PATTERN, download_file, save_root
+from .lofter_egg import download_eggs_for_post
 
 logger = logging.getLogger("loarchive.spider.single")
 
@@ -146,6 +147,11 @@ def run_single_img(ctx, params: dict) -> None:
                     }
                 )
 
+            # 顺带下载该帖已解锁的彩蛋（正文入 article/this，图片入 img/this）
+            download_eggs_for_post(
+                ctx, blog_url, text_dir=os.path.join(save_root(ctx), "article/this"), image_dir=dir_path
+            )
+
         except Exception as e:
             logger.warning("解析博客失败 %s: %s", blog_url, e)
             ctx.log(f"   ⚠️ 解析失败: {str(e)}")
@@ -246,6 +252,9 @@ def run_single_txt(ctx, params: dict) -> None:
             ctx.add_history(
                 "article", blog_url, title or f"{author_name} {public_time}", author_name, file_path, "lofter"
             )
+
+            # 顺带下载该帖已解锁的彩蛋（正文与图片分别入 article/this 与 img/this）
+            download_eggs_for_post(ctx, blog_url, text_dir=dir_path, image_dir=os.path.join(save_root(ctx), "img/this"))
 
         except Exception as e:
             logger.warning("保存文章失败 %s: %s", blog_url, e)
