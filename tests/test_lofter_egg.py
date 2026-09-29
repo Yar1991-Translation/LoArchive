@@ -1,6 +1,5 @@
 """Lofter 彩蛋（回礼）模块测试：纯函数解析与编排逻辑（全部离线）。"""
 
-
 import pytest
 
 from loarchive.errors import FetchError
